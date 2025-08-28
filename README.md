@@ -79,21 +79,26 @@
 
 flowchart TD
 
-     A((Inicio)) --> B[Usuario ingresa a la plataforma web/móvil]
-     B --> C{¿Tiene cuenta registrada?}
-     C -- Sí --> D[Inicia sesión]
-     C -- No --> E[Se registra en la plataforma]
-     D --> F[Visualiza catálogo de masajes]
-     E --> F[Visualiza catálogo de masajes]
-     F --> G[Selecciona servicio y horario disponible]
-     G --> H[Agrega datos personales de la cita]
-     H --> I[Selecciona método de pago]
-     I --> J{¿Pago exitoso?}
-     J --> Sí --> K[Genera reserva y confirma]
-     J --> No --> L[Solicita reintento de pago]
-     K --> M[Envía notificación por correo/WhatsApp]
-     M --> N[Reserva registrada en el sistema]
-     N --> O[Fin]
+   
+    A((Inicio)) --> B[Usuario ingresa a la plataforma web/móvil]
+    B --> C[Visualiza catálogo de masajes]
+    C --> D[Selecciona servicio y horario disponible]
+    D --> E{¿Tiene cuenta registrada?}
+    E -->|Sí| F[Inicia sesión]
+    E -->|No| G[Se registra en la plataforma]
+    G --> F
+    F --> H[Confirma selección]
+    H --> I[Agrega datos personales de la cita]
+    I --> J[Selecciona método de pago]
+    J --> K[Procesa pago]
+    K --> L{¿Pago exitoso?}
+    L -->|Sí| M[Genera reserva y confirma]
+    L -->|No| N[Solicita reintento de pago]
+    M --> O[Envía notificación por correo/WhatsApp]
+    O --> P[Reserva registrada en el sistema]
+    P --> Q[Fin]
+
+
 
 
 
