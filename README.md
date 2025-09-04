@@ -80,14 +80,14 @@
 flowchart TD
 
    
-    A((Inicio)) --> B[Usuario ingresa a la plataforma web/móvil]
-    B --> C[Visualiza catálogo de masajes]
-    C --> D[Selecciona servicio y horario disponible]
-    D --> E{¿Tiene cuenta registrada?}
-    E -->|Sí| F[Inicia sesión]
-    E -->|No| G[Se registra en la plataforma]
-    G --> F
-    F --> H[Confirma selección]
+    A((Inicio)) --> B{¿Tiene cuenta registrada?}
+    B -->|Sí| C[Inicia sesión]
+    B -->|No| D[Se registra en la plataforma]
+    D --> C
+    C --> E[Usuario ingresa a la plataforma web/móvil]
+    E --> F[Visualiza catálogo de masajes]
+    F --> G[Selecciona servicio y horario disponible]
+    G --> H[Confirma selección]
     H --> I[Agrega datos personales de la cita]
     I --> J[Selecciona método de pago]
     J --> K[Procesa pago]
