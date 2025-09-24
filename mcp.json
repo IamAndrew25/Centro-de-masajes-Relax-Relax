@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "local-project": {
+      "command": "mcp-filesystem",
+      "args": ["--root", "D:/Proyecto_integrador/Centro-de-masajes-Relax-Relax"]
+    }
+  }
+}
