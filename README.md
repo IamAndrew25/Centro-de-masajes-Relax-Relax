@@ -65,9 +65,9 @@
 
 - Lenguajes: Java, HTML5, CSS3, JavaScript
 
-- Backend: Java, Servlets, JSP
+- Backend: Java, Spring Boot
 
-- Frontend: HTML5, CSS3, Bootstrap 4.6
+- Frontend: HTML5, CSS3, javacript(React)
 
 - Base de Datos: MySQL
 
