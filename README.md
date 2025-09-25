@@ -4,7 +4,7 @@
 - **Obispo Calla, Andres Alexander** (U20227680) - [GitHub:] (https://github.com/IamAndrew25)
 - **Tanta Salazar, Andre Leandro** (U22100892) - [GitHub:] (https://github.com/AndreTs8)
 - **Sánchez Ríos Jheremy Ayrton** (U21205138) - [GitHub:] (https://github.com/JherySanchez)
-- **Ortiz Gonzales Derek** (U22209547) - [GitHub:] (https://github.com/MounstroComeGalletas)
+- **Ortiz Gonzales Derek** (U22209547) - [GitHub:] (https://github.com/DerekOrtiz07)
 - **Rios Luna, Bryan Snayder**  (U22217418) - [GitHub:] (https://github.com/BryanRLS-2004)
 - **Lopez Chavez, Yherson Richard ** (U22323606) -- [GitHub:] (https://github.com/yherson2378)
 
