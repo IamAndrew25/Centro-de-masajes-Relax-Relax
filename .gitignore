@@ -1,2 +1,30 @@
-node_modules
-node_modules
+# Archivos y carpetas generados por el sistema operativo
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos temporales, de compilación y de IDE (entorno de desarrollo)
+# Java/Spring (Maven y Gradle)
+/target/
+/build/
+.gradle/
+*.iml
+.idea/
+.project
+.classpath
+.settings/
+out/
+bin/
+
+# React
+/node_modules
+/dist
+/build
+
+# Archivos de configuración de variables de entorno
+# Contiene información sensible como contraseñas, claves API, etc.
+# NUNCA deben subirse al repositorio.
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
