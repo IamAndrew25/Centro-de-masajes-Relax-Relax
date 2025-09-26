@@ -245,3 +245,54 @@
   margin-bottom: 1rem;
   font-size: 0.9rem;
 }
+
+/* Diseño Responsivo */
+@media (max-width: 850px) {
+  .auth-container {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    overflow-y: auto;
+  }
+
+  .auth-container.register-view {
+    height: auto; /* Se ajustara la altura de acuerdo al contenido */
+  }
+
+  .slider {
+    flex: 0 0 300px; /* Altura fija para el slider en celulares */
+    width: 100%;
+    padding-bottom: 20px;
+    align-items: center; /* Centra el texto verticalmente */
+  }
+
+  .overlay-text h2 {
+    font-size: 1.8rem; /* Reduce tamaño de fuente */
+  }
+
+  .form-section {
+    flex: 1;
+    padding: 2rem 1rem;
+  }
+
+  .form-inner-container {
+    width: 90%;
+    max-width: none;
+  }
+
+  .logo {
+    width: 100px;
+    height: 100px;
+    align-self: center; /* Centrar logo en celulares */
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .slider {
+    display: none; /* Si es muy pequeño, no se muestra el slider */
+  }
+}
