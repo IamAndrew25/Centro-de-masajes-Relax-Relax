@@ -1,10 +1,14 @@
-import AppRouter from "./routes/AppRouter";
-import "./App.css";
+import Admin from "./pages/Admin/Admin";
 
 function App() {
+  const handleLogout = () => {
+    console.log("Logout clicked");
+  };
+
   return (
     <div className="app-container">
-      <AppRouter />
+      {/* Mostrar solo la vista de administrador para revisión */}
+      <Admin onLogout={handleLogout} />
     </div>
   );
 }
