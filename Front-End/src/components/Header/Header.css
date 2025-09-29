@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+
+/* Header base */
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 12px 0;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Container */
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* No se porque funciona con el a..si no hay <a> */
+.logo a {
+  text-decoration: none;
+}
+/*Update: Cuando React renderiza esto en el navegador,
+ el componente <NavLink> se convierte en una etiqueta <a> normal.*/
+
+/* Logo */
+.logo h1 {
+  font-family: 'Dancing Script', cursive;
+  color: #000;
+  margin: 0;
+  font-size: 50px;
+  font-weight: normal;
+}
+
+/* Navigation */
+.nav {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+/* Links */
+.nav-link {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  font-size: 15px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #ff8c42;
+}
+
+/* CTA button */
+.nav-cta {
+  background: #ff8c42;
+  color: #fff !important;
+  padding: 10px 22px;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.nav-cta:hover {
+  background: #e67a37;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 140, 66, 0.3);
+}
+
+/* Hamburguesa */
+.menu-icon {
+  display: none;
+  font-size: 28px;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .menu-icon {
+    display: block;
+  }
+
+  .nav {
+    position: absolute;
+    top: 70px;
+    right: -100%;
+    flex-direction: column;
+    gap: 20px;
+    background: #fff;
+    width: 200px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+
+  .nav.active {
+    right: 20px;
+  }
+}

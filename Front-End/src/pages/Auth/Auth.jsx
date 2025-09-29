@@ -33,35 +33,37 @@ const AuthPage = () => {
   }, []);
 
   return (
-    <div className={`auth-container ${!isLoginView ? 'register-view' : ''}`}>
-      {/* Slider */}
-      <div className="slider">
-        {slides.map((slide, index) => (
-          <img
-            key={index}
-            src={slide.image}
-            alt="Imagen del carrusel"
-            className={`background-slider ${index === currentSlide ? 'active' : ''}`}
-          />
-        ))}
-        <div className="overlay-text">
-          <h2>{slides[currentSlide].text}</h2>
-          <div className="carousel-dots">
-            {slides.map((_, index) => (
-              <span key={index} className={`dot ${index === currentSlide ? 'active' : ''}`}></span>
-            ))}
+    <div className="auth-page">
+      <div className={`auth-container ${!isLoginView ? 'register-view' : ''}`}>
+        {/* Slider */}
+        <div className="slider">
+          {slides.map((slide, index) => (
+            <img
+              key={index}
+              src={slide.image}
+              alt="Imagen del carrusel"
+              className={`background-slider ${index === currentSlide ? 'active' : ''}`}
+            />
+          ))}
+          <div className="overlay-text">
+            <h2>{slides[currentSlide].text}</h2>
+            <div className="carousel-dots">
+              {slides.map((_, index) => (
+                <span key={index} className={`dot ${index === currentSlide ? 'active' : ''}`}></span>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Formulario Login/Registro */}
-      {/*La relajacion es el arte de dejar ir, lo que no puedes controlar*/ }
-      <div className="form-section">
-        {isLoginView ? (
-          <LoginForm onToggleView={toggleView} />
-        ) : (
-          <RegisterForm onToggleView={toggleView} />
-        )}
+        {/* Formulario Login/Registro */}
+        {/*La relajacion es el arte de dejar ir, lo que no puedes controlar*/ }
+        <div className="form-section">
+          {isLoginView ? (
+            <LoginForm onToggleView={toggleView} />
+          ) : (
+            <RegisterForm onToggleView={toggleView} />
+          )}
+        </div>
       </div>
     </div>
   );

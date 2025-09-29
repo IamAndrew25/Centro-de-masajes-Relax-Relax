@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
 /* Contenedor Principal */
 .auth-container {
   display: flex;
@@ -286,7 +295,7 @@
   .logo {
     width: 100px;
     height: 100px;
-    align-self: center; /* Centrar logo en celulares */
+    align-self: center; /* Centrar logo en móvil */
     margin-bottom: 1rem;
   }
 }
