@@ -1,5 +1,6 @@
 import React from 'react';
 import './Home.css';
+import Footer from './Footer';
 
 // Importar imágenes desde public
 const paginaPrincipal = '/pagina_principal.png';
@@ -10,6 +11,7 @@ const rectangle14 = '/Rectangle14.png';
 
 const Home = ({ onLogin }) => {
     return (
+        <>
         <div className="home-container">
             {/* Header/Navegación */}
             <header className="header">
@@ -139,7 +141,12 @@ const Home = ({ onLogin }) => {
                     </button>
                 </div>
             </section>
-        </div>
+
+
+                {/* Footer */}
+            </div>
+            <Footer />
+        </>
     );
 };
 

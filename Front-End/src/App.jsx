@@ -1,14 +1,10 @@
-import Admin from "./pages/Admin/Admin";
+
+import Home from "./pages/Home/Home";
 
 function App() {
-  const handleLogout = () => {
-    console.log("Logout clicked");
-  };
-
   return (
     <div className="app-container">
-      {/* Mostrar solo la vista de administrador para revisión */}
-      <Admin onLogout={handleLogout} />
+      <Home />
     </div>
   );
 }
