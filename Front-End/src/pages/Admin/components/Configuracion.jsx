@@ -174,7 +174,7 @@ const Configuracion = () => {
         <div className="config">
             <h2>⚙️ Configuración del Sistema</h2>
             <InformacionNegocio />
-            <GestionPersonal />
+            {/* <GestionPersonal /> */}
             <ConfiguracionCitas />
             <ConfiguracionAcciones />
         </div>

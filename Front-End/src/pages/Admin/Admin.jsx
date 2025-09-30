@@ -6,11 +6,12 @@ import Dashboard from './components/Dashboard';
 import Reservas from './components/Reservas';
 import Servicios from './components/Servicios';
 import Clientes from './components/Clientes';
+import Trabajadores from './components/Trabajadores';
 import Reportes from './components/Reportes';
 import Configuracion from './components/Configuracion';
 
 // Importar hooks personalizados
-import { useClienteData, useServicioData, useStats } from './hooks/useAdminData';
+import { useClienteData, useServicioData, useWorkersData, useStats } from './hooks/useAdminData';
 
 const Admin = ({ onLogout }) => {
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -19,6 +20,7 @@ const Admin = ({ onLogout }) => {
     const { stats } = useStats();
     const clienteHooks = useClienteData();
     const servicioHooks = useServicioData();
+    const workersHooks = useWorkersData();
 
     return (
         <div className="admin-container">
@@ -47,6 +49,12 @@ const Admin = ({ onLogout }) => {
                         onClick={() => setActiveTab('clientes')}
                     >
                         👥 Clientes
+                    </button>
+                    <button 
+                        className={`nav-item ${activeTab === 'trabajadores' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('trabajadores')}
+                    >
+                        👨‍💼 Trabajadores
                     </button>
                     <button 
                         className={`nav-item ${activeTab === 'servicios' ? 'active' : ''}`}
@@ -112,6 +120,30 @@ const Admin = ({ onLogout }) => {
                             newClientData={clienteHooks.newClientData}
                             handleInputChange={clienteHooks.handleInputChange}
                             handleSaveClient={clienteHooks.handleSaveClient}
+                        />
+                    )}
+
+                    {activeTab === 'trabajadores' && (
+                        <Trabajadores 
+                            handleNewWorker={workersHooks.handleNewWorker}
+                            showNewWorkerModal={workersHooks.showNewWorkerModal}
+                            setShowNewWorkerModal={workersHooks.setShowNewWorkerModal}
+                            newWorkerData={workersHooks.newWorkerData}
+                            handleWorkerInputChange={workersHooks.handleWorkerInputChange}
+                            handleSaveWorker={workersHooks.handleSaveWorker}
+                            showEditWorkerModal={workersHooks.showEditWorkerModal}
+                            setShowEditWorkerModal={workersHooks.setShowEditWorkerModal}
+                            showScheduleModal={workersHooks.showScheduleModal}
+                            setShowScheduleModal={workersHooks.setShowScheduleModal}
+                            selectedWorker={workersHooks.selectedWorker}
+                            editWorkerData={workersHooks.editWorkerData}
+                            scheduleData={workersHooks.scheduleData}
+                            handleEditWorker={workersHooks.handleEditWorker}
+                            handleScheduleWorker={workersHooks.handleScheduleWorker}
+                            handleEditWorkerInputChange={workersHooks.handleEditWorkerInputChange}
+                            handleScheduleChange={workersHooks.handleScheduleChange}
+                            handleSaveEditWorker={workersHooks.handleSaveEditWorker}
+                            handleSaveSchedule={workersHooks.handleSaveSchedule}
                         />
                     )}
 

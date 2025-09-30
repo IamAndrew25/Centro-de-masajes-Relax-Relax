@@ -94,6 +94,175 @@ export const useServicioData = () => {
     };
 };
 
+// Hook para manejar datos de trabajadores
+export const useWorkersData = () => {
+    const [showNewWorkerModal, setShowNewWorkerModal] = useState(false);
+    const [showEditWorkerModal, setShowEditWorkerModal] = useState(false);
+    const [showScheduleModal, setShowScheduleModal] = useState(false);
+    const [selectedWorker, setSelectedWorker] = useState(null);
+    const [newWorkerData, setNewWorkerData] = useState({
+        nombre: '',
+        telefono: '',
+        email: '',
+        fechaNacimiento: '',
+        direccion: '',
+        especialidad: '',
+        tipoHorario: '',
+        experiencia: '',
+        salario: '',
+        licencia: '',
+        estado: '',
+        notas: ''
+    });
+
+    const [editWorkerData, setEditWorkerData] = useState({
+        nombre: '',
+        telefono: '',
+        email: '',
+        fechaNacimiento: '',
+        direccion: '',
+        especialidad: '',
+        tipoHorario: '',
+        experiencia: '',
+        salario: '',
+        licencia: '',
+        estado: '',
+        notas: ''
+    });
+
+    const [scheduleData, setScheduleData] = useState({
+        lunes: { inicio: '09:00', fin: '17:00', activo: true },
+        martes: { inicio: '09:00', fin: '17:00', activo: true },
+        miercoles: { inicio: '09:00', fin: '17:00', activo: true },
+        jueves: { inicio: '09:00', fin: '17:00', activo: true },
+        viernes: { inicio: '09:00', fin: '17:00', activo: true },
+        sabado: { inicio: '09:00', fin: '14:00', activo: true },
+        domingo: { inicio: '09:00', fin: '14:00', activo: false }
+    });
+
+    const handleNewWorker = () => {
+        setShowNewWorkerModal(true);
+    };
+
+    const handleEditWorker = (worker) => {
+        setSelectedWorker(worker);
+        setEditWorkerData({
+            nombre: worker.nombre.replace('🧑‍⚕️ ', ''),
+            telefono: worker.telefono,
+            email: worker.email,
+            fechaNacimiento: '',
+            direccion: '',
+            especialidad: worker.especialidad,
+            tipoHorario: '',
+            experiencia: worker.experiencia,
+            salario: '',
+            licencia: '',
+            estado: worker.estado.toLowerCase(),
+            notas: ''
+        });
+        setShowEditWorkerModal(true);
+    };
+
+    const handleScheduleWorker = (worker) => {
+        setSelectedWorker(worker);
+        setShowScheduleModal(true);
+    };
+
+    const handleWorkerInputChange = (field, value) => {
+        setNewWorkerData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handleEditWorkerInputChange = (field, value) => {
+        setEditWorkerData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handleScheduleChange = (day, field, value) => {
+        setScheduleData(prev => ({
+            ...prev,
+            [day]: {
+                ...prev[day],
+                [field]: value
+            }
+        }));
+    };
+
+    const handleSaveWorker = () => {
+        console.log('Guardando trabajador:', newWorkerData);
+        alert('Trabajador guardado exitosamente!');
+        setShowNewWorkerModal(false);
+        setNewWorkerData({
+            nombre: '',
+            telefono: '',
+            email: '',
+            fechaNacimiento: '',
+            direccion: '',
+            especialidad: '',
+            tipoHorario: '',
+            experiencia: '',
+            salario: '',
+            licencia: '',
+            estado: '',
+            notas: ''
+        });
+    };
+
+    const handleSaveEditWorker = () => {
+        console.log('Actualizando trabajador:', selectedWorker.id, editWorkerData);
+        alert(`Trabajador ${editWorkerData.nombre} actualizado exitosamente!`);
+        setShowEditWorkerModal(false);
+        setSelectedWorker(null);
+        setEditWorkerData({
+            nombre: '',
+            telefono: '',
+            email: '',
+            fechaNacimiento: '',
+            direccion: '',
+            especialidad: '',
+            tipoHorario: '',
+            experiencia: '',
+            salario: '',
+            licencia: '',
+            estado: '',
+            notas: ''
+        });
+    };
+
+    const handleSaveSchedule = () => {
+        console.log('Guardando horarios para:', selectedWorker.nombre, scheduleData);
+        alert(`Horarios de ${selectedWorker.nombre.replace('🧑‍⚕️ ', '')} actualizados exitosamente!`);
+        setShowScheduleModal(false);
+        setSelectedWorker(null);
+    };
+
+    return {
+        showNewWorkerModal,
+        setShowNewWorkerModal,
+        showEditWorkerModal,
+        setShowEditWorkerModal,
+        showScheduleModal,
+        setShowScheduleModal,
+        selectedWorker,
+        newWorkerData,
+        editWorkerData,
+        scheduleData,
+        handleNewWorker,
+        handleEditWorker,
+        handleScheduleWorker,
+        handleWorkerInputChange,
+        handleEditWorkerInputChange,
+        handleScheduleChange,
+        handleSaveWorker,
+        handleSaveEditWorker,
+        handleSaveSchedule
+    };
+};
+
 // Hook para estadísticas
 export const useStats = () => {
     const stats = {
