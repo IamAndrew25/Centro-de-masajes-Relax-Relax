@@ -2,6 +2,7 @@ package com.andreutp.centromasajes.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -29,9 +30,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(
-                auth -> auth.requestMatchers
-                ("/auth/register/**","/auth/login/**").
-                permitAll().anyRequest().authenticated()
+                auth -> auth
+                        .requestMatchers("/auth/register/**","/auth/login/**").permitAll()
+                        // Solo ADMIN puede crear/actualizar/eliminar servicios
+                        //.requestMatchers("/services/**" ,"/services" ).hasRole("ADMIN")//sigue pidiendo token si aun esta en permitir todo
+                        .requestMatchers("/services/**").permitAll()
+                        // Solo USER puede listar servicios (GET)
+                        //.requestMatchers("/services").hasAnyRole("USER", "ADMIN")
+                        .anyRequest().authenticated()
         )       .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userDetailsService),
                         UsernamePasswordAuthenticationFilter.class); //token
