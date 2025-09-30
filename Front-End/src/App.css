@@ -5,10 +5,13 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-.app-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100vw;
-  height: 100vh;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Transiciones suaves */
+* {
+  transition: all 0.3s ease;
 }
