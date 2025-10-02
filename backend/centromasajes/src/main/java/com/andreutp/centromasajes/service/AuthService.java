@@ -8,11 +8,16 @@ import com.andreutp.centromasajes.model.UserModel;
 import com.andreutp.centromasajes.dao.IRoleRepository;
 import com.andreutp.centromasajes.dao.IUserRepository;
 import com.andreutp.centromasajes.security.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -92,9 +97,50 @@ public class AuthService {
         response.setEmail(user.getEmail());
         response.setUsername(user.getUsername());
         response.setRoleId(user.getRole().getId());
+        response.setRoleName(user.getRole().getName());
         response.setToken(token);
 
         return response;
     }
 
+
+    //EMPEZAMOS CON GOOGLE GUAVA XD que necesitaremos aqui es el iuserrepository el tokenservice que se creo ahi
+    // el JavaMailSender y pues eel password encoderq esta en la parte superios junto a el iuserreposiroty
+    @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private JavaMailSender mailSender;
+
+    // Enviar token
+    public void sendPasswordResetToken(String email) {
+        Optional<UserModel> userOpt = iuserRepository.findByEmail(email);
+        if (userOpt.isEmpty()) throw new RuntimeException("Usuario no encontrado");
+
+        String token = UUID.randomUUID().toString();
+        tokenService.storeToken(token, email);
+
+        String resetLink = "http://localhost:3000/reset-password?token=" + token;
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(email);
+        mailMessage.setSubject("Recuperación de contraseña");
+        mailMessage.setText("Haz clic aquí para cambiar tu contraseña: " + resetLink);
+
+        mailSender.send(mailMessage);
+    }
+
+    // Resetear contraseña
+    public void resetPassword(String token, String newPassword) {
+        String email = tokenService.validateToken(token);
+        if (email == null) throw new RuntimeException("Token inválido o expirado");
+
+        UserModel user = iuserRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        iuserRepository.save(user);
+
+        tokenService.removeToken(token); // eliminar token usado
+    }
 }

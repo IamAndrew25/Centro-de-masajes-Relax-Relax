@@ -8,6 +8,7 @@ public class AuthResponse {
     private String email;
     private String username;
     private Long roleId;
+    private String roleName;
     private String dni;
     private String token; //campo del token
 }

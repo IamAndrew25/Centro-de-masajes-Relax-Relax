@@ -2,6 +2,7 @@ package com.andreutp.centromasajes.controller;
 
 import com.andreutp.centromasajes.model.ServiceModel;
 import com.andreutp.centromasajes.service.ServiceService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class ServiceController {
 
     //crear servicio
     @PostMapping
-    public ResponseEntity<ServiceModel> saveService(@RequestBody ServiceModel service){
+    public ResponseEntity<ServiceModel> saveService(@Valid @RequestBody ServiceModel service){
         return ResponseEntity.ok(serviceService.saveModelService(service));
     }
 
@@ -37,7 +38,7 @@ public class ServiceController {
 
     //Actualizar servicios
     @PutMapping("/{id}")
-    public ResponseEntity<ServiceModel> updateServiceById(@PathVariable Long id, ServiceModel  serviceModel){
+    public ResponseEntity<ServiceModel> updateServiceById(@Valid @PathVariable Long id, ServiceModel  serviceModel){
         return ResponseEntity.ok(serviceService.updateService(id,serviceModel));
     }
 
