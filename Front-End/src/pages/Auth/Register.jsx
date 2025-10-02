@@ -3,7 +3,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { register } from '../../api/authApi';
 
 const Register = ({ onToggleView }) => {
-  const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
   const [phone, setPhone] = useState('');
   const [dni, setDni] = useState('');
   const [email, setEmail] = useState('');
@@ -12,9 +12,62 @@ const Register = ({ onToggleView }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+
+  //Restricciones de nombre
+  const handleUsername = (e) => {
+    const value = e.target.value;
+    // Limita la longitud a 20 caracteres
+    if (value.length <= 30) {
+      setUsername(value);
+    }
+  };
+  //Restricciones de dni
+  const handlePhone = (e) => {
+    const value = e.target.value;
+    //Permite solo números y un campo vacio
+    if (value === '' || /^[0-9\b]+$/.test(value)&& value.length <= 9) {
+      setPhone(value);
+    }
+  };
+
+  //Restricciones de dni
+  const handleDni = (e) => {
+    const value = e.target.value;
+    // Permite solo números, un campo vacio y limita la longitud a 8
+    if ((value === '' || /^[0-9\b]+$/.test(value)) && value.length <= 8) {
+      setDni(value);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Validaciones del lado del cliente
+    if (!username || !phone || !dni || !email || !password) {
+      setError("Por favor, completa todos los campos.");
+      return;
+    }
+    if (username.length > 30) {
+      setError("El nombre no debe exceder los 30 caracteres.");
+      return;
+    }
+    if (phone.length !== 9) {
+      setError("El numero de celular debe tener exactamente 9 dígitos.");
+      return;
+    }
+    if (dni.length !== 8) {
+      setError("El DNI debe tener exactamente 8 dígitos.");
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Por favor, ingresa un formato de correo válido.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
 
     if (!agreed) {
       setError("Debes aceptar la política de privacidad y los términos.");
@@ -24,7 +77,7 @@ const Register = ({ onToggleView }) => {
     setLoading(true);
     try {
       const response = await register({
-        fullName,
+        username,
         phone,
         dni,
         email,
@@ -52,19 +105,19 @@ const Register = ({ onToggleView }) => {
 
       <form onSubmit={handleSubmit}>
         <div className="input-group">
-          <label htmlFor="fullName">Nombre completo</label>
-          <input type="text" id="fullName" placeholder="Barney tu papá"
-            value={fullName} onChange={(e) => setFullName(e.target.value)} />
+          <label htmlFor="username">Nombre completo</label>
+          <input type="text" id="username" placeholder="Barney tu papá"
+            value={username} onChange={handleUsername} />
         </div>
         <div className="input-group">
           <label htmlFor="phone">Teléfono</label>
-          <input type="tel" id="phone" placeholder="9894594487"
-            value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <input type="tel" id="phone" placeholder="Ejm. 95321687"
+            value={phone} onChange={handlePhone} />
         </div>
         <div className="input-group">
           <label htmlFor="dni">DNI</label>
-          <input type="text" id="dni" placeholder="Ej. 12345678A"
-            value={dni} onChange={(e) => setDni(e.target.value)} />
+          <input type="text" id="dni" placeholder="Ejm. 75248632"
+            value={dni} onChange={handleDni} />
         </div>
         <div className="input-group">
           <label htmlFor="email">Email</label>

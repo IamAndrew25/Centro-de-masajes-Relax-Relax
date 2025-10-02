@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaCheck } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 import MainLayout from '../../layouts/MainLayout';
 import './Home.css';
 import heroOilImage from '../../assets/images/Banner.jpg';
@@ -38,7 +39,7 @@ const Home = () => {
                   <span>Sesiones de masaje personalizados</span>
                 </div>
               </div>
-              <button className="btn-cta">Ver tarifas</button>
+              <Link to="/plans" className="btn-cta">Ver tarifas</Link>
             </div>
             <div className="images">
               <div className="therapy-image-container">
