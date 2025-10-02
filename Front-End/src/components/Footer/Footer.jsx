@@ -9,8 +9,8 @@ const Footer = () => {
         
         {/* Información */}
         <div className="footer-section">
-          <h3>Centro de Masajes</h3>
-          <p>Av. El buen masaje Miraflores - Lima, Perú</p>
+          <h3>Centro de Masajes Relax Total</h3>
+          <p>Av. El buen masaje, Miraflores - Lima, Perú</p>
           <p>Teléfono: +51 922 955 336</p>
           <p>Email: contacto@relaxtotal.com</p>
         </div>

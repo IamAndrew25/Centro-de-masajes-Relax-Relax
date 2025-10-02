@@ -13,6 +13,17 @@ const Login = ({ onToggleView }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Validaciones del lado del cliente
+    if (!email || !password) {
+      setError("Por favor, completa todos los campos.");
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Por favor, ingresa un formato de correo válido.");
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await login({ email, password });
