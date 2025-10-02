@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(
                 auth -> auth
-                        .requestMatchers("/auth/register/**","/auth/login/**").permitAll()
+                        .requestMatchers("/auth/register/**","/auth/login/**","/auth/forgot-password/**", "/auth/reset-password/**").permitAll()
                         // Solo ADMIN puede crear/actualizar/eliminar servicios
                         //.requestMatchers("/services/**" ,"/services" ).hasRole("ADMIN")//sigue pidiendo token si aun esta en permitir todo
                         .requestMatchers("/services/**").permitAll()

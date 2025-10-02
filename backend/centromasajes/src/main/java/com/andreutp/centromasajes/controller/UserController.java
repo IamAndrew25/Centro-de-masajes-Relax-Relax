@@ -3,6 +3,7 @@ package com.andreutp.centromasajes.controller;
 
 import com.andreutp.centromasajes.service.UserService;
 import com.andreutp.centromasajes.model.UserModel;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping
-    public UserModel saveUser(@RequestBody UserModel user){
+    public UserModel saveUser(@Valid @RequestBody UserModel user){
         return  this.userService.saveUser(user);
     }
 
@@ -32,7 +33,7 @@ public class UserController {
     }
 
     @PutMapping(path = "/{id}")
-    public UserModel updateUserById(@RequestBody UserModel request, @PathVariable("id") Long id){
+    public UserModel updateUserById(@Valid @RequestBody UserModel request, @PathVariable("id") Long id){
         return this.userService.updateById(request, id);
     }
 
