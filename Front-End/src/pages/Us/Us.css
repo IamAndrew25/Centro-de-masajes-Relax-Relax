@@ -1,0 +1,320 @@
+.nosotros-container {
+  background-color: #ffffff;
+}
+
+.hero-section {
+  width: 100%;
+  height: 400px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.hero-section h1 {
+  position: relative;
+  z-index: 1;
+  color: #ffffff;
+  font-weight: 300;
+  font-size: 76px;
+  text-align: center;
+  margin: 0;
+}
+
+/* seccion de bienvenidad*/
+
+.section-confianza {
+  background-color: #ffffff;
+  padding: 80px 20px 40px;
+  text-align: left;
+}
+
+.confianza-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.confianza-title {
+  font-size: 44px;
+  color: #000000;
+  font-weight: 300;
+  margin-bottom: 20px;
+  max-width: 600px;
+}
+
+.confianza-title strong {
+  font-weight: 700;
+  color: #f4a940;
+}
+
+.confianza-text {
+  font-size: 18px;
+  color: #333333;
+  line-height: 1.6;
+  max-width: 700px;
+  margin: 0;
+}
+
+/* seccion mision vision */
+.section-MV-accent {
+  background-color: #f4f5f7;
+  padding: 40px 20px 80px;
+}
+
+.container-MV-accent {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 60px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  display: grid;
+  gap: 40px;
+}
+
+@media (min-width: 860px) {
+  .container-MV-accent.grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.title-MV-accent {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: #f4a940;
+}
+
+.MV-text {
+  color: #333333;
+  line-height: 1.7;
+}
+
+/* imagen parallax */
+
+.section-cta-image {
+  width: 100%;
+  height: 500px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-attachment: fixed;
+}
+
+.cta-overlay-dark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.cta-content {
+  position: relative;
+  z-index: 10;
+  color: #ffffff;
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.cta-title {
+  font-size: 52px;
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 15px;
+}
+
+.cta-title strong {
+  font-weight: 700;
+}
+
+.cta-subtitle {
+  font-size: 18px;
+  margin-bottom: 40px;
+  color: #ddd;
+}
+
+.cta-main {
+  font-size: 18px;
+  padding: 14px 28px;
+}
+
+/* especilistas */
+
+.band {
+  background: #ffffff;
+  padding-top: 60px;
+}
+
+.container-nosotros-full {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  background: transparent;
+  padding: 60px 0;
+}
+
+.title-nosotros {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #000000;
+}
+
+/* Botones de call to action siu*/
+.cta-nosotros {
+  background: #f4a940;
+  color: #000000;
+  padding: 12px 22px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 500;
+  box-shadow: 0 10px 24px rgba(244, 169, 64, 0.35);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.cta-nosotros:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(244, 169, 64, 0.45);
+}
+
+/* Boton de inscripción*/
+.band-btn {
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  margin-bottom: 40px;
+}
+
+/* Team cards*/
+
+.cards-nosotros {
+  display: grid;
+  gap: 20px;
+}
+
+@media (min-width: 640px) {
+  .cards-nosotros {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 980px) {
+  .cards-nosotros {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.card-nosotros {
+  overflow: hidden;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-nosotros:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.09);
+}
+
+.media-nosotros {
+  height: 170px;
+  overflow: hidden;
+}
+
+.media-nosotros img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.card-nosotros:hover img {
+  transform: scale(1.06);
+}
+
+.body-nosotros {
+  padding: 16px;
+}
+
+.body-nosotros h4 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: #000000;
+}
+
+.body-nosotros p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+
+/* Responsive*/
+
+@media (max-width: 1200px) {
+  .container-MV-accent, .container-nosotros-full {
+    width: auto;
+    margin: 0 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    height: 300px;
+  }
+
+  .hero-section h1 {
+    font-size: 56px;
+  }
+
+  .cta-title {
+    font-size: 36px;
+  }
+  
+  .confianza-title {
+    font-size: 32px;
+  }
+
+  .section-MV-accent {
+    padding: 40px 0;
+  }
+
+  .container-MV-accent {
+    grid-template-columns: 1fr !important;
+    padding: 40px 20px;
+  }
+
+  .cards-nosotros {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .cards-nosotros {
+    grid-template-columns: 1fr;
+  }
+}

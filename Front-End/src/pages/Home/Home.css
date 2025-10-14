@@ -1,0 +1,181 @@
+/* Home Container */
+.home-container {
+  width: 100%;
+}
+
+/* Hero Section */
+.hero-section {
+  width: 100%;
+  height: 400px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Seccion main */ /*Wellnes=bienestar, adaptense al inglish :)*/
+.bienestar-section {
+  background-color: #555555;
+  padding: 60px 20px;
+}
+
+.bienestar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px 20px;
+  align-items: center;
+  background: #fff;
+  padding: 60px;
+  clip-path: polygon(0 0, 100% 10%, 100% 100%, 0 90%);
+  /*clip-path: polygon(5% 0, 100% 0, 95% 100%, 0 100%);*/
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.bienestar-content h2 {
+  font-size: 32px;
+  color: #2c2c2c;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+.bienestar-features {
+  margin-bottom: 40px;
+}
+
+/*Caractersisticas y checks*/
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.check-icon {
+  color: #2c2c2c;
+  font-size: 16px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.feature-item span {
+  color: #2c2c2c;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+/*CTA =call to action*/
+.btn-cta {
+  background-color: #ff8c42;
+  color: white;
+  border: none;
+  text-decoration: none;
+  padding: 15px 40px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cta:hover {
+  background-color: #e67a37;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 140, 66, 0.3);
+}
+
+/* Imagenes */
+.images {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.therapy-image-container {
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  cursor: pointer;
+}
+
+.therapy-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+  border-radius: 15px;
+}
+
+.therapy-image-container:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+}
+
+.therapy-image-container:hover .therapy-image {
+  transform: scale(1.08);
+}
+
+/* Responsivos */
+@media (max-width: 768px) {
+  .hero-section {
+    height: 300px;
+  }
+
+  .bienestar-container {
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: 40px;
+    text-align: center;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    clip-path: none;
+  }
+
+  .bienestar-content h2 {
+    font-size: 28px;
+  }
+
+  .feature-item {
+    justify-content: center;
+    text-align: left;
+  }
+
+  .therapy-image {
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bienestar-section {
+    padding: 40px 15px;
+  }
+  
+
+  .bienestar-content h2 {
+    font-size: 24px;
+  }
+
+  .feature-item span {
+    font-size: 14px;
+  }
+
+  .btn-cta {
+    padding: 12px 30px;
+    font-size: 14px;
+  }
+}
