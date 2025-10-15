@@ -11,18 +11,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.andreutp.centromasajes.security.LoginRateLimiter;
+import com.google.common.base.Preconditions;
+
 import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    //endpoints , al igua lq los role y user services
+    //endpoints , al igual que los role y user services
     private final AuthService authService;
+    private final LoginRateLimiter loginRateLimiter;
 
     //su constructor pa usarlo
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, LoginRateLimiter loginRateLimiter) {
         this.authService = authService;
+        this.loginRateLimiter = loginRateLimiter;
     }
 
     //registra usuario
@@ -32,10 +37,21 @@ public class AuthController {
     }
 
 
-    //logea al usuario
+    // Login de usuario con Rate Limiting y validacion con predictions(guava)
     @PostMapping("/login")
-    public AuthResponse login (@Valid @RequestBody LoginRequest request){
-        return authService.login(request);
+    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
+        String key = request.getEmail(); // Usamos el email como clave de rate limiting
+        // Validación con Guava
+        Preconditions.checkNotNull(request, "El objeto LoginRequest no puede ser nulo");
+        Preconditions.checkArgument(request.getEmail() != null && !request.getEmail().isEmpty(), "El correo electrónico no puede estar vacío");
+        Preconditions.checkArgument(request.getPassword() != null && !request.getPassword().isEmpty(), "La contraseña no puede estar vacía");
+
+        // Limitar los intentos de login: 1 intento por segundo
+        if (!loginRateLimiter.tryAcquire(key, 1.0)) {
+            throw new RateLimitExceededException("Demasiados intentos. Intenta de nuevo más tarde.");
+        }
+
+        return authService.login(request); // Procesamos el login si no excede el límite
     }
 
 
@@ -51,6 +67,13 @@ public class AuthController {
     public Map<String, String> resetPassword(@RequestBody Map<String, String> body) {
         authService.resetPassword(body.get("token"), body.get("newPassword"));
         return Map.of("message", "Contraseña actualizada con éxito");
+    }
+
+     // Excepción personalizada para Rate Limit
+    static class RateLimitExceededException extends RuntimeException {
+        public RateLimitExceededException(String msg) {
+            super(msg);
+        }
     }
 
 }
