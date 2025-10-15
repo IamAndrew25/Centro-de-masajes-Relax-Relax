@@ -43,8 +43,8 @@ public class AuthController {
 
         // Validación con Guava
         Preconditions.checkNotNull(request, "El objeto LoginRequest no puede ser nulo");
-        Preconditions.checkArgument(request.getEmail() != null && !request.getEmail().isBlank(), "El correo electrónico no puede estar vacío");
-        Preconditions.checkArgument(request.getPassword() != null && !request.getPassword().isBlank(), "La contraseña no puede estar vacía");
+        Preconditions.checkArgument(request.getEmail() != null && !request.getEmail().isEmpty(), "El correo electrónico no puede estar vacío");
+        Preconditions.checkArgument(request.getPassword() != null && !request.getPassword().isEmpty(), "La contraseña no puede estar vacía");
 
         // Limitar los intentos de login: 1 intento por segundo
         String key = request.getEmail(); // Usamos el email como clave de rate limiting
