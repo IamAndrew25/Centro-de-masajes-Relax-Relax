@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaGoogle, FaFacebook } from "react-icons/fa";
 import { TfiMicrosoftAlt } from "react-icons/tfi";
 import logo from '../../assets/images/logo.png';
 import { login } from '../../api/authApi';
 
 const Login = ({ onToggleView }) => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -31,9 +33,12 @@ const Login = ({ onToggleView }) => {
 
       if (response.token) {
         localStorage.setItem("token", response.token);
-        window.location.href='/home';
-        // Aquí podrías redirigir al usuario a otra página, por ejemplo:
-        // window.location.href = '/dashboard';
+        // Redirigir según el rol del usuario
+        if (response.roleName === 'ADMIN') { // Verifica si el rol es ADMIN
+          navigate('/admin'); // Redirige a la página de admin
+        } else {
+          navigate('/home'); // Redirige a la pagina de inicio para otros roles
+        }
       }
     } catch (error) {
       console.error("Error en login:", error.response?.data || error.message);

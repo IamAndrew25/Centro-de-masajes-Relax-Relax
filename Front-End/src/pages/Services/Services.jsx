@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
 import "./Services.css";
 import heroImage from "../../assets/images/Banner.jpg";
@@ -24,6 +24,7 @@ const servicesData = {
 const Services = () => {
   const location = useLocation();
   const categories = Object.keys(servicesData);
+  const navigate = useNavigate();
 
   const getCategoryFromHash = () => {
     const hash = location.hash.replace("#", "");
@@ -50,7 +51,7 @@ const Services = () => {
         <p className="card-description">{service.description}</p>
         <div className="card-footer">
           <span className="card-price">S/ {service.price}</span>
-          <button className="cta-button">Reservar</button>
+          <button className="cta-button" onClick={() => navigate(`/reserva?servicio=${encodeURIComponent(service.name)}`)}>Reservar</button>
         </div>
       </div>
     </div>

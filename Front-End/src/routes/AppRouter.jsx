@@ -9,6 +9,8 @@ import Plans from "../pages/Plans/Plans";
 import Services from "../pages/Services/Services";
 import Experiences from "../pages/Experiences/Experiences";
 import Reservation from "../pages/Reservation/Reservation";
+import Admin from "../pages/Admin/Admin";
+import Contact from "../pages/Contact/Contact";
 
 
 export default function AppRouter() {
@@ -21,6 +23,8 @@ export default function AppRouter() {
         <Route path="/nosotros" element={<Us />} />
         <Route path="/login" element={<Auth />} />
         <Route path="/reserva" element={<Reservation />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/contact" element={<Contact />} />
         
         {/* RUTAS DEL MENÚ DESPLEGABLE 'SERVICIOS' */}
         

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IoIosArrowBack } from "react-icons/io";
+import { Link } from 'react-router-dom';
 import { register } from '../../api/authApi';
 
 const Register = ({ onToggleView }) => {
@@ -133,7 +134,7 @@ const Register = ({ onToggleView }) => {
           <input type="checkbox" id="privacy"
             checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
           <label htmlFor="privacy">
-            Acepto la <a href="/privacy">Política de privacidad</a> y los <a href="/terms">Términos y condiciones*</a>
+            Acepto la <Link to="/privacy">Política de privacidad</Link> y los <Link to="/terms">Términos y condiciones*</Link>
           </label>
         </div>
         <button type="submit" className="action-button" disabled={loading}>

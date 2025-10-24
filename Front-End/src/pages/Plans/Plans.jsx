@@ -1,14 +1,21 @@
 import React from "react";
 import MainLayout from "../../layouts/MainLayout";
 import "./Plans.css";
+import { useNavigate } from "react-router-dom";
 
 import heroImage from "../../assets/images/Banner.jpg";
+import packageCouples from "../../assets/images/package-couples.jpg";
+import packagePrenatal from "../../assets/images/package-prenatal.jpg";
+import packageFather from "../../assets/images/package-father.jpg";
+import paqueteEjecutivo from "../../assets/images/package-ejecutivo.jpg";
+import paquetePremium from "../../assets/images/package-premium.jpg";
+
 
 const customPackages = [
   {
     id: 1,
     name: "Masaje para Parejas",
-    image: "url(/assets/images/package-couples.jpg)",
+    image: packageCouples,
     price: 165,
     details: [
       "Masaje Relajante",
@@ -21,7 +28,7 @@ const customPackages = [
   {
     id: 2,
     name: "Ritual Pre Natal",
-    image: "url(/assets/images/package-prenatal.jpg)",
+    image: packagePrenatal,
     price: 140,
     details: [
       "Masaje Pre Natal (60MIN)",
@@ -33,7 +40,7 @@ const customPackages = [
   {
     id: 3,
     name: "Promo Día del Padre",
-    image: "url(/assets/images/package-father.jpg)",
+    image: packageFather,
     price: 289,
     details: [
       "Sauna o tina de Hidromasajes (30 min)",
@@ -45,7 +52,7 @@ const customPackages = [
   {
     id: 4,
     name: "Paquete Ejecutivo",
-    image: "url(/assets/images/paquete-ejecutivo.jpg)",
+    image: paqueteEjecutivo,
     price: "30% Descuento",
     details: ["Hidromasaje", "Masaje relajante", "Limpieza facial", "Exfoliación corporal", "Aperitivo"],
     note: "Promoción disponible todo agosto."
@@ -53,7 +60,7 @@ const customPackages = [
   {
     id: 5,
     name: "Paquete Premium (2x1)",
-    image: "url(/assets/images/paquete-premium.jpg)",
+    image: paquetePremium,
     price: "2x1",
     details: ["Hidromasaje", "Masaje relajante", "Masaje facial", "Exfoliación corporal", "Limpieza y mascarilla facial revitalizante", "Emboltura de miel", "Aperitivo"],
     note: "Promoción disponible todo agosto."
@@ -100,6 +107,11 @@ const membershipPlans = [
 ];
 
 const Plans = () => {
+  const navigate = useNavigate();
+  const redirectlogin=()=>{
+    navigate('/login')
+  };
+
   return (
     <MainLayout>
       <div className="plans-container">
@@ -124,7 +136,7 @@ const Plans = () => {
                   <div key={pkg.id} className="package-card">
                     <div 
                       className="package-image"
-                      style={{ backgroundImage: pkg.image }}
+                      style={{ backgroundImage: `url(${pkg.image})` }}
                     ></div>
 
                     <div className="package-details">
@@ -142,7 +154,7 @@ const Plans = () => {
                                 ? `S/ ${pkg.price}`
                                 : pkg.price}
                             </span>
-                            <button className="cta-button">¡Quiero la Promoción!</button>
+                            <button className="cta-button" onClick={redirectlogin}>¡Quiero la Promoción!</button>
                         </div>
                     </div>
                   </div>
@@ -164,7 +176,7 @@ const Plans = () => {
                         <li key={i}>{benefit}</li>
                       ))}
                     </ul>
-                    <button className="btn-plan">¡Quiero este!</button>
+                    <button className="btn-plan" onClick={redirectlogin}>¡Quiero este!</button>
                   </div>
                 ))}
               </div>
