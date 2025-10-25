@@ -19,7 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    //endpoints , al igual que los role y user services
+
     private final AuthService authService;
     private final LoginRateLimiter loginRateLimiter;
 
