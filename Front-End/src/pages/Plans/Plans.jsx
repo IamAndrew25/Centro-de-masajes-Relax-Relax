@@ -2,6 +2,7 @@ import React from "react";
 import MainLayout from "../../layouts/MainLayout";
 import "./Plans.css";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../../context/cartContext";
 
 import heroImage from "../../assets/images/Banner.jpg";
 import packageCouples from "../../assets/images/package-couples.jpg";
@@ -108,9 +109,7 @@ const membershipPlans = [
 
 const Plans = () => {
   const navigate = useNavigate();
-  const redirectlogin=()=>{
-    navigate('/login')
-  };
+  const {addToCart} = useCart();
 
   return (
     <MainLayout>
@@ -154,7 +153,7 @@ const Plans = () => {
                                 ? `S/ ${pkg.price}`
                                 : pkg.price}
                             </span>
-                            <button className="cta-button" onClick={redirectlogin}>¡Quiero la Promoción!</button>
+                            <button className="cta-button" onClick={() => addToCart(pkg)}>¡Quiero la Promoción!</button>
                         </div>
                     </div>
                   </div>
@@ -176,7 +175,7 @@ const Plans = () => {
                         <li key={i}>{benefit}</li>
                       ))}
                     </ul>
-                    <button className="btn-plan" onClick={redirectlogin}>¡Quiero este!</button>
+                    <button className="btn-plan" onClick={() => addToCart({ ...plan, name: plan.title })}>¡Quiero este!</button>
                   </div>
                 ))}
               </div>
@@ -201,7 +200,7 @@ const Plans = () => {
               </div>
 
               {/* Boton Final */}
-              <button className="btn-pay">Pagar ahora</button>
+              {/*<button className="btn-pay">Pagar ahora</button>*/}
             </div>
           </div>
         </section>

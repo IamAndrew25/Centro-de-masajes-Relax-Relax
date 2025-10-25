@@ -13,20 +13,19 @@ const Register = ({ onToggleView }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-
   //Restricciones de nombre
   const handleUsername = (e) => {
     const value = e.target.value;
-    // Limita la longitud a 20 caracteres
+    // Limita la longitud a 30 caracteres
     if (value.length <= 30) {
       setUsername(value);
     }
   };
-  //Restricciones de dni
+  //Restricciones de telefono
   const handlePhone = (e) => {
     const value = e.target.value;
-    //Permite solo números y un campo vacio
-    if (value === '' || /^[0-9\b]+$/.test(value)&& value.length <= 9) {
+    //Permite solo números y un campo vacio, max 9 digitos
+    if (value === '' || (/^[0-9\b]+$/.test(value) && value.length <= 9)) {
       setPhone(value);
     }
   };
@@ -69,7 +68,6 @@ const Register = ({ onToggleView }) => {
       setError("La contraseña debe tener al menos 6 caracteres.");
       return;
     }
-
     if (!agreed) {
       setError("Debes aceptar la política de privacidad y los términos.");
       return;
@@ -97,53 +95,87 @@ const Register = ({ onToggleView }) => {
 
   return (
     <div className="form-inner-container">
-      <button onClick={onToggleView} className="back-link">
+      <button onClick={onToggleView} className="auth-back-link">
         <IoIosArrowBack size={18} /> Regresar
       </button>
 
       <h1 className="form-title">¡A por los buenos masajes, Únete!</h1>
-      {error && <p className="error-message">{error}</p>}
+      {error && <p className="auth-error-message">{error}</p>}
 
       <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <label htmlFor="username">Nombre completo</label>
-          <input type="text" id="username" placeholder="Barney tu papá"
-            value={username} onChange={handleUsername} />
+        <div className="auth-input-group">
+          <label htmlFor="username" className="auth-label">Nombre completo</label>
+          <input
+            type="text"
+            id="username"
+            placeholder="Barney tu papá"
+            value={username}
+            onChange={handleUsername}
+            className="auth-input"
+          />
         </div>
-        <div className="input-group">
-          <label htmlFor="phone">Teléfono</label>
-          <input type="tel" id="phone" placeholder="Ejm. 95321687"
-            value={phone} onChange={handlePhone} />
+        <div className="auth-input-group">
+          <label htmlFor="phone" className="auth-label">Teléfono</label>
+          <input
+            type="tel"
+            id="phone"
+            placeholder="Ejm. 95321687"
+            value={phone}
+            onChange={handlePhone}
+            className="auth-input"
+           />
         </div>
-        <div className="input-group">
-          <label htmlFor="dni">DNI</label>
-          <input type="text" id="dni" placeholder="Ejm. 75248632"
-            value={dni} onChange={handleDni} />
+        <div className="auth-input-group">
+          <label htmlFor="dni" className="auth-label">DNI</label>
+          <input
+            type="text"
+            id="dni"
+            placeholder="Ejm. 75248632"
+            value={dni}
+            onChange={handleDni}
+            className="auth-input"
+           />
         </div>
-        <div className="input-group">
-          <label htmlFor="email">Email</label>
-          <input type="email" id="email" placeholder="Ingresa tu correo"
-            value={email} onChange={(e) => setEmail(e.target.value)} />
+        <div className="auth-input-group">
+          <label htmlFor="email" className="auth-label">Email</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="Ingresa tu correo"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="auth-input"
+           />
         </div>
-        <div className="input-group">
-          <label htmlFor="password">Contraseña</label>
-          <input type="password" id="password" placeholder="Ingresa tu contraseña"
-            value={password} onChange={(e) => setPassword(e.target.value)} />
+        <div className="auth-input-group">
+          <label htmlFor="password" className="auth-label">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Ingresa tu contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="auth-input"
+           />
         </div>
-        <div className="privacy-policy">
-          <input type="checkbox" id="privacy"
-            checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+        <div className="auth-privacy-policy">
+          <input
+            type="checkbox"
+            id="privacy"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+          />
           <label htmlFor="privacy">
             Acepto la <Link to="/privacy">Política de privacidad</Link> y los <Link to="/terms">Términos y condiciones*</Link>
           </label>
         </div>
-        <button type="submit" className="action-button" disabled={loading}>
+        <button type="submit" className="auth-action-button" disabled={loading}>
           {loading ? 'Creando cuenta...' : 'Crear cuenta'}
         </button>
       </form>
-      <div className="signup-link">
+      <div className="auth-signup-link">
         Ya tienes una cuenta?{' '}
-        <span onClick={onToggleView} className="toggle-link">Inicia sesión</span>
+        <span onClick={onToggleView} className="auth-toggle-link">Inicia sesión</span>
       </div>
     </div>
   );

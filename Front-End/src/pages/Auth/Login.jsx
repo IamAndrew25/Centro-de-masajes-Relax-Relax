@@ -52,38 +52,52 @@ const Login = ({ onToggleView }) => {
     <div className="form-inner-container">
       <img src={logo} alt="Logo de la empresa" className="logo" />
       <h1 className="welcome-message">Hola, me alegra que estes de vuelta</h1>
-      {error && <p className="error-message">{error}</p>}
+      {error && <p className="auth-error-message">{error}</p>}
       <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <label htmlFor="email">Email</label>
-          <input type="email" id="email" placeholder="Ingresa tu correo"
-            value={email} onChange={(e) => setEmail(e.target.value)} />
-        </div>
-        <div className="input-group">
-          <label htmlFor="password">
-            Contraseña
-            <a href="/forgot-password" className="forgot-password">¿Has olvidado tu contraseña?</a>
+        <div className="auth-input-group">
+          <label htmlFor="email" className="auth-label">
+            Email
+            <a href="/forgot-password" className="auth-forgot-password">¿Has olvidado tu contraseña?</a>
           </label>
-          <input type="password" id="password" placeholder="Ingresa tu contraseña"
-            value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input
+            type="email"
+            id="email"
+            placeholder="Ingresa tu correo"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="auth-input"
+          />
         </div>
-        <div className="remember-me">
+        <div className="auth-input-group">
+          <label htmlFor="password" className="auth-label">
+            Contraseña
+          </label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Ingresa tu contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="auth-input"
+          />
+        </div>
+        <div className="auth-remember-me">
           <input type="checkbox" id="recordarme" />
           <label htmlFor="recordarme">Recordarme</label>
         </div>
-        <button type="submit" className="action-button" disabled={loading}>
+        <button type="submit" className="auth-action-button" disabled={loading}>
           {loading ? 'Iniciando...' : 'Iniciar sesión'}
         </button>
       </form>
-      <div className="separator">O continúa con</div>
-      <div className="social-login">
-        <button className="social-button"><FaGoogle size={20} /> Google</button>
-        <button className="social-button"><FaFacebook size={20} /> Facebook</button>
-        <button className="social-button"><TfiMicrosoftAlt size={20} /> Microsoft</button>
+      <div className="auth-separator">O continúa con</div>
+      <div className="auth-social-login">
+        <button className="auth-social-button"><FaGoogle size={20} /> Google</button>
+        <button className="auth-social-button"><FaFacebook size={20} /> Facebook</button>
+        <button className="auth-social-button"><TfiMicrosoftAlt size={20} /> Microsoft</button>
       </div>
-      <div className="signup-link">
+      <div className="auth-signup-link">
         Todavía no tienes una cuenta?{' '}
-        <span onClick={onToggleView} className="toggle-link">Únete!!</span>
+        <span onClick={onToggleView} className="auth-toggle-link">Únete!!</span>
       </div>
     </div>
   );

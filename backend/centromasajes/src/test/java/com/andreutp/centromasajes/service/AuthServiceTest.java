@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -68,7 +69,7 @@ public class AuthServiceTest {
         req.setPassword("1234");
 
         // simulamos que JwtUtil genera un token
-        when(jwtUtil.generateToken("andre")).thenReturn("fake-jwt-token");
+        when(jwtUtil.generateToken(any(UserModel.class))).thenReturn("fake-jwt-token");
 
         AuthResponse response = authService.login(req);
 

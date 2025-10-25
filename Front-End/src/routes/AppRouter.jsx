@@ -11,36 +11,34 @@ import Experiences from "../pages/Experiences/Experiences";
 import Reservation from "../pages/Reservation/Reservation";
 import Admin from "../pages/Admin/Admin";
 import Contact from "../pages/Contact/Contact";
+import Checkout from "../pages/Checkout/Checkout";
+import ProtectedRoute from "../routes/ProtectedRouter";
+
 
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Rutas Principales */}
+        {/* --- Rutas Públicas --- */}
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/nosotros" element={<Us />} />
         <Route path="/login" element={<Auth />} />
-        <Route path="/reserva" element={<Reservation />} />
-        <Route path="/admin" element={<Admin />} />
         <Route path="/contact" element={<Contact />} />
-        
-        {/* RUTAS DEL MENÚ DESPLEGABLE 'SERVICIOS' */}
-        
-        {/* 2. Masajes*/}
-        <Route path="/servicios/masajes" element={<Services />} /> 
-        
-        {/* 3. Experiencias */}
-        <Route path="/servicios/experiencias" element={<Experiences />} /> 
-        
-        {/* 4. Planes y Membresías */}
-        <Route path="/servicios/planes" element={<Plans />} /> 
-
-        {/* Otras rutas */}
+        <Route path="/servicios/masajes" element={<Services />} />
+        <Route path="/servicios/experiencias" element={<Experiences />} />
+        <Route path="/servicios/planes" element={<Plans />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/claims" element={<Claims />} />
+        <Route path="/reserva" element={<Reservation />} />
+
+        {/* --- Rutas Protegidas (Requieren Login) --- */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/admin" element={<Admin />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

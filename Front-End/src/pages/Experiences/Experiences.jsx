@@ -1,5 +1,6 @@
 import React from "react";
 import MainLayout from "../../layouts/MainLayout";
+import { useCart } from "../../context/cartContext";
 import "./Experiences.css";
 
 import heroImage from "../../assets/images/Banner.jpg";
@@ -34,7 +35,10 @@ const experiencesData = [
   },
 ];
 
-const ExperienceCard = ({ experience }) => (
+const ExperienceCard = ({ experience }) => {
+  const {addToCart} = useCart();
+
+  return (
   <div className="experience-card">
     <img src={experience.image} alt={experience.name} className="experience-image" />
     <div className="card-content">
@@ -43,11 +47,12 @@ const ExperienceCard = ({ experience }) => (
       <p className="card-description">{experience.description}</p>
       <div className="card-footer">
         <span className="card-price">S/ {experience.price}</span>
-        <button className="cta-button">Reservar</button>
+        <button className="cta-button" onClick={() => addToCart(experience)}>Añadir al carrito</button>
       </div>
     </div>
   </div>
-);
+  );
+};  
 
 const Experiences = () => {
   return (

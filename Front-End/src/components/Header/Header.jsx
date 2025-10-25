@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes } from "react-icons/fa"; 
-import { AiOutlineShoppingCart } from "react-icons/ai"; 
+import { AiOutlineShoppingCart } from "react-icons/ai";
+import { useCart } from '../../context/cartContext';
 import './Header.css';
 
 const Header = () => {
@@ -12,6 +13,7 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const { cartItems, removeFromCart, cartItemCount, totalCartPrice } = useCart();
 
   useEffect(() => {
     // Comprueba si hay un token en localStorage para saber si el usuario inició sesión
@@ -30,21 +32,13 @@ const Header = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [isLoggedIn]); // Se ejecuta cuando el estado de login cambia
 
-  const [cartItems] = useState([
-    { id: 1, name: "Plan Individual - 3 meses", price: 28 },
-    { id: 2, name: "Plan Parejas - 6 meses", price: 49 }
-  ]);
-
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
     if (!menuOpen) setIsDropdownOpen(false); 
   };
   
   const toggleCart = () => setCartOpen(!cartOpen);
-
-  const closeMenu = () => {
-    setMenuOpen(false);
-  }
+  const closeMenu = () => { setMenuOpen(false);}
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -161,8 +155,8 @@ const Header = () => {
             {/* Carrito dentro del nav */}
             <div className="cart-icon" onClick={toggleCart}>
               <AiOutlineShoppingCart size={24} /> 
-              {cartItems.length > 0 && (
-                <span className="cart-badge">{cartItems.length}</span>
+              {cartItemCount > 0 && (
+                <span className="cart-badge">{cartItemCount}</span>
               )}
             </div>
           </nav>
@@ -177,20 +171,42 @@ const Header = () => {
         </div>
 
         <div className="cart-content">
-          {cartItems.length === 0 ? (
+          {cartItemCount === 0 ? (
             <p>Tu carrito está vacío</p>
           ) : (
             cartItems.map(item => (
               <div key={item.id} className="cart-item">
-                <p>{item.name}</p>
-                <span>${item.price}</span>
+                <div className="cart-item-details">
+                  <p>{item.name || item.title}</p>
+                  <span>S/ {String(item.price).replace('S/ ', '')}</span>
+                </div>
+                {/*Boton para elimianr */}
+                <FaTimes 
+                  size={18} 
+                  className="cart-item-remove" 
+                  onClick={() => removeFromCart(item.id)}
+                />
               </div>
             ))
           )}
         </div>
-
-        {cartItems.length > 0 && (
-          <button className="checkout-btn">Pagar ahora</button>
+        {cartItemCount > 0 && (
+          <div className="cart-footer">
+            <div className="cart-total">
+              <strong>Total:</strong>
+              <strong>S/ {totalCartPrice.toFixed(2)}</strong>
+            </div>
+            {/* Futura pag de checkout */}
+            <button 
+              className="checkout-btn" 
+              onClick={() => {
+                navigate('/checkout'); // Navegamos a la página de pago
+                toggleCart(); // Cerramos el carrito
+              }}
+            >
+              Pagar ahora
+            </button>
+          </div>
         )}
       </div>
     </>

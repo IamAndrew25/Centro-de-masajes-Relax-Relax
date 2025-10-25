@@ -77,8 +77,10 @@ public class AuthService {
 
         //login
     public AuthResponse login(LoginRequest request){
-        // Buscar usuario por email directamente en la BD
-        Optional<UserModel> userOpt = iuserRepository.findByEmail(request.getEmail());
+        //de lista de los usuarios
+        Optional<UserModel> userOpt= iuserRepository.findAll()
+                .stream()
+                .filter(u -> u.getEmail().equals(request.getEmail())).findFirst();
         //verificar si el user esta vacio o es incorrecto junto a la contrasena cifrada
         if (userOpt.isEmpty()|| !passwordEncoder.matches(request.getPassword(), userOpt.get().getPassword())){
             throw new RuntimeException("Email o contrasena incorrectos :0");
@@ -87,7 +89,7 @@ public class AuthService {
         //obtenemos e usuario
         UserModel user = userOpt.get();
         //ahora el token
-        String token = jwtUtil.generateToken(user.getUsername()); // aca se genera el token , ahi dice generatetoken xd
+        String token = jwtUtil.generateToken(user); // aca se genera el token , ahi dice generatetoken xd
         // da bien si es pues correcto dx
         AuthResponse response = new AuthResponse();
 
