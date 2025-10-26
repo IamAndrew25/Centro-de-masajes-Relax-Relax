@@ -3,6 +3,8 @@ import MainLayout from '../../layouts/MainLayout';
 import './Contact.css';
 import heroImage from '../../assets/images/Banner.jpg';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -10,7 +12,6 @@ const Contact = () => {
     email: '',
     message: '',
   });
-  const [submitMessage, setSubmitMessage] = useState('');
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -21,9 +22,8 @@ const Contact = () => {
     e.preventDefault();
     // Aquí va la lógica para enviar el formulario al backensito
     console.log('Datos del formulario:', formData);
-    setSubmitMessage('¡Gracias por tu mensaje! Te responderemos pronto.');
+    toast.success('¡Gracias por tu mensaje! Te responderemos pronto.');
     setFormData({ name: '', email: '', message: '' });
-    setTimeout(() => setSubmitMessage(''), 5000);
   };
 
   return (
@@ -44,7 +44,6 @@ const Contact = () => {
             {/* Formulario de Contacto */}
             <div className="contact-form-card">
               <h2>Escríbenos</h2>
-              {submitMessage && <p className="submit-message">{submitMessage}</p>}
               <form className="contact-form" onSubmit={handleSubmit} noValidate>
                 <div className="form-group">
                   <label htmlFor="name">Nombre</label>

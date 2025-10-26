@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import './Checkout.css';
 import { FaCreditCard, FaCalendarAlt, FaLock, FaCcVisa, FaCcMastercard} from 'react-icons/fa';
 import { createPayment } from '../../api/paymentApi';
+import { toast } from 'react-toastify';
 
 const Checkout = () => {
   const { cartItems, totalCartPrice, clearCart } = useCart();
@@ -78,7 +79,7 @@ const Checkout = () => {
       console.log("Pago creado con éxito en backend:", paymentResponse);
 
       // Si la llamada fue exitosa
-      alert('¡Pago procesado con éxito! Gracias por tu compra.');
+      toast.success('¡Pago procesado con éxito! Gracias por tu compra.');
       clearCart();
       navigate('/home');
 

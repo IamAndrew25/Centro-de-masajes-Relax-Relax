@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import MainLayout from '../../layouts/MainLayout';
 import "./Claims.css";
+import { toast } from "react-toastify";
 
 const Claims = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ const Claims = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Tu reclamo ha sido enviado correctamente. Gracias por confiar en Relax Total.");
+    toast.succes("Tu reclamo ha sido enviado correctamente. Gracias por confiar en Relax Total.");
     // Aquí se puede manejar para enviar los datos a la Bd o API, si es necesario.
   };
 

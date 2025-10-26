@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { IoIosArrowBack } from "react-icons/io";
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { register } from '../../api/authApi';
 
 const Register = ({ onToggleView }) => {
@@ -83,7 +84,7 @@ const Register = ({ onToggleView }) => {
         password,
       });
       console.log("Registro exitoso:", response);
-      alert("¡Registro exitoso! Ahora puedes iniciar sesión.");
+      toast.success("¡Registro exitoso! Ahora puedes iniciar sesión.");
       onToggleView(); // volver al login tras registrarse
     } catch (error) {
       console.error("Error en registro:", error.response?.data || error.message);

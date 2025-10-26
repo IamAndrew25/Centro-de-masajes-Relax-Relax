@@ -10,7 +10,7 @@ import bacheloretteImage from "../../assets/images/Despedida.jpg";
 
 const experiencesData = [
   {
-    id: 1,
+    id: 8,
     name: "Half Day Spa (Escapada)",
     image: halfDayImage,
     duration: "Aprox. 3 horas",
@@ -18,7 +18,7 @@ const experiencesData = [
     description: "Tu pausa perfecta. Incluye acceso a tina de hidromasajes, exfoliación corporal y un masaje relajante de 60 minutos.",
   },
   {
-    id: 2,
+    id: 9,
     name: "Full Day Spa (Renovación Total)",
     image: fullDayImage,
     duration: "Aprox. 5 horas",
@@ -26,7 +26,7 @@ const experiencesData = [
     description: "Un día completo para ti. Incluye sauna, hidromasaje, masaje de 90 min (a elección), limpieza facial profunda y un aperitivo ligero.",
   },
   {
-    id: 3,
+    id: 10,
     name: "Experiencia (Despedida de Solter@)",
     image: bacheloretteImage,
     duration: "Aprox. 2.5 horas",

@@ -14,7 +14,7 @@ import paquetePremium from "../../assets/images/package-premium.jpg";
 
 const customPackages = [
   {
-    id: 1,
+    id: 11,
     name: "Masaje para Parejas",
     image: packageCouples,
     price: 165,
@@ -27,7 +27,7 @@ const customPackages = [
     note: "Disponible solo Martes y Miércoles. No aplica otros días de la semana."
   },
   {
-    id: 2,
+    id: 12,
     name: "Ritual Pre Natal",
     image: packagePrenatal,
     price: 140,
@@ -39,7 +39,7 @@ const customPackages = [
     note: "Precio por persona."
   },
   {
-    id: 3,
+    id: 13,
     name: "Promo Día del Padre",
     image: packageFather,
     price: 289,
@@ -51,7 +51,7 @@ const customPackages = [
     note: "Precio por dos personas. Incluye 02 copas de vino."
   },
   {
-    id: 4,
+    id: 14,
     name: "Paquete Ejecutivo",
     image: paqueteEjecutivo,
     price: "30% Descuento",
@@ -59,7 +59,7 @@ const customPackages = [
     note: "Promoción disponible todo agosto."
   },
   {
-    id: 5,
+    id: 15,
     name: "Paquete Premium (2x1)",
     image: paquetePremium,
     price: "2x1",

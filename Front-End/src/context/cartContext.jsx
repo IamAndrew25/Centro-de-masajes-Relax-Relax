@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
+import { toast } from 'react-toastify';
+
 const CartContext = createContext();
 
 export const useCart = () => {
@@ -11,19 +13,16 @@ export const CartProvider = ({ children }) => {
 
   // Función para añadir un item al carrito
   const addToCart = (item) => {
-    // Comprobamos si el item ya existe
+    const isItemInCart = cartItems.find(cartItem => cartItem.id === item.id);
+
+    if (isItemInCart) {
+      toast.warn(`${item.name || item.title} ya está en el carrito.`);
+      return; 
+    }
+    
+    toast.success(`${item.name || item.title} ha sido añadido al carrito!`);
     setCartItems(prevItems => {
-      const isItemInCart = prevItems.find(cartItem => cartItem.id === item.id);
-      
-      if (isItemInCart) {
-        // De momento, solo evitamos duplicados
-        alert(`${item.name || item.title} ya está en el carrito.`);
-        return prevItems;
-      } else {
-        // Añadir nuevo item
-        alert(`${item.name || item.title} ha sido añadido al carrito!`);
-        return [...prevItems, { ...item, quantity: 1 }];
-      }
+      return [...prevItems, { ...item, quantity: 1 }];
     });
   };
 

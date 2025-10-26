@@ -4,6 +4,7 @@ import { FaGoogle, FaFacebook } from "react-icons/fa";
 import { TfiMicrosoftAlt } from "react-icons/tfi";
 import logo from '../../assets/images/logo.png';
 import { login } from '../../api/authApi';
+import { toast } from 'react-toastify';
 
 const Login = ({ onToggleView }) => {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ const Login = ({ onToggleView }) => {
       }
     } catch (error) {
       console.error("Error en login:", error.response?.data || error.message);
-      setError(error.response?.data?.message || "Error al iniciar sesión. Inténtalo de nuevo.");
+      toast.error(error.response?.data?.message || "Error al iniciar sesión. Inténtalo de nuevo.");
     } finally {
       setLoading(false);
     }
