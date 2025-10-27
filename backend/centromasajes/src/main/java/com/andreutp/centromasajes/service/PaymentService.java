@@ -65,14 +65,14 @@ public class PaymentService {
     }
 
     public PaymentModel createPayment(PaymentRequest request) {
-        // 1️⃣ Buscar usuario y cita
+        // 1 Buscar usuario y cita
         UserModel user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         AppointmentModel appointment = appointmentRepository.findById(request.getAppointmentId())
                 .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
 
-        // 2️⃣ Crear pago
+        // 2 Crear pago
         PaymentModel payment = PaymentModel.builder()
                 .user(user)
                 .appointment(appointment)
@@ -85,7 +85,7 @@ public class PaymentService {
 
         PaymentModel savedPayment = paymentRepository.save(payment);
 
-        // 3️⃣ Generar factura/boleta automáticamente
+        // 3 Generar factura/boleta automáticamente
         InvoiceModel invoice = InvoiceModel.builder()
                 .payment(savedPayment)
                 .user(savedPayment.getUser())
@@ -100,11 +100,11 @@ public class PaymentService {
 
         invoice = invoiceRepository.save(invoice);
 
-        // 4️⃣ Asociar factura al pago
+        // 4 Asociar factura al pago
         savedPayment.setInvoice(invoice);
         paymentRepository.save(savedPayment);
 
-        // 5️⃣ Enviar PDF por correo automáticamente
+        // 5 Enviar PDF por correo automáticamente
         emailService.enviarBoletaConPDF(
                 user.getEmail(),
                 "Tu boleta de pago #" + invoice.getInvoiceNumber(),
