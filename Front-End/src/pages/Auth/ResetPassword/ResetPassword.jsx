@@ -1,17 +1,29 @@
 import { useState } from "react";
-import { useSearchParams} from "react-router-dom"; // Para leer ?token=...
-import { NavLink, Link } from 'react-router-dom';
-
+import { useSearchParams, NavLink, useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import { FiLock } from "react-icons/fi";
+import '../Auth.css';
 
 export default function ResetPassword() {
   const [newPassword, setNewPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
-  const token = searchParams.get("token"); // token de la URL
-    const [menuOpen, setMenuOpen] = useState(false);
+  const token = searchParams.get("token"); 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validaciones
+    if (newPassword.length < 6) {
+      toast.warn("La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.warn("Las contraseñas no coinciden.");
+      return;
+    }
 
     try {
       const res = await fetch("http://localhost:8080/auth/reset-password", {
@@ -21,31 +33,74 @@ export default function ResetPassword() {
       });
 
       const data = await res.json();
-      setMessage(data.message || "Contraseña actualizada!");
+
+      if (!res.ok) {
+        throw new Error(data.message || "Error desconocido");
+      }
+
+      toast.success(data.message || "¡Contraseña actualizada con éxito!");
+      //Redirige al login después de 2 segundos
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+
     } catch (err) {
-      setMessage("Error al actualizar contraseña.");
+      toast.error(err.message || "Error al actualizar contraseña. El token puede ser inválido o haber expirado.");
       console.error(err);
     }
   };
-    const closeMenu = () => {
-    setMenuOpen(false);
-  }
 
   return (
-    <div className="reset-password-container">
-      <h2>Cambiar Contraseña</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="password"
-          placeholder="Nueva contraseña"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Actualizar contraseña</button>
-      </form>
-      {message && <p>{message}</p>}
-      <NavLink to="/login" className="nav-link nav-cta" onClick={closeMenu}>Regresar al login</NavLink>
+    <div className="auth-page">
+      <div className="reset-card-container">
+        <div className="form-inner-container" style={{ width: '100%', maxWidth: 'none', margin: 0 }}>
+          <FiLock size={40} className="auth-icon" />
+          <h2 className="form-title" style={{ textAlign: 'center' }}>
+            Reestablecer Contraseña
+          </h2>
+          <p style={{ color: '#ccc', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.5', textAlign: 'center' }}>
+            Ingresa tu nueva contraseña. Asegúrate de que sea segura.
+          </p>
+
+          <form onSubmit={handleSubmit}>
+            <div className="auth-input-group">
+              <label className="auth-label" htmlFor="newPassword">Nueva Contraseña</label>
+              <input
+                id="newPassword"
+                className="auth-input"
+                type="password"
+                placeholder="••••••••"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="auth-input-group">
+              <label className="auth-label" htmlFor="confirmPassword">Confirmar Contraseña</label>
+              <input
+                id="confirmPassword"
+                className="auth-input"
+                type="password"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <button type="submit" className="auth-action-button" style={{ marginTop: '1rem' }}>
+              Actualizar contraseña
+            </button>
+          </form>
+
+          <div className="auth-signup-link" style={{ marginTop: '1.5rem' }}>
+            <NavLink to="/login" className="auth-toggle-link">
+              Regresar al login
+            </NavLink>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
