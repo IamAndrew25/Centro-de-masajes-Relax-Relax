@@ -22,7 +22,6 @@ public class PaymentController {
 
     @PostMapping
     public ResponseEntity<PaymentModel> createPayment(@RequestBody PaymentRequest request) {
-        return ResponseEntity.ok(paymentService.createPayment(request));
         PaymentModel pagoCreado = paymentService.createPayment(request); // ya envía el PDF
         return ResponseEntity.ok(pagoCreado);
     }

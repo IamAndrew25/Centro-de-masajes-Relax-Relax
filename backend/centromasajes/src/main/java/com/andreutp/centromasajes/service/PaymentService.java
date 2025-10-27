@@ -23,73 +23,56 @@ public class PaymentService {
     private final IInvoiceRepository invoiceRepository;
     @Autowired
     private final IAppointmentRepository appointmentRepository;
-
-    public PaymentService(IPaymentRepository paymentRepository, IUserRepository userRepository,
-                          IInvoiceRepository invoiceRepository, IAppointmentRepository appointmentRepository) {
     private final EmailService emailService;
 
     public PaymentService(IPaymentRepository paymentRepository, IUserRepository userRepository,
                           IInvoiceRepository invoiceRepository, IAppointmentRepository appointmentRepository
-                            ,EmailService emailService) {
+            ,EmailService emailService) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
         this.invoiceRepository = invoiceRepository;
         this.appointmentRepository = appointmentRepository;
         this.emailService = emailService;
     }
-/*
-    // Crear pago con factura o boleta existente
-    public PaymentModel createPayment(PaymentRequest request) {
-        UserModel user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    /*
+        // Crear pago con factura o boleta existente
+        public PaymentModel createPayment(PaymentRequest request) {
+            UserModel user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        AppointmentModel appointment = appointmentRepository.findById(request.getAppointmentId())
-                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+            AppointmentModel appointment = appointmentRepository.findById(request.getAppointmentId())
+                    .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
 
-        InvoiceModel invoice = invoiceRepository.findById(request.getInvoiceId())
-                .orElseThrow(() -> new RuntimeException("Factura no encontrada"));
+            InvoiceModel invoice = invoiceRepository.findById(request.getInvoiceId())
+                    .orElseThrow(() -> new RuntimeException("Factura no encontrada"));
 
 
-        PaymentModel payment = new PaymentModel();
-        payment.setUser(user);
-        payment.setAppointment(appointment);
-        payment.setInvoice(invoice);
-        payment.setAmount(request.getAmount());
-        payment.setPaymentDate(request.getPaymentDate());
-        payment.setMethod(request.getMethod());
-        payment.setStatus(PaymentModel.Status.COMPLETED);
-        payment.setCoveredBySubscription(request.isCoveredBySubscription());
+            PaymentModel payment = new PaymentModel();
+            payment.setUser(user);
+            payment.setAppointment(appointment);
+            payment.setInvoice(invoice);
+            payment.setAmount(request.getAmount());
+            payment.setPaymentDate(request.getPaymentDate());
+            payment.setMethod(request.getMethod());
+            payment.setStatus(PaymentModel.Status.COMPLETED);
+            payment.setCoveredBySubscription(request.isCoveredBySubscription());
 
-        return paymentRepository.save(payment);
-    }
-*/
+            return paymentRepository.save(payment);
+        }
+    */
     public List<PaymentModel> getAllPayments() {
         return paymentRepository.findAll();
     }
 
-    // Crear pago (sin factura o boleta  ain)
     public PaymentModel createPayment(PaymentRequest request) {
-        UserModel user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        PaymentModel payment = new PaymentModel();
-        payment.setUser(user);
-
-        if (request.getAppointmentId() != null) {
-            AppointmentModel appointment = appointmentRepository.findById(request.getAppointmentId())
-                    .orElseThrow(() -> new RuntimeException("Cita no encontrada con ID: " + request.getAppointmentId()));
-            payment.setAppointment(appointment);
-        }
-
-    public PaymentModel createPayment(PaymentRequest request) {
-        // 1️⃣ Buscar usuario y cita
+        // 1 Buscar usuario y cita
         UserModel user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         AppointmentModel appointment = appointmentRepository.findById(request.getAppointmentId())
                 .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
 
-        // 2️⃣ Crear pago
+        // 2 Crear pago
         PaymentModel payment = PaymentModel.builder()
                 .user(user)
                 .appointment(appointment)
@@ -102,7 +85,7 @@ public class PaymentService {
 
         PaymentModel savedPayment = paymentRepository.save(payment);
 
-        // 3️⃣ Generar factura/boleta automáticamente
+        // 3 Generar factura/boleta automáticamente
         InvoiceModel invoice = InvoiceModel.builder()
                 .payment(savedPayment)
                 .user(savedPayment.getUser())
@@ -117,11 +100,11 @@ public class PaymentService {
 
         invoice = invoiceRepository.save(invoice);
 
-        // 4️⃣ Asociar factura al pago
+        // 4 Asociar factura al pago
         savedPayment.setInvoice(invoice);
         paymentRepository.save(savedPayment);
 
-        // 5️⃣ Enviar PDF por correo automáticamente
+        // 5 Enviar PDF por correo automáticamente
         emailService.enviarBoletaConPDF(
                 user.getEmail(),
                 "Tu boleta de pago #" + invoice.getInvoiceNumber(),
@@ -156,7 +139,6 @@ public class PaymentService {
         // Guardar pago primero, sin factura
         return paymentRepository.save(payment);
     }
-
 */
     // Generar factura para un pago existente
     public InvoiceModel createInvoiceForPayment(Long paymentId, String type, String customerName, String customerDoc) {

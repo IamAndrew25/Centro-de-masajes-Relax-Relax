@@ -60,7 +60,6 @@ const Login = ({ onToggleView }) => {
         <div className="auth-input-group">
           <label htmlFor="email" className="auth-label">
             Email
-            <a href="/forgot-password" className="auth-forgot-password">¿Has olvidado tu contraseña?</a>
           </label>
           <input
             type="email"
@@ -74,7 +73,7 @@ const Login = ({ onToggleView }) => {
         <div className="auth-input-group">
           <label htmlFor="password" className="auth-label">
             Contraseña
-            <Link to="/ForgotPassword" className="forgot-password">
+            <Link to="/ForgotPassword" className="auth-forgot-password">
               ¿Has olvidado tu contraseña?
             </Link>
           </label>
