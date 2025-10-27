@@ -34,7 +34,11 @@ public class SecurityConfig {
                         //SERVICIOS ENDPOINS
                         // Solo ADMIN puede crear/actualizar/eliminar servicios
                         //.requestMatchers("/services/**" ,"/services" ).hasRole("ADMIN")//sigue pidiendo token si aun esta en permitir todo
-                        .requestMatchers("/services/**").permitAll() //cambiarlo luego a que solo el administrador pueda
+                        .requestMatchers("/services/**").permitAll()
+                        .requestMatchers("/test-email").permitAll()
+                        .requestMatchers("/test-excel").permitAll()
+                        .requestMatchers("/reports/**").permitAll()
+                        //cambiarlo luego a que solo el administrador pueda
                         // Solo USER puede listar servicios (GET)
                         //.requestMatchers("/services").hasAnyRole("USER", "ADMIN")
 
