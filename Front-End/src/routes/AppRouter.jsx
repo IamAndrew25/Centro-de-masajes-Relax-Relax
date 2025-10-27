@@ -9,6 +9,8 @@ import Plans from "../pages/Plans/Plans";
 import Services from "../pages/Services/Services";
 import Experiences from "../pages/Experiences/Experiences";
 import Reservation from "../pages/Reservation/Reservation";
+import ForgotPassword from "../pages/Auth/ResetPassword/ForgotPassword";
+import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
 
 
 export default function AppRouter() {
@@ -37,6 +39,8 @@ export default function AppRouter() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/claims" element={<Claims />} />
+        <Route path="/ForgotPassword" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );

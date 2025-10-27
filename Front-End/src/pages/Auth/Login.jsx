@@ -3,6 +3,8 @@ import { FaGoogle, FaFacebook } from "react-icons/fa";
 import { TfiMicrosoftAlt } from "react-icons/tfi";
 import logo from '../../assets/images/logo.png';
 import { login } from '../../api/authApi';
+import { Link } from 'react-router-dom';
+
 
 const Login = ({ onToggleView }) => {
   const [email, setEmail] = useState('');
@@ -57,7 +59,9 @@ const Login = ({ onToggleView }) => {
         <div className="input-group">
           <label htmlFor="password">
             Contraseña
-            <a href="/forgot-password" className="forgot-password">¿Has olvidado tu contraseña?</a>
+            <Link to="/ForgotPassword" className="forgot-password">
+              ¿Has olvidado tu contraseña?
+            </Link>
           </label>
           <input type="password" id="password" placeholder="Ingresa tu contraseña"
             value={password} onChange={(e) => setPassword(e.target.value)} />
