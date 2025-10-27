@@ -5,6 +5,8 @@ import { TfiMicrosoftAlt } from "react-icons/tfi";
 import logo from '../../assets/images/logo.png';
 import { login } from '../../api/authApi';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
+
 
 const Login = ({ onToggleView }) => {
   const navigate = useNavigate();
@@ -72,6 +74,9 @@ const Login = ({ onToggleView }) => {
         <div className="auth-input-group">
           <label htmlFor="password" className="auth-label">
             Contraseña
+            <Link to="/ForgotPassword" className="forgot-password">
+              ¿Has olvidado tu contraseña?
+            </Link>
           </label>
           <input
             type="password"

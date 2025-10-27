@@ -10,6 +10,7 @@ import com.andreutp.centromasajes.dao.IUserRepository;
 import com.andreutp.centromasajes.dto.PaymentRequest;
 import com.andreutp.centromasajes.model.PaymentModel;
 import com.andreutp.centromasajes.model.UserModel;
+import com.andreutp.centromasajes.utils.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +26,16 @@ public class PaymentService {
 
     public PaymentService(IPaymentRepository paymentRepository, IUserRepository userRepository,
                           IInvoiceRepository invoiceRepository, IAppointmentRepository appointmentRepository) {
+    private final EmailService emailService;
+
+    public PaymentService(IPaymentRepository paymentRepository, IUserRepository userRepository,
+                          IInvoiceRepository invoiceRepository, IAppointmentRepository appointmentRepository
+                            ,EmailService emailService) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
         this.invoiceRepository = invoiceRepository;
         this.appointmentRepository = appointmentRepository;
+        this.emailService = emailService;
     }
 /*
     // Crear pago con factura o boleta existente
@@ -74,6 +81,72 @@ public class PaymentService {
             payment.setAppointment(appointment);
         }
 
+    public PaymentModel createPayment(PaymentRequest request) {
+        // 1️⃣ Buscar usuario y cita
+        UserModel user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        AppointmentModel appointment = appointmentRepository.findById(request.getAppointmentId())
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+
+        // 2️⃣ Crear pago
+        PaymentModel payment = PaymentModel.builder()
+                .user(user)
+                .appointment(appointment)
+                .amount(request.getAmount())
+                .paymentDate(request.getPaymentDate())
+                .method(request.getMethod())
+                .status(PaymentModel.Status.PAID) // Marcamos como pagado directamente
+                .coveredBySubscription(request.isCoveredBySubscription())
+                .build();
+
+        PaymentModel savedPayment = paymentRepository.save(payment);
+
+        // 3️⃣ Generar factura/boleta automáticamente
+        InvoiceModel invoice = InvoiceModel.builder()
+                .payment(savedPayment)
+                .user(savedPayment.getUser())
+                .appointment(appointment) // <<--- ¡MUY IMPORTANTE! Asignar la cita
+                .type(InvoiceModel.Type.BOLETA) // O FACTURA según tu lógica
+                .invoiceNumber(generateInvoiceNumber())
+                .customerName(user.getUsername())
+                .customerDoc(user.getDni()) // DNI del usuario
+                .total(savedPayment.getAmount())
+                .status(InvoiceModel.Status.PENDING)
+                .build();
+
+        invoice = invoiceRepository.save(invoice);
+
+        // 4️⃣ Asociar factura al pago
+        savedPayment.setInvoice(invoice);
+        paymentRepository.save(savedPayment);
+
+        // 5️⃣ Enviar PDF por correo automáticamente
+        emailService.enviarBoletaConPDF(
+                user.getEmail(),
+                "Tu boleta de pago #" + invoice.getInvoiceNumber(),
+                user.getUsername(),
+                invoice.getInvoiceNumber(),
+                invoice.getTotal()
+        );
+
+        return savedPayment;
+    }
+
+
+
+
+    /*// Crear pago (sin factura o boleta  ain)
+    public PaymentModel createPayment(PaymentRequest request) {
+        UserModel user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        AppointmentModel appointment = appointmentRepository.findById(request.getAppointmentId())
+                .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
+
+        PaymentModel payment = new PaymentModel();
+        payment.setUser(user);
+        payment.setAppointment(appointment);
         payment.setAmount(request.getAmount());
         payment.setPaymentDate(request.getPaymentDate());
         payment.setMethod(request.getMethod());
@@ -84,6 +157,7 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
+*/
     // Generar factura para un pago existente
     public InvoiceModel createInvoiceForPayment(Long paymentId, String type, String customerName, String customerDoc) {
         PaymentModel payment = paymentRepository.findById(paymentId)
