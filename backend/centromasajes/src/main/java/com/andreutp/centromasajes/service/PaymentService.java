@@ -23,6 +23,9 @@ public class PaymentService {
     private final IInvoiceRepository invoiceRepository;
     @Autowired
     private final IAppointmentRepository appointmentRepository;
+
+    public PaymentService(IPaymentRepository paymentRepository, IUserRepository userRepository,
+                          IInvoiceRepository invoiceRepository, IAppointmentRepository appointmentRepository) {
     private final EmailService emailService;
 
     public PaymentService(IPaymentRepository paymentRepository, IUserRepository userRepository,
@@ -63,6 +66,20 @@ public class PaymentService {
     public List<PaymentModel> getAllPayments() {
         return paymentRepository.findAll();
     }
+
+    // Crear pago (sin factura o boleta  ain)
+    public PaymentModel createPayment(PaymentRequest request) {
+        UserModel user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        PaymentModel payment = new PaymentModel();
+        payment.setUser(user);
+
+        if (request.getAppointmentId() != null) {
+            AppointmentModel appointment = appointmentRepository.findById(request.getAppointmentId())
+                    .orElseThrow(() -> new RuntimeException("Cita no encontrada con ID: " + request.getAppointmentId()));
+            payment.setAppointment(appointment);
+        }
 
     public PaymentModel createPayment(PaymentRequest request) {
         // 1️⃣ Buscar usuario y cita
@@ -139,6 +156,7 @@ public class PaymentService {
         // Guardar pago primero, sin factura
         return paymentRepository.save(payment);
     }
+
 */
     // Generar factura para un pago existente
     public InvoiceModel createInvoiceForPayment(Long paymentId, String type, String customerName, String customerDoc) {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { useCart } from "../../context/cartContext";
 import MainLayout from "../../layouts/MainLayout";
 import "./Services.css";
 import heroImage from "../../assets/images/Banner.jpg";
@@ -40,7 +41,10 @@ const Services = () => {
   }, [location.hash]);
 
   // Tarjeta de servicio
-  const ServiceCard = ({ service }) => (
+  const ServiceCard = ({ service }) => {
+    const {addToCart} = useCart();
+
+    return (
     <div className="service-card">
       {/* Puedes añadir imagen si quieres */}
       {/* <img src={`/images/${service.id}.jpg`} alt={service.name} className="service-image" /> */}
@@ -50,12 +54,12 @@ const Services = () => {
         <p className="card-description">{service.description}</p>
         <div className="card-footer">
           <span className="card-price">S/ {service.price}</span>
-          <button className="cta-button">Reservar</button>
+          <button className="cta-button" onClick={() => addToCart(service)}>Reservar</button>
         </div>
       </div>
     </div>
   );
-
+  };
   return (
     <MainLayout>
       <div className="services-page">

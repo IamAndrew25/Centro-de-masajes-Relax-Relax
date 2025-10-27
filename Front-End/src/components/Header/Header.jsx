@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes } from "react-icons/fa"; 
-import { AiOutlineShoppingCart } from "react-icons/ai"; 
+import { AiOutlineShoppingCart } from "react-icons/ai";
+import { useCart } from '../../context/cartContext';
 import './Header.css';
 
 const Header = () => {
@@ -9,20 +10,27 @@ const Header = () => {
   const [cartOpen, setCartOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); 
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+  const { cartItems, removeFromCart, cartItemCount, totalCartPrice } = useCart();
 
   useEffect(() => {
+    // Comprueba si hay un token en localStorage para saber si el usuario inició sesión
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const [cartItems] = useState([
-    { id: 1, name: "Plan Individual - 3 meses", price: 28 },
-    { id: 2, name: "Plan Parejas - 6 meses", price: 49 }
-  ]);
+  }, [isLoggedIn]); // Se ejecuta cuando el estado de login cambia
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -30,10 +38,16 @@ const Header = () => {
   };
   
   const toggleCart = () => setCartOpen(!cartOpen);
+  const closeMenu = () => { setMenuOpen(false);}
 
-  const closeMenu = () => {
-    setMenuOpen(false);
-  }
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    setIsUserDropdownOpen(false);
+    closeMenu();
+    navigate('/home'); // Redirige al inicio
+  };
+
 
   const serviceCategories = [
 
@@ -82,7 +96,7 @@ const Header = () => {
             
             <NavLink to="/reserva" className="nav-link" onClick={closeMenu}>Reserva</NavLink>
             
-            {/* MENÚ DESPLEGABLE DE SERVICIOS */}
+            {/* Menu de servicios */}
             <div 
               className={dropdownClass}
               onMouseEnter={() => {
@@ -114,14 +128,35 @@ const Header = () => {
             </div>
 
             <NavLink to="/nosotros" className="nav-link" onClick={closeMenu}>Nosotros</NavLink>
-            
-            <NavLink to="/login" className="nav-link nav-cta" onClick={closeMenu}>Inicia sesión</NavLink>
+            <NavLink to="/contact" className="nav-link" onClick={closeMenu}>Contacto</NavLink>
+
+
+            {isLoggedIn ? (
+              <div className="nav-link user-menu">
+                <span onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)} className="nav-cta-logged-in">
+                  Bienvenido
+                </span>
+                {isUserDropdownOpen && (
+                  <ul className="dropdown-menu user-dropdown">
+                    <li>
+                      <Link to="#" onClick={handleLogout}>
+                        Cerrar Sesión
+                      </Link>
+                    </li>
+                  </ul>
+                )}
+              </div>
+            ) : (
+              <NavLink to="/login" className="nav-link nav-cta" onClick={closeMenu}>
+                Inicia sesión
+              </NavLink>
+            )}
 
             {/* Carrito dentro del nav */}
             <div className="cart-icon" onClick={toggleCart}>
               <AiOutlineShoppingCart size={24} /> 
-              {cartItems.length > 0 && (
-                <span className="cart-badge">{cartItems.length}</span>
+              {cartItemCount > 0 && (
+                <span className="cart-badge">{cartItemCount}</span>
               )}
             </div>
           </nav>
@@ -136,20 +171,42 @@ const Header = () => {
         </div>
 
         <div className="cart-content">
-          {cartItems.length === 0 ? (
+          {cartItemCount === 0 ? (
             <p>Tu carrito está vacío</p>
           ) : (
             cartItems.map(item => (
               <div key={item.id} className="cart-item">
-                <p>{item.name}</p>
-                <span>${item.price}</span>
+                <div className="cart-item-details">
+                  <p>{item.name || item.title}</p>
+                  <span>S/ {String(item.price).replace('S/ ', '')}</span>
+                </div>
+                {/*Boton para elimianr */}
+                <FaTimes 
+                  size={18} 
+                  className="cart-item-remove" 
+                  onClick={() => removeFromCart(item.id)}
+                />
               </div>
             ))
           )}
         </div>
-
-        {cartItems.length > 0 && (
-          <button className="checkout-btn">Pagar ahora</button>
+        {cartItemCount > 0 && (
+          <div className="cart-footer">
+            <div className="cart-total">
+              <strong>Total:</strong>
+              <strong>S/ {totalCartPrice.toFixed(2)}</strong>
+            </div>
+            {/* Futura pag de checkout */}
+            <button 
+              className="checkout-btn" 
+              onClick={() => {
+                navigate('/checkout'); // Navegamos a la página de pago
+                toggleCart(); // Cerramos el carrito
+              }}
+            >
+              Pagar ahora
+            </button>
+          </div>
         )}
       </div>
     </>

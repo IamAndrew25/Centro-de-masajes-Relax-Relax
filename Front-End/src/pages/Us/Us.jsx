@@ -1,5 +1,6 @@
 import React from "react";
 import MainLayout from "../../layouts/MainLayout";
+import { Link } from "react-router-dom";
 import "./Us.css";
 
 // Importa tus imágenes
@@ -93,9 +94,9 @@ const Us = () => {
             <p className="cta-subtitle">
               Reserva tu momento de paz y bienestar hoy mismo.
             </p>
-            <a href="#reservar" className="cta-nosotros cta-main">
+            <Link to="/servicios/masajes" className="cta-nosotros cta-main">
               ¡Conoce nuestros tratamientos!
-            </a>
+            </Link>
           </div>
         </section>
 
@@ -121,9 +122,9 @@ const Us = () => {
 
               {/* Boton de inscripción*/}
               <div className="band-btn">
-                <a href="#inscripcion" className="cta-nosotros">
+                <Link to="/reserva" className="cta-nosotros">
                   Inscríbete hoy
-                </a>
+                </Link>
               </div>
             </div>
           </div>

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import MainLayout from "../../layouts/MainLayout";
 import "./Reservation.css";
 
@@ -15,6 +16,16 @@ const Reservation = () => {
   });
   const [errors, setErrors] = useState({});
   const [submitMessage, setSubmitMessage] = useState("");
+  const location = useLocation();
+
+  useEffect(() => {
+      const params = new URLSearchParams(location.search);
+      const serviceFromURL = params.get('servicio');
+      if (serviceFromURL) {
+        // Actualiza el estado del formulario si el parámetro existe
+        setFormData(prevData => ({ ...prevData, service: serviceFromURL }));
+      }
+    }, [location]);
 
   const handlePhoneChange = (e) => {
     const value = e.target.value;
@@ -111,6 +122,11 @@ const Reservation = () => {
                   <option>Ritual Pre Natal</option>
                   <option>Paquete Premium</option>
                   <option>Masaje para Parejas</option>
+                  <option>Masaje Sueco</option>
+                  <option>Masaje de Aromaterapia</option>
+                  <option>Masaje con Piedras Calientes</option>
+                  <option>Masaje Deportivo</option>
+                  <option>Drenaje Linfático</option>
                 </select>
                 {errors.service && <p className="error-text">{errors.service}</p>}
               </div>

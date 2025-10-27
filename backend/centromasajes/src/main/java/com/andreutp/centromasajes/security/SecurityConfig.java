@@ -18,11 +18,11 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
 
 
-    //inyeccion o sea los constructores son para poder usar una clse dentro de otra , de pasada sus metodos y asi
     public SecurityConfig(CustomUserDetailsService userDetailsService, JwtUtil jwtUtil) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
     }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -30,7 +30,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(
                 auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() 
                         .requestMatchers("/auth/register/**","/auth/login/**","/auth/forgot-password/**", "/auth/reset-password/**").permitAll()
+                        .requestMatchers("/services/**").permitAll()
                         //SERVICIOS ENDPOINS
                         // Solo ADMIN puede crear/actualizar/eliminar servicios
                         //.requestMatchers("/services/**" ,"/services" ).hasRole("ADMIN")//sigue pidiendo token si aun esta en permitir todo
@@ -102,7 +104,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
         )       .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userDetailsService),
-                        UsernamePasswordAuthenticationFilter.class); //token
+                        UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -123,5 +125,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
-
 }
