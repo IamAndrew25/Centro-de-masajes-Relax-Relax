@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/appointments")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AppointmentController {
     private final AppointmentService appointmentService;
 
@@ -81,8 +82,8 @@ public class AppointmentController {
     // ------------------------
     @PutMapping("/{id}")
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AppointmentModel> updateAppointment(@PathVariable Long id, @RequestBody AppointmentModel appointment) {
-        AppointmentModel updated = appointmentService.updateAppointment(id, appointment);
+    public ResponseEntity<AppointmentModel> updateAppointment(@PathVariable Long id, @RequestBody AppointmentRequest request) {
+        AppointmentModel updated = appointmentService.updateAppointment(id, request);
         return ResponseEntity.ok(updated);
     }
 
