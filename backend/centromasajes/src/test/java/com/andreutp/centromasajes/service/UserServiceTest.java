@@ -16,12 +16,12 @@ public class UserServiceTest {
     private IUserRepository userRepository;
     private UserService userService;
 
-    @BeforeEach
+    /*@BeforeEach
     void setUp() {
         userRepository = mock(IUserRepository.class);
         userService = new UserService(userRepository);
     }
-
+*/
     @Test
     void testGetUserById() {
         UserModel user = new UserModel();

@@ -30,6 +30,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(
                 auth -> auth
+                        .requestMatchers("/appointments/**").permitAll()
+                        .requestMatchers("/user/**").permitAll()
+                        .requestMatchers("/availability/**").permitAll()
+
                         .requestMatchers("/auth/register/**","/auth/login/**","/auth/forgot-password/**", "/auth/reset-password/**").permitAll()
                         .requestMatchers("/services/**").permitAll()
                         //SERVICIOS ENDPOINS
