@@ -1,28 +1,78 @@
-
-import React, { useState } from 'react';
-import { SectionHeader } from './ui/Card';
+import React, { useState, useEffect } from 'react';
 import { Modal } from './ui/Modal';
 import { FormInput, FormRow } from './ui/Form';
-import { CLIENTES_DATA, FORM_OPTIONS } from '../data/adminData';
+import { getAllClients, createClient , 
+    descargarExcelClientes,enviarReporteClientes } from './JS/ClientesService';
 
-const Clientes = ({ handleNewClient, showNewClientModal, setShowNewClientModal, newClientData, handleInputChange, handleSaveClient }) => {
+
+const Clientes = () => {
+    const [clientes, setClientes] = useState([]);
     const [searchName, setSearchName] = useState('');
     const [dateFrom, setDateFrom] = useState('');
     const [dateTo, setDateTo] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [newClientData, setNewClientData] = useState({
+        nombre: '',
+        telefono: '',
+        email: '',
+        ultimaVisita: '',
+        servicios: '',
+        tipoMasaje: ''
+    });
 
-    // Filtrar por nombre
-    const filteredByName = CLIENTES_DATA.filter(cliente =>
-        cliente.nombre.toLowerCase().includes(searchName.toLowerCase())
+    useEffect(() => {
+        fetchClientes();
+    }, []);
+
+    const fetchClientes = async () => {
+        try {
+            const data = await getAllClients();
+            setClientes(data);
+        } catch (error) {
+            console.error('Error cargando clientes:', error);
+        }
+    };
+
+    const handleInputChange = (field, value) => {
+        setNewClientData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleSaveClient = async () => {
+        try {
+            await createClient({
+                username: newClientData.nombre,
+                phone: newClientData.telefono,
+                email: newClientData.email,
+                password: 'default123',
+                dni: '00000000',
+                enabled: true
+            });
+            setShowModal(false);
+            setNewClientData({
+                nombre: '',
+                telefono: '',
+                email: '',
+                ultimaVisita: '',
+                servicios: '',
+                tipoMasaje: ''
+            });
+            fetchClientes();
+        } catch (error) {
+            console.error('Error guardando cliente:', error);
+        }
+    };
+
+    // Filtrado por nombre
+    const filteredByName = clientes.filter(c =>
+        c.username?.toLowerCase().includes(searchName.toLowerCase())
     );
 
-    // Filtrar por fecha
-    const filteredByDate = filteredByName.filter(cliente => {
+    // Filtrado por fecha
+    const filteredByDate = filteredByName.filter(c => {
         if (!dateFrom && !dateTo) return true;
-        // Si la fecha ya está en formato yyyy-mm-dd, úsala directamente
-        let fecha = cliente.ultimaVisita;
-        if (fecha.includes('/')) {
-            fecha = fecha.split('/').reverse().join('-'); // dd/mm/yyyy -> yyyy-mm-dd
-        }
+        if (!c.ultimaVisita) return true;
+
+        let fecha = c.ultimaVisita.includes('T') ? c.ultimaVisita.split('T')[0] : c.ultimaVisita;
         if (dateFrom && fecha < dateFrom) return false;
         if (dateTo && fecha > dateTo) return false;
         return true;
@@ -30,6 +80,7 @@ const Clientes = ({ handleNewClient, showNewClientModal, setShowNewClientModal, 
 
     return (
         <>
+        
             <div className="clientes">
                 <div style={{ marginBottom: '20px' }}>
                     <h2 style={{ margin: 0, fontWeight: 700, fontSize: '1.5rem', color: '#2c3e50' }}>👥 Gestión de Clientes</h2>
@@ -62,6 +113,18 @@ const Clientes = ({ handleNewClient, showNewClientModal, setShowNewClientModal, 
                             style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid #ccc' }}
                         />
                     </div>
+                    <button 
+                        style={{ height: '40px', marginLeft: '10px' }} 
+                        onClick={descargarExcelClientes} 
+                      >
+                        ⬇️ Descargar Excel
+                      </button>
+                    <button 
+                        style={{ height: '40px', marginLeft: '10px' }} 
+                        onClick={enviarReporteClientes} 
+                      >
+                        📊 Reporte Excel
+                      </button>
                 </div>
 
                 <div className="clientes-tabla-wrapper">
@@ -84,11 +147,11 @@ const Clientes = ({ handleNewClient, showNewClientModal, setShowNewClientModal, 
                             ) : (
                                 filteredByDate.map(cliente => (
                                     <tr key={cliente.id}>
-                                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{cliente.nombre.replace('👩 ', '').replace('👨 ', '')}</td>
-                                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{cliente.telefono}</td>
-                                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{cliente.email}</td>
-                                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{cliente.ultimaVisita.includes('/') ? cliente.ultimaVisita.split('/').reverse().join('-') : cliente.ultimaVisita}</td>
-                                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{cliente.servicios}</td>
+                                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{cliente.username || '-'}</td>
+                                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{cliente.phone || '-'}</td>
+                                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{cliente.email || '-'}</td>
+                                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{cliente.ultimaVisita || '-'}</td>
+                                        <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{cliente.servicios || '-'}</td>
                                         <td style={{ padding: '10px', borderBottom: '1px solid #eee' }}>{cliente.tipoMasaje || '-'}</td>
                                     </tr>
                                 ))
@@ -99,8 +162,8 @@ const Clientes = ({ handleNewClient, showNewClientModal, setShowNewClientModal, 
             </div>
 
             <Modal
-                isOpen={showNewClientModal}
-                onClose={() => setShowNewClientModal(false)}
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
                 title="➕ Agregar Nuevo Cliente"
                 onSave={handleSaveClient}
                 saveButtonText="💾 Guardar Cliente"
@@ -110,7 +173,7 @@ const Clientes = ({ handleNewClient, showNewClientModal, setShowNewClientModal, 
                         <FormInput
                             label="👤 Nombre Completo"
                             value={newClientData.nombre}
-                            onChange={(e) => handleInputChange('nombre', e.target.value)}
+                            onChange={e => handleInputChange('nombre', e.target.value)}
                             placeholder="Ej: María García López"
                             required
                         />
@@ -118,7 +181,7 @@ const Clientes = ({ handleNewClient, showNewClientModal, setShowNewClientModal, 
                             type="tel"
                             label="📞 Teléfono"
                             value={newClientData.telefono}
-                            onChange={(e) => handleInputChange('telefono', e.target.value)}
+                            onChange={e => handleInputChange('telefono', e.target.value)}
                             placeholder="Ej: +1 (555) 123-4567"
                             required
                         />
@@ -128,7 +191,7 @@ const Clientes = ({ handleNewClient, showNewClientModal, setShowNewClientModal, 
                             type="email"
                             label="📧 Email"
                             value={newClientData.email}
-                            onChange={(e) => handleInputChange('email', e.target.value)}
+                            onChange={e => handleInputChange('email', e.target.value)}
                             placeholder="Ej: maria@email.com"
                         />
                         <FormInput

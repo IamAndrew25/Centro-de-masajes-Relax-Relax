@@ -98,25 +98,27 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    public AppointmentModel updateAppointment(Long id, AppointmentModel newAppointment) {
+    public AppointmentModel updateAppointment(Long id, AppointmentRequest request) {
         AppointmentModel existing = getAppointmentById(id);
 
-        existing.setUser(userRepository.findById(newAppointment.getUser().getId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado")));
+        UserModel user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        UserModel worker = userRepository.findById(request.getWorkerId())
+                .orElseThrow(() -> new RuntimeException("Trabajador no encontrado"));
+        ServiceModel service = serviceRepository.findById(request.getServiceId())
+                .orElseThrow(() -> new RuntimeException("Servicio no encontrado"));
 
-        existing.setWorker(userRepository.findById(newAppointment.getWorker().getId())
-                .orElseThrow(() -> new RuntimeException("Trabajador no encontrado")));
-
-        existing.setService(serviceRepository.findById(newAppointment.getService().getId())
-                .orElseThrow(() -> new RuntimeException("Servicio no encontrado")));
-
-        existing.setAppointmentStart(newAppointment.getAppointmentStart());
-        existing.setAppointmentEnd(newAppointment.getAppointmentEnd());
-        existing.setStatus(newAppointment.getStatus());
-        existing.setNotes(newAppointment.getNotes());
+        existing.setUser(user);
+        existing.setWorker(worker);
+        existing.setService(service);
+        existing.setAppointmentStart(request.getAppointmentStart());
+        existing.setAppointmentEnd(request.getAppointmentEnd());
+        existing.setStatus(AppointmentModel.Status.valueOf(request.getStatus()));
+        existing.setNotes(request.getNotes());
 
         return appointmentRepository.save(existing);
     }
+
 
     public void deleteAppointment(Long id) {
         appointmentRepository.deleteById(id);

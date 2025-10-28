@@ -3,8 +3,11 @@ package com.andreutp.centromasajes.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -44,21 +47,42 @@ public class UserModel {
     private RoleModel role;
 
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WorkerAvailabilityModel> availability;
+
+    private String especialidad;    // Masaje Relajante, Deportivo, etc.
+    private String estado;          // Activo, Vacaciones, Inactivo
+    private Integer experiencia;    // Años de experiencia
+
 
     public UserModel() {}
 
-    public UserModel(Long id, String username, String password, String phone, String email,
-                     Boolean enabled, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public UserModel(Long id, String username, String password, String phone, String email, Boolean enabled, String dni,
+                     RoleModel role, LocalDateTime createdAt,
+                     LocalDateTime updatedAt, List<WorkerAvailabilityModel> availability,
+                     String especialidad, String estado, Integer experiencia) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.phone = phone;
         this.email = email;
         this.enabled = enabled;
+        this.dni = dni;
+        this.role = role;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.availability = availability;
+        this.especialidad = especialidad;
+        this.estado = estado;
+        this.experiencia = experiencia;
     }
 
     public Long getId() {
@@ -139,5 +163,37 @@ public class UserModel {
 
     public void setDni(String dni) {
         this.dni = dni;
+    }
+
+    public List<WorkerAvailabilityModel> getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(List<WorkerAvailabilityModel> availability) {
+        this.availability = availability;
+    }
+
+    public String getEspecialidad() {
+        return especialidad;
+    }
+
+    public void setEspecialidad(String especialidad) {
+        this.especialidad = especialidad;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public Integer getExperiencia() {
+        return experiencia;
+    }
+
+    public void setExperiencia(Integer experiencia) {
+        this.experiencia = experiencia;
     }
 }

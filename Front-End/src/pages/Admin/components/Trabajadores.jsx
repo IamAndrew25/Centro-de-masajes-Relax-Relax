@@ -1,442 +1,306 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { SectionHeader } from './ui/Card';
 import { Modal } from './ui/Modal';
-import { FormInput, FormSelect, FormTextarea, FormRow } from './ui/Form';
+import { FormInput, FormSelect, FormRow, FormTextarea } from './ui/Form';
+import { 
+  getAllWorkers, 
+  createWorker, 
+  updateWorker, 
+  deleteWorker, 
+  saveWorkerAvailability,
+  enviarExcelTrabajadores,
+  descargarExcelTrabajadores
+} from './JS/workerService';
 
-// Datos de ejemplo para trabajadores
-const TRABAJADORES_DATA = [
-    { 
-        id: 1, 
-        nombre: "🧑‍⚕️ Dr. Ana Martínez", 
-        telefono: "+1 (555) 111-2222", 
-        email: "ana.martinez@relaxtotal.com", 
-        especialidad: "Masaje Terapéutico", 
-        experiencia: "5 años",
-        estado: "Activo"
-    },
-    { 
-        id: 2, 
-        nombre: "🧑‍⚕️ Carlos Rivera", 
-        telefono: "+1 (555) 333-4444", 
-        email: "carlos.rivera@relaxtotal.com", 
-        especialidad: "Masaje Deportivo", 
-        experiencia: "3 años",
-        estado: "Activo"
-    },
-    { 
-        id: 3, 
-        nombre: "🧑‍⚕️ Sofía López", 
-        telefono: "+1 (555) 555-6666", 
-        email: "sofia.lopez@relaxtotal.com", 
-        especialidad: "Masaje Relajante", 
-        experiencia: "7 años",
-        estado: "Vacaciones"
-    },
-    { 
-        id: 4, 
-        nombre: "🧑‍⚕️ Miguel Torres", 
-        telefono: "+1 (555) 777-8888", 
-        email: "miguel.torres@relaxtotal.com", 
-        especialidad: "Masaje con Piedras", 
-        experiencia: "4 años",
-        estado: "Activo"
-    }
+const TRABAJADORES_ESTADOS = [
+  { value: "ACTIVO", label: "Activo" },
+  { value: "VACACIONES", label: "Vacaciones" },
+  { value: "LICENCIA", label: "Licencia" },
+  { value: "INACTIVO", label: "Inactivo" }
 ];
 
-// Opciones para formularios de trabajadores
-const TRABAJADORES_FORM_OPTIONS = {
-    especialidades: [
-        { value: "relajante", label: "Masaje Relajante" },
-        { value: "deportivo", label: "Masaje Deportivo" },
-        { value: "terapeutico", label: "Masaje Terapéutico" },
-        { value: "piedras", label: "Masaje con Piedras Calientes" },
-        { value: "reflexologia", label: "Reflexología" },
-        { value: "aromaterapia", label: "Aromaterapia" }
-    ],
-    horarios: [
-        { value: "tiempo-completo", label: "Tiempo Completo" },
-        { value: "medio-tiempo", label: "Medio Tiempo" },
-        { value: "por-horas", label: "Por Horas" },
-        { value: "fines-semana", label: "Solo Fines de Semana" }
-    ],
-    estados: [
-        { value: "activo", label: "Activo" },
-        { value: "vacaciones", label: "En Vacaciones" },
-        { value: "licencia", label: "En Licencia" },
-        { value: "inactivo", label: "Inactivo" }
-    ]
-};
+const DIAS_SEMANA = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO"];
 
-const Trabajadores = ({ 
-    handleNewWorker, 
-    showNewWorkerModal, 
-    setShowNewWorkerModal, 
-    newWorkerData, 
-    handleWorkerInputChange, 
-    handleSaveWorker,
-    showEditWorkerModal,
-    setShowEditWorkerModal,
-    showScheduleModal,
-    setShowScheduleModal,
-    selectedWorker,
-    editWorkerData,
-    scheduleData,
-    handleEditWorker,
-    handleScheduleWorker,
-    handleEditWorkerInputChange,
-    handleScheduleChange,
-    handleSaveEditWorker,
-    handleSaveSchedule
-}) => {
-    
+const Trabajadores = () => {
+  const [workers, setWorkers] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({
+    id: null,
+    username: '',
+    email: '',
+    phone: '',
+    dni: '',
+    estado: 'ACTIVO',
+    notas: '',
+    password: '',
+    especialidad: '',
+    experiencia: '',
+    availability: DIAS_SEMANA.map(day => ({
+      day,
+      activo: false,
+      inicio: '',
+      fin: ''
+    }))
+  });
+
+  useEffect(() => {
+    fetchWorkers();
+  }, []);
+
+  const fetchWorkers = async () => {
+    try {
+      const data = await getAllWorkers();
+      setWorkers(data);
+    } catch (error) {
+      console.error('Error cargando trabajadores:', error);
+    }
+  };
+
+  const handleInputChange = (field, value) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleAvailabilityChange = (index, field, value) => {
+    setForm(prev => {
+      const newAvailability = [...prev.availability];
+      newAvailability[index] = { ...newAvailability[index], [field]: value };
+      return { ...prev, availability: newAvailability };
+    });
+  };
+
+  const handleSave = async () => {
+    try {
+      if (!form.username || !form.email || !form.phone || !form.dni) {
+        alert("Nombre, Email, Teléfono y DNI son obligatorios.");
+        return;
+      }
+
+      const now = new Date().toISOString();
+      const payload = {
+        username: form.username,
+        email: form.email,
+        phone: form.phone,
+        dni: form.dni,
+        estado: form.estado || 'ACTIVO',
+        notas: form.notas || '',
+        password: form.password || '123456789',
+        enabled: true,
+        role: { id: 3 }, // Worker
+        especialidad: form.especialidad || '',
+        experiencia: form.experiencia || '',
+        created_at: now,
+        updated_at: now
+      };
+
+      let savedWorker;
+      if (form.id) {
+        savedWorker = await updateWorker(form.id, payload);
+      } else {
+        if (!form.password) {
+          alert('Contraseña es obligatoria para nuevo trabajador.');
+          return;
+        }
+        savedWorker = await createWorker(payload);
+      }
+
+      // Filtramos los días activos antes de guardar
+      const activeAvailability = form.availability
+        .filter(a => a.activo && a.inicio && a.fin)
+        .map(a => ({
+          day: a.day,
+          inicio: a.inicio,
+          fin: a.fin
+        }));
+
+      if (activeAvailability.length > 0) {
+        await saveWorkerAvailability(savedWorker.id || form.id, activeAvailability);
+      }
+
+      alert("✅ Trabajador y disponibilidad guardados correctamente");
+      setShowModal(false);
+      setForm({
+        id: null,
+        username: '',
+        email: '',
+        phone: '',
+        dni: '',
+        estado: 'ACTIVO',
+        notas: '',
+        password: '',
+        especialidad: '',
+        experiencia: '',
+        availability: DIAS_SEMANA.map(day => ({
+          day,
+          activo: false,
+          inicio: '',
+          fin: ''
+        }))
+      });
+      fetchWorkers();
+    } catch (error) {
+      console.error('Error guardando trabajador:', error.response?.data || error);
+      alert('Error guardando trabajador. Revisa la consola.');
+    }
+  };
+
+  const handleEdit = (worker) => {
+    setForm({
+      id: worker.id || null,
+      username: worker.username || '',
+      email: worker.email || '',
+      phone: worker.phone || '',
+      dni: worker.dni || '',
+      estado: worker.estado || 'ACTIVO',
+      notas: worker.notas || '',
+      password: '',
+      especialidad: worker.especialidad || '',
+      experiencia: worker.experiencia || '',
+      availability: DIAS_SEMANA.map(day => ({
+        day,
+        activo: worker.availability?.some(a => a.day === day) || false,
+        inicio: worker.availability?.find(a => a.day === day)?.inicio || '',
+        fin: worker.availability?.find(a => a.day === day)?.fin || ''
+      }))
+    });
+    setShowModal(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("¿Seguro que quieres eliminar este trabajador?")) return;
+    try {
+      await deleteWorker(id);
+      fetchWorkers();
+    } catch (error) {
+      console.error('Error eliminando trabajador:', error);
+      alert('No se pudo eliminar. Revisa la consola.');
+    }
+  };
+
+  const WorkerAvailability = ({ availability }) => {
+    if (!Array.isArray(availability)) return <p>🕒 Sin horarios registrados</p>;
+    if (!availability.length) return <p>🕒 Sin horarios registrados</p>;
+
     return (
-        <>
-            <div className="trabajadores">
-                <SectionHeader 
-                    title="👨‍💼 Gestión de Trabajadores" 
-                    buttonText="➕ Nuevo Trabajador" 
-                    onButtonClick={handleNewWorker} 
-                />
-                
-                <div className="workers-grid">
-                    {TRABAJADORES_DATA.map(trabajador => (
-                        <div key={trabajador.id} className="worker-card">
-                            <div className="worker-info">
-                                <h4>{trabajador.nombre}</h4>
-                                <p>📞 {trabajador.telefono}</p>
-                                <p>📧 {trabajador.email}</p>
-                                <p>💆‍♀️ Especialidad: {trabajador.especialidad}</p>
-                                <p>⏱️ Experiencia: {trabajador.experiencia}</p>
-                                <p className={`worker-status ${trabajador.estado.toLowerCase().replace(' ', '-')}`}>
-                                    📊 Estado: {trabajador.estado}
-                                </p>
-                            </div>
-                            <div className="worker-actions">
-                                <button 
-                                    className="edit-btn"
-                                    onClick={() => handleEditWorker(trabajador)}
-                                >
-                                    ✏️ Editar
-                                </button>
-                                <button 
-                                    className="schedule-btn"
-                                    onClick={() => handleScheduleWorker(trabajador)}
-                                >
-                                    � Horarios
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            <Modal
-                isOpen={showNewWorkerModal}
-                onClose={() => setShowNewWorkerModal(false)}
-                title="➕ Agregar Nuevo Trabajador"
-                onSave={handleSaveWorker}
-                saveButtonText="💾 Guardar Trabajador"
-            >
-                <div className="worker-form">
-                    <FormRow>
-                        <FormInput
-                            label="👤 Nombre Completo"
-                            value={newWorkerData.nombre}
-                            onChange={(e) => handleWorkerInputChange('nombre', e.target.value)}
-                            placeholder="Ej: Dr. Ana Martínez"
-                            required
-                        />
-                        <FormInput
-                            type="tel"
-                            label="📞 Teléfono"
-                            value={newWorkerData.telefono}
-                            onChange={(e) => handleWorkerInputChange('telefono', e.target.value)}
-                            placeholder="Ej: +1 (555) 123-4567"
-                            required
-                        />
-                    </FormRow>
-                    
-                    <FormRow>
-                        <FormInput
-                            type="email"
-                            label="📧 Email"
-                            value={newWorkerData.email}
-                            onChange={(e) => handleWorkerInputChange('email', e.target.value)}
-                            placeholder="Ej: ana.martinez@relaxtotal.com"
-                            required
-                        />
-                        <FormInput
-                            type="date"
-                            label="🎂 Fecha de Nacimiento"
-                            value={newWorkerData.fechaNacimiento}
-                            onChange={(e) => handleWorkerInputChange('fechaNacimiento', e.target.value)}
-                        />
-                    </FormRow>
-                    
-                    <FormInput
-                        label="🏠 Dirección"
-                        value={newWorkerData.direccion}
-                        onChange={(e) => handleWorkerInputChange('direccion', e.target.value)}
-                        placeholder="Ej: Av. Principal 123, Ciudad"
-                    />
-                    
-                    <FormRow>
-                        <FormSelect
-                            label="💆‍♀️ Especialidad Principal"
-                            value={newWorkerData.especialidad}
-                            onChange={(e) => handleWorkerInputChange('especialidad', e.target.value)}
-                            options={TRABAJADORES_FORM_OPTIONS.especialidades}
-                            defaultOption="Seleccionar especialidad"
-                            required
-                        />
-                        <FormSelect
-                            label="⏰ Tipo de Horario"
-                            value={newWorkerData.tipoHorario}
-                            onChange={(e) => handleWorkerInputChange('tipoHorario', e.target.value)}
-                            options={TRABAJADORES_FORM_OPTIONS.horarios}
-                            defaultOption="Seleccionar horario"
-                        />
-                    </FormRow>
-
-                    <FormRow>
-                        <FormInput
-                            label="🎓 Años de Experiencia"
-                            type="number"
-                            value={newWorkerData.experiencia}
-                            onChange={(e) => handleWorkerInputChange('experiencia', e.target.value)}
-                            placeholder="Ej: 5"
-                            min="0"
-                        />
-                        <FormInput
-                            label="💰 Salario/Hora (S/)"
-                            type="number"
-                            value={newWorkerData.salario}
-                            onChange={(e) => handleWorkerInputChange('salario', e.target.value)}
-                            placeholder="Ej: 50"
-                            min="0"
-                        />
-                    </FormRow>
-
-                    <FormRow>
-                        <FormInput
-                            label="📜 Número de Licencia"
-                            value={newWorkerData.licencia}
-                            onChange={(e) => handleWorkerInputChange('licencia', e.target.value)}
-                            placeholder="Ej: LIC-2023-001"
-                        />
-                        <FormSelect
-                            label="📊 Estado"
-                            value={newWorkerData.estado}
-                            onChange={(e) => handleWorkerInputChange('estado', e.target.value)}
-                            options={TRABAJADORES_FORM_OPTIONS.estados}
-                            defaultOption="Seleccionar estado"
-                        />
-                    </FormRow>
-                    
-                    <FormTextarea
-                        label="📝 Certificaciones y Notas"
-                        value={newWorkerData.notas}
-                        onChange={(e) => handleWorkerInputChange('notas', e.target.value)}
-                        placeholder="Ej: Certificado en masaje terapéutico, especialista en lesiones deportivas, etc."
-                    />
-                </div>
-            </Modal>
-
-            {/* Modal Editar Trabajador */}
-            <Modal
-                isOpen={showEditWorkerModal}
-                onClose={() => setShowEditWorkerModal(false)}
-                title={`✏️ Editar ${selectedWorker ? selectedWorker.nombre.replace('🧑‍⚕️ ', '') : 'Trabajador'}`}
-                onSave={handleSaveEditWorker}
-                saveButtonText="💾 Actualizar Trabajador"
-            >
-                <div className="worker-form">
-                    <FormRow>
-                        <FormInput
-                            label="👤 Nombre Completo"
-                            value={editWorkerData.nombre}
-                            onChange={(e) => handleEditWorkerInputChange('nombre', e.target.value)}
-                            placeholder="Ej: Dr. Ana Martínez"
-                            required
-                        />
-                        <FormInput
-                            type="tel"
-                            label="📞 Teléfono"
-                            value={editWorkerData.telefono}
-                            onChange={(e) => handleEditWorkerInputChange('telefono', e.target.value)}
-                            placeholder="Ej: +1 (555) 123-4567"
-                            required
-                        />
-                    </FormRow>
-                    
-                    <FormRow>
-                        <FormInput
-                            type="email"
-                            label="📧 Email"
-                            value={editWorkerData.email}
-                            onChange={(e) => handleEditWorkerInputChange('email', e.target.value)}
-                            placeholder="Ej: ana.martinez@relaxtotal.com"
-                            required
-                        />
-                        <FormInput
-                            type="date"
-                            label="🎂 Fecha de Nacimiento"
-                            value={editWorkerData.fechaNacimiento}
-                            onChange={(e) => handleEditWorkerInputChange('fechaNacimiento', e.target.value)}
-                        />
-                    </FormRow>
-                    
-                    <FormInput
-                        label="🏠 Dirección"
-                        value={editWorkerData.direccion}
-                        onChange={(e) => handleEditWorkerInputChange('direccion', e.target.value)}
-                        placeholder="Ej: Av. Principal 123, Ciudad"
-                    />
-                    
-                    <FormRow>
-                        <FormSelect
-                            label="💆‍♀️ Especialidad Principal"
-                            value={editWorkerData.especialidad}
-                            onChange={(e) => handleEditWorkerInputChange('especialidad', e.target.value)}
-                            options={TRABAJADORES_FORM_OPTIONS.especialidades}
-                            defaultOption="Seleccionar especialidad"
-                            required
-                        />
-                        <FormSelect
-                            label="⏰ Tipo de Horario"
-                            value={editWorkerData.tipoHorario}
-                            onChange={(e) => handleEditWorkerInputChange('tipoHorario', e.target.value)}
-                            options={TRABAJADORES_FORM_OPTIONS.horarios}
-                            defaultOption="Seleccionar horario"
-                        />
-                    </FormRow>
-
-                    <FormRow>
-                        <FormInput
-                            label="🎓 Años de Experiencia"
-                            type="number"
-                            value={editWorkerData.experiencia}
-                            onChange={(e) => handleEditWorkerInputChange('experiencia', e.target.value)}
-                            placeholder="Ej: 5"
-                            min="0"
-                        />
-                        <FormInput
-                            label="💰 Salario/Hora (S/)"
-                            type="number"
-                            value={editWorkerData.salario}
-                            onChange={(e) => handleEditWorkerInputChange('salario', e.target.value)}
-                            placeholder="Ej: 50"
-                            min="0"
-                        />
-                    </FormRow>
-
-                    <FormRow>
-                        <FormInput
-                            label="📜 Número de Licencia"
-                            value={editWorkerData.licencia}
-                            onChange={(e) => handleEditWorkerInputChange('licencia', e.target.value)}
-                            placeholder="Ej: LIC-2023-001"
-                        />
-                        <FormSelect
-                            label="📊 Estado"
-                            value={editWorkerData.estado}
-                            onChange={(e) => handleEditWorkerInputChange('estado', e.target.value)}
-                            options={TRABAJADORES_FORM_OPTIONS.estados}
-                            defaultOption="Seleccionar estado"
-                        />
-                    </FormRow>
-                    
-                    <FormTextarea
-                        label="📝 Certificaciones y Notas"
-                        value={editWorkerData.notas}
-                        onChange={(e) => handleEditWorkerInputChange('notas', e.target.value)}
-                        placeholder="Ej: Certificado en masaje terapéutico, especialista en lesiones deportivas, etc."
-                    />
-                </div>
-            </Modal>
-
-            {/* Modal Gestión de Horarios */}
-            <Modal
-                isOpen={showScheduleModal}
-                onClose={() => setShowScheduleModal(false)}
-                title={`📅 Gestión de Horarios - ${selectedWorker ? selectedWorker.nombre.replace('🧑‍⚕️ ', '') : 'Trabajador'}`}
-                onSave={handleSaveSchedule}
-                saveButtonText="💾 Guardar Horarios"
-            >
-                <div className="schedule-form">
-                    <div className="schedule-header">
-                        <h4>📋 Configurar horarios de trabajo semanales</h4>
-                        <p>Define los horarios de trabajo para cada día de la semana</p>
-                    </div>
-                    
-                    {Object.entries(scheduleData).map(([day, schedule]) => {
-                        const dayNames = {
-                            lunes: 'Lunes',
-                            martes: 'Martes',
-                            miercoles: 'Miércoles',
-                            jueves: 'Jueves',
-                            viernes: 'Viernes',
-                            sabado: 'Sábado',
-                            domingo: 'Domingo'
-                        };
-                        
-                        return (
-                            <div key={day} className="schedule-day">
-                                <div className="day-header">
-                                    <label className="day-toggle">
-                                        <input
-                                            type="checkbox"
-                                            checked={schedule.activo}
-                                            onChange={(e) => handleScheduleChange(day, 'activo', e.target.checked)}
-                                        />
-                                        <span className="day-name">{dayNames[day]}</span>
-                                    </label>
-                                </div>
-                                
-                                {schedule.activo && (
-                                    <div className="time-inputs">
-                                        <FormInput
-                                            type="time"
-                                            label="⏰ Hora de Inicio"
-                                            value={schedule.inicio}
-                                            onChange={(e) => handleScheduleChange(day, 'inicio', e.target.value)}
-                                        />
-                                        <FormInput
-                                            type="time"
-                                            label="🕐 Hora de Fin"
-                                            value={schedule.fin}
-                                            onChange={(e) => handleScheduleChange(day, 'fin', e.target.value)}
-                                        />
-                                    </div>
-                                )}
-                                
-                                {!schedule.activo && (
-                                    <div className="day-off">
-                                        <span>🚫 Día libre</span>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                    
-                    <div className="schedule-summary">
-                        <h5>📊 Resumen Semanal</h5>
-                        <p>Días activos: {Object.values(scheduleData).filter(day => day.activo).length} de 7</p>
-                        <p>Total horas aproximadas: {
-                            Object.values(scheduleData)
-                                .filter(day => day.activo)
-                                .reduce((total, day) => {
-                                    const inicio = new Date(`2000-01-01T${day.inicio}`);
-                                    const fin = new Date(`2000-01-01T${day.fin}`);
-                                    return total + (fin - inicio) / (1000 * 60 * 60);
-                                }, 0)
-                                .toFixed(1)
-                        } horas</p>
-                    </div>
-                </div>
-            </Modal>
-        </>
+      <div className="availability-list">
+        <h5>🗓️ Disponibilidad:</h5>
+        <ul>
+          {availability.map((slot, index) => (
+            <li key={index}>
+              {slot.day}: {slot.inicio} - {slot.fin}
+            </li>
+          ))}
+        </ul>
+      </div>
     );
+  };
+
+  return (
+    <div className="trabajadores">
+        
+      <SectionHeader 
+        title="Gestión de Trabajadores"      
+        buttonText="Nuevo Trabajador" 
+        onButtonClick={() => setShowModal(true)} 
+      />
+<button 
+    style={{ height: '40px', marginLeft: '10px' }} 
+    onClick={enviarExcelTrabajadores} 
+  >
+    📊 Reporte Excel
+  </button>
+  <button 
+    style={{ height: '40px', marginLeft: '10px' }} 
+    onClick={descargarExcelTrabajadores} 
+  >
+    ⬇️ Descargar Excel
+  </button>
+      <div className="workers-grid">
+        {workers.map(worker => (
+          <div key={worker.id} className="worker-card">
+            <div className="worker-info">
+              <h4>{worker.username || '—'}</h4>
+              <p>📞 {worker.phone || '—'}</p>
+              <p>📧 {worker.email || '—'}</p>
+              <p>DNI: {worker.dni || '—'}</p>
+              <p>💼 Especialidad: {worker.especialidad || '—'}</p>
+              <p>📅 Experiencia: {worker.experiencia ? `${worker.experiencia} años` : '—'}</p>
+              <p className={`status ${worker.estado?.toLowerCase() || 'pendiente'}`}>
+                📊 Estado: {worker.estado || 'Pendiente'}
+              </p>
+              <WorkerAvailability availability={worker.availability} />
+            </div>
+            <div className="worker-actions">
+              <button onClick={() => handleEdit(worker)}>✏️ Editar</button>
+              <button onClick={() => handleDelete(worker.id)}>🗑️ Eliminar</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={form.id ? "Editar Trabajador" : "Nuevo Trabajador"}
+        onSave={handleSave}
+        saveButtonText="💾 Guardar"
+      >
+        <div className="worker-form">
+          <FormRow>
+            <FormInput label="Nombre" value={form.username} onChange={e => handleInputChange('username', e.target.value)} required />
+            <FormInput label="Teléfono" value={form.phone} onChange={e => handleInputChange('phone', e.target.value)} required />
+          </FormRow>
+
+          <FormRow>
+            <FormInput label="DNI" value={form.dni} onChange={e => handleInputChange('dni', e.target.value)} required />
+            <FormInput label="Email" type="email" value={form.email} onChange={e => handleInputChange('email', e.target.value)} required />
+          </FormRow>
+
+          <FormRow>
+            <FormSelect label="Estado" value={form.estado} onChange={e => handleInputChange('estado', e.target.value)} options={TRABAJADORES_ESTADOS} />
+          </FormRow>
+
+          {!form.id && (
+            <FormRow>
+              <FormInput label="Contraseña" type="password" value={form.password} onChange={e => handleInputChange('password', e.target.value)} required />
+            </FormRow>
+          )}
+
+          <FormRow>
+            <FormInput label="Especialidad" value={form.especialidad} onChange={e => handleInputChange('especialidad', e.target.value)} />
+            <FormInput label="Experiencia (años)" value={form.experiencia} onChange={e => handleInputChange('experiencia', e.target.value)} />
+          </FormRow>
+
+          <FormTextarea label="Notas" value={form.notas} onChange={e => handleInputChange('notas', e.target.value)} />
+
+          <h4>🗓️ Disponibilidad Semanal</h4>
+          <div className="availability-section">
+            {form.availability.map((a, i) => (
+              <div key={i} className="availability-row">
+                <label style={{ width: '100px' }}>{a.day}</label>
+                <input
+                  type="checkbox"
+                  checked={a.activo}
+                  onChange={(e) => handleAvailabilityChange(i, 'activo', e.target.checked)}
+                />
+                <input
+                  type="time"
+                  value={a.inicio}
+                  onChange={(e) => handleAvailabilityChange(i, 'inicio', e.target.value)}
+                  disabled={!a.activo}
+                />
+                <input
+                  type="time"
+                  value={a.fin}
+                  onChange={(e) => handleAvailabilityChange(i, 'fin', e.target.value)}
+                  disabled={!a.activo}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </Modal>
+    </div>
+  );
 };
 
 export default Trabajadores;
