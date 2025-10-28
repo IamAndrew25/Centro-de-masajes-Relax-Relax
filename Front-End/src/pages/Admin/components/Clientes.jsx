@@ -38,6 +38,12 @@ const Clientes = () => {
     };
 
     const handleSaveClient = async () => {
+        // el nombre no debe contener numeros vlidacion xd
+        const nombreValido = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(newClientData.nombre);
+        if (!nombreValido) {
+            alert("El nombre no puede contener números ni caracteres especiales");
+            return;
+        }
         try {
             await createClient({
                 username: newClientData.nombre,
@@ -90,11 +96,15 @@ const Clientes = () => {
                     <div>
                         <label>Buscar por nombre:</label>
                         <input
-                            type="text"
-                            placeholder="Nombre del cliente"
-                            value={searchName}
-                            onChange={e => setSearchName(e.target.value)}
-                            style={{ marginLeft: '8px', padding: '6px 10px', borderRadius: '6px', border: '1px solid #ccc' }}
+                        type="text"
+                        placeholder="Andre Ts"
+                        value={searchName}
+                        onChange={e => {
+                            // Solo permitir letras y espacios
+                            const soloLetras = e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+                            setSearchName(soloLetras);
+                        }}
+                        style={{ marginLeft: '8px', padding: '6px 10px', borderRadius: '6px', border: '1px solid #ccc' }}
                         />
                     </div>
                     <div>

@@ -16,7 +16,6 @@ const Servicios = () => {
     description: ''
   });
 
-  // ✅ Cargar servicios al inicio
   useEffect(() => {
     fetchServices();
   }, []);
@@ -84,18 +83,18 @@ const Servicios = () => {
           buttonText="➕ Nuevo Servicio"
           onButtonClick={handleNewService}
         />
-        <button 
-                        style={{ height: '40px', marginLeft: '10px' }} 
-                        onClick={descargarExcelServicios} 
-                        >
-                        ⬇️ Descargar Excel
-                        </button>
-                    <button 
-                        style={{ height: '40px', marginLeft: '10px' }} 
-                        onClick={enviarExcelServicios} 
-                        >
-                        📊 Reporte Excel
-                        </button> 
+          <button 
+            style={{ height: '40px', marginLeft: '10px' }} 
+            onClick={descargarExcelServicios} 
+            >
+            ⬇️ Descargar Excel
+          </button>
+          <button 
+            style={{ height: '40px', marginLeft: '10px' }} 
+            onClick={enviarExcelServicios} 
+            >
+            📊 Reporte Excel
+            </button> 
 
         <div className="services-grid">
           {services.length === 0 ? (
@@ -128,7 +127,6 @@ const Servicios = () => {
         </div>
       </div>
 
-      {/* ✅ Modal de Crear/Editar Servicio */}
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
@@ -140,7 +138,11 @@ const Servicios = () => {
           <FormInput
             label="💆‍♀️ Nombre del Servicio"
             value={form.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
+            onChange={(e) => {
+              // Solo letras y espacios
+              const soloLetras = e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+              handleInputChange('name', soloLetras);
+            }}
             placeholder="Ej: Masaje Sueco"
             required
           />
@@ -149,17 +151,25 @@ const Servicios = () => {
               type="number"
               label="⏱️ Duración (minutos)"
               value={form.durationMin}
-              onChange={(e) => handleInputChange('durationMin', e.target.value)}
+              onChange={(e) => {
+                //no jala no se porque xd
+                const soloNumeros = e.target.value.replace(/[^0-9.]/g, '');
+                handleInputChange('durationMin', soloNumeros);
+              }}
               min="15"
               max="300"
               required
             />
             <FormInput
-              type="number"
+              type="text"
               label="💰 Precio (Soles)"
               value={form.baseprice}
-              onChange={(e) => handleInputChange('baseprice', e.target.value)}
-              step="10"
+              onChange={(e) => {
+                //numeros como 5.5 50
+                const soloNumerosYPunto = e.target.value.replace(/[^0-9.]/g, '');
+                handleInputChange('baseprice', soloNumerosYPunto);
+              }}
+              placeholder="Ej: 50 o 50.5"
               required
             />
           </FormRow>

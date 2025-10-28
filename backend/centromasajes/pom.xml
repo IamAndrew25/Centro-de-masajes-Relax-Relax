@@ -114,7 +114,7 @@
 		</dependency>
 
 
-		<!-- 📊 Apache POI (Excel) -->
+		<!-- Apache POI (Excel) -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
@@ -126,11 +126,12 @@
 			<version>5.3.0</version>
 		</dependency>
 
-		<!-- 📄 iText 7 (PDF) -->
+		<!-- iText 7 (PDF) -->
 		<dependency>
 			<groupId>com.itextpdf</groupId>
 			<artifactId>itext7-core</artifactId>
 			<version>7.2.6</version>
+			<type>pom</type>
 		</dependency>
 
 
@@ -146,7 +147,23 @@
 			<version>2.13.0</version>
 		</dependency>
 
-
+		<!-- Mockito JUnit Jupiter -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- MockMvc para tests de controladores -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<!-- H2 Database para tests  -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -73,7 +73,7 @@ export const enviarExcelReservas = async () => {
   }
 };
 
-// --- Descargar Excel de reservas ---
+//  Descargar Excel de reservas 
 export const descargarExcelReservas = async () => {
   try {
     const response = await fetch(`${API_URL}/reports/reservas/download`, {
