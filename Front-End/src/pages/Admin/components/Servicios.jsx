@@ -41,22 +41,32 @@ const Servicios = () => {
 
   const handleSaveService = async () => {
     try {
-      if (!form.name || !form.durationMin || !form.baseprice) {
-        alert('Nombre, duración y precio son obligatorios.');
+      if (!form.name || !form.durationMin || !form.baseprice || !form.description) {
+        alert('Nombre, duración, precio y descripción son obligatorios.');
         return;
       }
 
+      const servicePayload = {
+        ...form,
+        durationMin: parseInt(form.durationMin, 10),
+        baseprice: parseFloat(form.baseprice)
+      };
+
       if (form.id) {
-        await updateService(form.id, form);
+        await updateService(form.id, servicePayload);
       } else {
-        await createService(form);
+        await createService(servicePayload);
       }
 
       setShowModal(false);
       fetchServices();
     } catch (error) {
       console.error('Error guardando servicio:', error);
-      alert('Error al guardar el servicio. Revisa la consola.');
+      let errorMsg = 'Error al guardar el servicio. Revisa la consola.';
+      if (error.response && error.response.data) {
+        console.log("Detalles del error del backend:", error.response.data);
+      }
+      alert(errorMsg);
     }
   };
 
@@ -168,6 +178,7 @@ const Servicios = () => {
             value={form.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
             rows={4}
+            required
           />
         </div>
       </Modal>

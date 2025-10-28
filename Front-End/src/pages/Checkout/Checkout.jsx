@@ -32,6 +32,13 @@ const Checkout = () => {
   const handlePayment = async (e) => {
     e.preventDefault();
 
+    //Validacion de cita
+    if (!appointmentId) {
+      toast.error('Error: No se ha encontrado una cita. Por favor, reserva una hora antes de pagar.');
+      navigate('/reserva');
+      return;
+    }
+
     //Validaciones del formulario
     if (!cardNumber || !cardExpiry || !cardCvv) {
       toast.warn('Por favor, completa todos los campos de la tarjeta.');
