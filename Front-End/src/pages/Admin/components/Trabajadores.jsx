@@ -116,7 +116,7 @@ const Trabajadores = () => {
         await saveWorkerAvailability(savedWorker.id || form.id, activeAvailability);
       }
 
-      alert("✅ Trabajador y disponibilidad guardados correctamente");
+      alert("Trabajador y disponibilidad guardados correctamente xdd");
       setShowModal(false);
       setForm({
         id: null,
@@ -246,12 +246,30 @@ const Trabajadores = () => {
       >
         <div className="worker-form">
           <FormRow>
-            <FormInput label="Nombre" value={form.username} onChange={e => handleInputChange('username', e.target.value)} required />
-            <FormInput label="Teléfono" value={form.phone} onChange={e => handleInputChange('phone', e.target.value)} required />
+            <FormInput label="Nombre"
+             value={form.username} 
+             onChange={(e) => {
+             const soloLetras = e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');   
+             handleInputChange('username', soloLetras)
+             }} 
+             required />
+            <FormInput label="Teléfono" 
+            value={form.phone} 
+            onChange={(e) =>{
+                const soloNumeros = e.target.value.replace(/[^0-9.]/g, '');    
+                handleInputChange('phone', soloNumeros)
+            }} 
+            required />
           </FormRow>
 
           <FormRow>
-            <FormInput label="DNI" value={form.dni} onChange={e => handleInputChange('dni', e.target.value)} required />
+            <FormInput label="DNI" 
+            value={form.dni} 
+            onChange={(e) =>{ 
+            const soloNumeros = e.target.value.replace(/[^0-9]/g, '');          
+            handleInputChange('dni', soloNumeros)
+        }} 
+            required />
             <FormInput label="Email" type="email" value={form.email} onChange={e => handleInputChange('email', e.target.value)} required />
           </FormRow>
 
@@ -266,8 +284,20 @@ const Trabajadores = () => {
           )}
 
           <FormRow>
-            <FormInput label="Especialidad" value={form.especialidad} onChange={e => handleInputChange('especialidad', e.target.value)} />
-            <FormInput label="Experiencia (años)" value={form.experiencia} onChange={e => handleInputChange('experiencia', e.target.value)} />
+            <FormInput label="Especialidad" 
+            value={form.especialidad} 
+            onChange={(e) => {
+            const soloLetras = e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+            handleInputChange('especialidad', soloLetras)
+            }} 
+            required/>
+            <FormInput label="Experiencia (años)" 
+            value={form.experiencia} 
+            onChange={(e) => {
+            const soloNumeros = e.target.value.replace(/[^0-9.]/g, '');    
+            handleInputChange('experiencia', soloNumeros)
+            }} 
+            required/>
           </FormRow>
 
           <FormTextarea label="Notas" value={form.notas} onChange={e => handleInputChange('notas', e.target.value)} />
