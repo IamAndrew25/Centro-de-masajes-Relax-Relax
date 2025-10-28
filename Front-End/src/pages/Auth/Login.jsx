@@ -5,27 +5,23 @@ import { TfiMicrosoftAlt } from "react-icons/tfi";
 import logo from '../../assets/images/logo.png';
 import { login } from '../../api/authApi';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
 
-
-const Login = ({ onToggleView }) => {
+const Login = ({ onToggleView, onForgotPasswordClick }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
 
     // Validaciones del lado del cliente
     if (!email || !password) {
-      setError("Por favor, completa todos los campos.");
+      toast.warn("Por favor, completa todos los campos.");
       return;
     }
     if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Por favor, ingresa un formato de correo válido.");
+      toast.warn("Por favor, ingresa un formato de correo válido.");
       return;
     }
 
@@ -54,8 +50,7 @@ const Login = ({ onToggleView }) => {
   return (
     <div className="form-inner-container">
       <img src={logo} alt="Logo de la empresa" className="logo" />
-      <h1 className="welcome-message">Hola, me alegra que estes de vuelta</h1>
-      {error && <p className="auth-error-message">{error}</p>}
+      <h1 className="welcome-message">Hola, me alegra que estes de vuelta</h1> 
       <form onSubmit={handleSubmit}>
         <div className="auth-input-group">
           <label htmlFor="email" className="auth-label">
@@ -73,9 +68,9 @@ const Login = ({ onToggleView }) => {
         <div className="auth-input-group">
           <label htmlFor="password" className="auth-label">
             Contraseña
-            <Link to="/ForgotPassword" className="auth-forgot-password">
-              ¿Has olvidado tu contraseña?
-            </Link>
+            <span onClick={onForgotPasswordClick} className="auth-forgot-password" style={{ cursor: 'pointer' }}
+            >¿Has olvidado tu contraseña?
+            </span>
           </label>
           <input
             type="password"
