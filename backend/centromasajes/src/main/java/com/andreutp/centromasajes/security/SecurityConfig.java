@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/appointments/**").permitAll()
                         .requestMatchers("/user/**").permitAll()
                         .requestMatchers("/availability/**").permitAll()
+                        .requestMatchers("/payments/**").permitAll()
 
                         .requestMatchers("/auth/register/**","/auth/login/**","/auth/forgot-password/**", "/auth/reset-password/**").permitAll()
                         .requestMatchers("/services/**").permitAll()
