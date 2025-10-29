@@ -1,15 +1,13 @@
 package com.andreutp.centromasajes.utils;
 
+import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
-import javax.mail.internet.MimeMessage;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,14 +25,14 @@ public class EmailServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-       // when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+       when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
     }
 
     @Test
     void testEnviarCorreoSimple() {
         emailService.enviarCorreoSimple("cliente@test.com", "Asunto", "Mensaje");
 
-        //verify(mailSender, times(1)).send(mimeMessage);
+        verify(mailSender, times(1)).send(mimeMessage);
     }
 
     @Test
@@ -43,7 +41,7 @@ public class EmailServiceTest {
         assertDoesNotThrow(() -> emailService.enviarBoletaConPDF("cliente@test.com",
                 "Boleta", "Juan", "001", 150.0));
 
-        //verify(mailSender, times(1)).send(mimeMessage);
+        verify(mailSender, times(1)).send(mimeMessage);
     }
 
     @Test
@@ -53,6 +51,6 @@ public class EmailServiceTest {
         assertDoesNotThrow(() -> emailService.enviarCorreoConAdjunto(
                 "cliente@test.com", "Asunto", "Mensaje", archivo, "archivo.txt"));
 
-        //verify(mailSender, times(1)).send(mimeMessage);
+        verify(mailSender, times(1)).send(mimeMessage);
     }
 }

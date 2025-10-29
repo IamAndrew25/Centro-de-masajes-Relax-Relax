@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearchParams} from "react-router-dom"; // Para leer ?token=...
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 
 export default function ResetPassword() {
@@ -9,7 +9,7 @@ export default function ResetPassword() {
   const [searchParams] = useSearchParams();
 
   const token = searchParams.get("token"); // token de la URL
-    const [menuOpen, setMenuOpen] = useState(false);
+    const [setMenuOpen] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
 

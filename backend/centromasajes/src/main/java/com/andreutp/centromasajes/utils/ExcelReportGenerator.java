@@ -170,7 +170,7 @@ public class ExcelReportGenerator {
         }
     }
 
-    // Reservad
+    // Reservas
     public static byte[] generarReporteReservas(List<AppointmentModel> reservas) {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Reservas");

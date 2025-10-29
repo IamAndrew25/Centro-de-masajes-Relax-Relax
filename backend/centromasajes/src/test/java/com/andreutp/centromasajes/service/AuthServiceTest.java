@@ -14,8 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +59,10 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
+        // CRITICAL: Inyectar manualmente los campos @Autowired que no están en el constructor
+        ReflectionTestUtils.setField(authService, "tokenService", tokenService);
+        ReflectionTestUtils.setField(authService, "mailSender", mailSender);
+
         // Setup role
         userRole = new RoleModel();
         userRole.setId(1L);
@@ -188,7 +194,7 @@ class AuthServiceTest {
         // Arrange
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(testUser));
         doNothing().when(tokenService).storeToken(anyString(), anyString());
-        //doNothing().when(mailSender).send();
+        doNothing().when(mailSender).send(any(SimpleMailMessage.class));
 
         // Act & Assert
         assertDoesNotThrow(() -> {
@@ -197,6 +203,7 @@ class AuthServiceTest {
 
         verify(userRepository, times(1)).findByEmail("test@example.com");
         verify(tokenService, times(1)).storeToken(anyString(), eq("test@example.com"));
+        verify(mailSender, times(1)).send(any(SimpleMailMessage.class));
     }
 
     @Test

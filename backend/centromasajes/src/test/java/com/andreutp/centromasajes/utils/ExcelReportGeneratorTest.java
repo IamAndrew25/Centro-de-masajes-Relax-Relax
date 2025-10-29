@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +33,7 @@ public class ExcelReportGeneratorTest {
         user.setUsername("Juan");
         pago.setUser(user);
         pago.setAmount(100.0);
-        //pago.setMethod(PaymentModel.Method.CASH);
+        pago.setMethod(PaymentModel.Status.PAID.name());
         pago.setCreatedAt(LocalDateTime.now());
 
         List<PaymentModel> pagos = List.of(pago);

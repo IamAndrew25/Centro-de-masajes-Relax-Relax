@@ -6,6 +6,7 @@ import com.andreutp.centromasajes.dto.LoginRequest;
 import com.andreutp.centromasajes.dto.RegisterRequest;
 import com.andreutp.centromasajes.service.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,26 +33,26 @@ public class AuthController {
 
     //registra usuario
     @PostMapping("/register")
-    public AuthResponse registrar(@Valid @RequestBody RegisterRequest request){
-        return authService.register(request);
+    public ResponseEntity<AuthResponse> registrar(@Valid @RequestBody RegisterRequest request) {
+        AuthResponse response = authService.register(request);
+        return ResponseEntity.ok(response);
     }
 
 
     // Login de usuario con Rate Limiting y validacion con predictions(guava)
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
-        String key = request.getEmail(); // Usamos el email como clave de rate limiting
-        // Validación con Guava
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         Preconditions.checkNotNull(request, "El objeto LoginRequest no puede ser nulo");
         Preconditions.checkArgument(request.getEmail() != null && !request.getEmail().isEmpty(), "El correo electrónico no puede estar vacío");
         Preconditions.checkArgument(request.getPassword() != null && !request.getPassword().isEmpty(), "La contraseña no puede estar vacía");
 
-        // Limitar los intentos de login: 1 intento por segundo
+        String key = request.getEmail();
         if (!loginRateLimiter.tryAcquire(key, 1.0)) {
             throw new RateLimitExceededException("Demasiados intentos. Intenta de nuevo más tarde.");
         }
 
-        return authService.login(request); // Procesamos el login si no excede el límite
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 
 
