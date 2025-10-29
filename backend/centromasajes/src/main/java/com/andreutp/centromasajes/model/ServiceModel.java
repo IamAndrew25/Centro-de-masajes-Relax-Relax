@@ -28,13 +28,14 @@ public class ServiceModel {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @NotNull(message = "La descripción es obligatoria")
+    @NotNull(message = "La duracion es obligatoria")
     @Min(value = 10, message = "La duración mínima es de 10 minutos")
     @Column(name = "duration_min" , nullable = false)
     private Integer durationMin;
 
     @NotNull(message = "El precio es obligatorio")
     @DecimalMin(value = "0.0", inclusive = false, message = "El precio debe ser mayor a 0")
+    @Column(name = "base_price")
     private Double baseprice;
 
     private Boolean active = true;

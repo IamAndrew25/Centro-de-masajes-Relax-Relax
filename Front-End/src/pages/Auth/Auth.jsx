@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 // Importamos formularios
 import LoginForm from './Login'; 
 import RegisterForm from './Register';
-
+import ForgotPassword from './ResetPassword/ForgotPassword';
 // Estilos e imagen
 import './Auth.css'; 
 import sliderImg1 from '../../assets/images/Slider1.jpg';
@@ -22,7 +22,10 @@ const slides = [
 const AuthPage = () => {
   const [isLoginView, setIsLoginView] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [ForgotModal, setForgotModal] = useState(false);
   const toggleView = () => setIsLoginView(!isLoginView);
+  const openModal = () => setForgotModal(true);
+  const closeModal = () => setForgotModal(false);
 
   useEffect(() => {
     const slideInterval = setInterval(() => {
@@ -59,12 +62,18 @@ const AuthPage = () => {
         {/*La relajacion es el arte de dejar ir, lo que no puedes controlar*/ }
         <div className="form-section">
           {isLoginView ? (
-            <LoginForm onToggleView={toggleView} />
+            <LoginForm 
+              onToggleView={toggleView} 
+              onForgotPasswordClick={openModal}
+            />
           ) : (
             <RegisterForm onToggleView={toggleView} />
           )}
         </div>
       </div>
+
+      {/* Render el modal */}
+      {ForgotModal && <ForgotPassword onClose={closeModal} />}
     </div>
   );
 };

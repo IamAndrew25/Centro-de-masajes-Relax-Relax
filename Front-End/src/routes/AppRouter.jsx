@@ -13,8 +13,6 @@ import Admin from "../pages/Admin/Admin";
 import Contact from "../pages/Contact/Contact";
 import Checkout from "../pages/Checkout/Checkout";
 import ProtectedRoute from "../routes/ProtectedRouter";
-
-import ForgotPassword from "../pages/Auth/ResetPassword/ForgotPassword";
 import ResetPassword from "../pages/Auth/ResetPassword/ResetPassword";
 
 
@@ -41,7 +39,6 @@ export default function AppRouter() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/admin" element={<Admin />} />
         </Route>
-        <Route path="/ForgotPassword" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
