@@ -33,7 +33,7 @@ public class PdfGenerator {
             document.add(new Paragraph("Total: S/ " + total));
             document.add(new Paragraph("Fecha de emisión: " + java.time.LocalDate.now()));
 
-            document.add(new Paragraph("\nGracias por su preferencia ❤️"));
+            document.add(new Paragraph("\nGracias por su preferencia ❤<3"));
 
             document.close();
             logger.info("PDF generado correctamente para la boleta {}", invoiceNumber);

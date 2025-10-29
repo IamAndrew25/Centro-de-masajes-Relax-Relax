@@ -107,10 +107,8 @@ class PaymentServiceTest {
         when(invoiceRepository.save(any(InvoiceModel.class))).thenReturn(testInvoice);
         doNothing().when(emailService).enviarBoletaConPDF(anyString(), anyString(), anyString(), anyString(), any(Double.class));
 
-        // Act
         PaymentModel result = paymentService.createPayment(paymentRequest);
 
-        // Assert
         assertNotNull(result);
         assertEquals(testUser, result.getUser());
         assertEquals(testAppointment, result.getAppointment());
@@ -126,10 +124,8 @@ class PaymentServiceTest {
 
     @Test
     void testCreatePayment_UserNotFound() {
-        // Arrange
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             paymentService.createPayment(paymentRequest);
         });
@@ -140,11 +136,9 @@ class PaymentServiceTest {
 
     @Test
     void testCreatePayment_AppointmentNotFound() {
-        // Arrange
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(appointmentRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             paymentService.createPayment(paymentRequest);
         });
@@ -155,14 +149,11 @@ class PaymentServiceTest {
 
     @Test
     void testGetAllPayments() {
-        // Arrange
         List<PaymentModel> payments = Arrays.asList(testPayment);
         when(paymentRepository.findAll()).thenReturn(payments);
 
-        // Act
         List<PaymentModel> result = paymentService.getAllPayments();
 
-        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(testPayment, result.get(0));
@@ -171,15 +162,12 @@ class PaymentServiceTest {
 
     @Test
     void testGetPaymentsByUser_Success() {
-        // Arrange
         List<PaymentModel> payments = Arrays.asList(testPayment);
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(paymentRepository.findByUser(testUser)).thenReturn(payments);
 
-        // Act
         List<PaymentModel> result = paymentService.getPaymentsByUser(1L);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         verify(userRepository, times(1)).findById(1L);
@@ -188,10 +176,8 @@ class PaymentServiceTest {
 
     @Test
     void testGetPaymentsByUser_UserNotFound() {
-        // Arrange
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             paymentService.getPaymentsByUser(1L);
         });
@@ -201,13 +187,10 @@ class PaymentServiceTest {
 
     @Test
     void testGetPaymentById_Success() {
-        // Arrange
         when(paymentRepository.findById(1L)).thenReturn(Optional.of(testPayment));
 
-        // Act
         PaymentModel result = paymentService.getPaymentById(1L);
 
-        // Assert
         assertNotNull(result);
         assertEquals(testPayment, result);
         verify(paymentRepository, times(1)).findById(1L);
@@ -215,10 +198,8 @@ class PaymentServiceTest {
 
     @Test
     void testGetPaymentById_NotFound() {
-        // Arrange
         when(paymentRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             paymentService.getPaymentById(1L);
         });
@@ -228,7 +209,6 @@ class PaymentServiceTest {
 
     @Test
     void testUpdatePayment_Success() {
-        // Arrange
         PaymentModel updatedPayment = new PaymentModel();
         updatedPayment.setAmount(150.0);
         updatedPayment.setMethod("CASH");
@@ -238,10 +218,8 @@ class PaymentServiceTest {
         when(paymentRepository.findById(1L)).thenReturn(Optional.of(testPayment));
         when(paymentRepository.save(any(PaymentModel.class))).thenReturn(testPayment);
 
-        // Act
         PaymentModel result = paymentService.updatePayment(1L, updatedPayment);
 
-        // Assert
         assertNotNull(result);
         verify(paymentRepository, times(1)).findById(1L);
         verify(paymentRepository, times(1)).save(testPayment);
@@ -249,27 +227,21 @@ class PaymentServiceTest {
 
     @Test
     void testDeletePayment() {
-        // Arrange
         doNothing().when(paymentRepository).deleteById(1L);
 
-        // Act
         paymentService.deletePayment(1L);
 
-        // Assert
         verify(paymentRepository, times(1)).deleteById(1L);
     }
 
     @Test
     void testCreateInvoiceForPayment_Success() {
-        // Arrange
         when(paymentRepository.findById(1L)).thenReturn(Optional.of(testPayment));
         when(invoiceRepository.save(any(InvoiceModel.class))).thenReturn(testInvoice);
         when(paymentRepository.save(any(PaymentModel.class))).thenReturn(testPayment);
 
-        // Act
         InvoiceModel result = paymentService.createInvoiceForPayment(1L, "BOLETA", "Test Customer", "12345678");
 
-        // Assert
         assertNotNull(result);
         assertEquals(testInvoice, result);
         verify(paymentRepository, times(1)).findById(1L);
@@ -279,10 +251,8 @@ class PaymentServiceTest {
 
     @Test
     void testCreateInvoiceForPayment_PaymentNotFound() {
-        // Arrange
         when(paymentRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             paymentService.createInvoiceForPayment(1L, "BOLETA", "Test", "12345678");
         });
