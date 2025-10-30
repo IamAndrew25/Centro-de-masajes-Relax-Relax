@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Preview - Relax Total</title>
+  <style>
+    /* Minimal styles to mimic the Admin layout for quick preview */
+    :root{--sidebar:#1a1a1a;--accent:#f39c12;--accent2:#e67e22}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f7fa;color:#2c3e50}
+    .admin-container{display:flex;min-height:100vh}
+    .admin-sidebar{width:280px;background:linear-gradient(135deg,var(--sidebar),#111);color:#fff;display:flex;flex-direction:column;position:fixed;height:100vh;padding:20px}
+    .admin-logo h2{margin:0;font-family:serif;font-size:28px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;color:transparent}
+    .admin-nav{margin-top:30px;display:flex;flex-direction:column;gap:6px}
+    .nav-item{background:none;border:none;color:rgba(255,255,255,0.9);padding:12px 14px;text-align:left;border-radius:6px;cursor:pointer}
+    .nav-item.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:white}
+    .logout-btn{margin-top:auto;padding:10px;border-radius:8px;border:1px solid #e74c3c;background:transparent;color:#e74c3c;cursor:pointer}
+    .admin-main{margin-left:300px;flex:1;padding:24px}
+    .admin-header{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#fff;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.06)}
+    .admin-content{margin-top:18px}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+    .stat-card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    .table{width:100%;border-collapse:collapse;margin-top:18px}
+    .table th,.table td{padding:12px;border-bottom:1px solid #eee;text-align:left}
+    .section-header{display:flex;justify-content:space-between;align-items:center}
+    .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:10px 16px;border-radius:20px;border:none}
+    /* small responsive */
+    @media(max-width:800px){.admin-sidebar{position:relative;width:100%;height:auto}.admin-main{margin-left:0}}
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <aside class="admin-sidebar">
+      <div class="admin-logo">
+        <h2>Relax Total</h2>
+        <div style="font-size:12px;opacity:.8;margin-top:6px">Admin Panel</div>
+      </div>
+
+      <nav class="admin-nav">
+        <button class="nav-item active">📊 Dashboard</button>
+        <button class="nav-item">📅 Reservas</button>
+        <button class="nav-item">👥 Clientes</button>
+        <button class="nav-item">👨‍💼 Trabajadores</button>
+        <button class="nav-item">💆‍♀️ Servicios</button>
+        <button class="nav-item">📈 Reportes</button>
+        <button class="nav-item">⚙️ Configuración</button>
+      </nav>
+
+      <button class="logout-btn">🚪 Cerrar Sesión</button>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <h1>Panel de Administración</h1>
+        <div>👤 Administrador</div>
+      </header>
+
+      <section class="admin-content">
+        <div class="section-header">
+          <h2>Resumen</h2>
+          <button class="btn-primary">Acción rápida</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card"><h3>Reservas</h3><p style="font-size:24px;margin:6px 0">124</p><small>Última semana</small></div>
+          <div class="stat-card"><h3>Ingresos</h3><p style="font-size:24px;margin:6px 0">$8,420</p><small>Mes actual</small></div>
+          <div class="stat-card"><h3>Nuevos clientes</h3><p style="font-size:24px;margin:6px 0">18</p><small>Mes actual</small></div>
+        </div>
+
+        <div style="margin-top:22px">
+          <h3>Reservas recientes</h3>
+          <table class="table">
+            <thead><tr><th>Cliente</th><th>Servicio</th><th>Fecha</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td>María López</td><td>Masaje relajante</td><td>2025-10-29</td><td><span style="color:#2ecc71;font-weight:700">Confirmada</span></td></tr>
+              <tr><td>Carlos Ruiz</td><td>Masaje deportivo</td><td>2025-10-30</td><td><span style="color:#f39c12;font-weight:700">Pendiente</span></td></tr>
+              <tr><td>Ana Pérez</td><td>Experiencia spa</td><td>2025-11-02</td><td><span style="color:#e74c3c;font-weight:700">Cancelada</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Pequeña interactividad: cambiar pestañas en la previsualización
+    document.querySelectorAll('.nav-item').forEach((btn, idx)=>{
+      btn.addEventListener('click', ()=>{
+        document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+        btn.classList.add('active');
+        // para demo simple, solo modifica el título
+        const section = document.querySelector('.section-header h2');
+        const titles = ['Resumen','Reservas','Clientes','Trabajadores','Servicios','Reportes','Configuración'];
+        section.textContent = titles[idx] || 'Panel';
+      });
+    });
+  </script>
+</body>
+</html>

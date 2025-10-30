@@ -7,6 +7,8 @@ import Reservas from './components/Reservas';
 import Servicios from './components/Servicios';
 import Clientes from './components/Clientes';
 import Trabajadores from './components/Trabajadores';
+import Promociones from './components/Promociones';
+import PlanesMembresias from './components/PlanesMembresias';
 import Reportes from './components/Reportes';
 import Configuracion from './components/Configuracion';
 
@@ -61,6 +63,18 @@ const Admin = ({ onLogout }) => {
                         onClick={() => setActiveTab('servicios')}
                     >
                         💆‍♀️ Servicios
+                    </button>
+                    <button 
+                        className={`nav-item ${activeTab === 'promociones' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('promociones')}
+                    >
+                        🎉 Promociones
+                    </button>
+                    <button 
+                        className={`nav-item ${activeTab === 'planes' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('planes')}
+                    >
+                        💳 Planes y Membresías
                     </button>
                     <button 
                         className={`nav-item ${activeTab === 'reportes' ? 'active' : ''}`}
@@ -145,6 +159,14 @@ const Admin = ({ onLogout }) => {
                             handleSaveEditWorker={workersHooks.handleSaveEditWorker}
                             handleSaveSchedule={workersHooks.handleSaveSchedule}
                         />
+                    )}
+
+                    {activeTab === 'promociones' && (
+                        <Promociones />
+                    )}
+
+                    {activeTab === 'planes' && (
+                        <PlanesMembresias />
                     )}
 
                     {activeTab === 'reportes' && (

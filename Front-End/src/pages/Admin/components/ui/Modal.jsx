@@ -1,29 +1,25 @@
 import React from 'react';
 
-export const Modal = ({ isOpen, onClose, title, children, onSave, saveButtonText = "💾 Guardar" }) => {
-    if (!isOpen) return null;
-
+const Modal = ({ children, onClose, title }) => {
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <div className="modal-header">
-                    <h3>{title}</h3>
-                    <button className="modal-close" onClick={onClose}>✖️</button>
-                </div>
-                
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                {title && (
+                    <div className="modal-header">
+                        <h3>{title}</h3>
+                        <button className="modal-close" onClick={onClose}>✖</button>
+                    </div>
+                )}
+                {!title && (
+                    <button className="modal-close" onClick={onClose} style={{position: 'absolute', top: '15px', right: '15px', zIndex: 10}}>✖</button>
+                )}
                 <div className="modal-body">
                     {children}
-                </div>
-                
-                <div className="modal-footer">
-                    <button className="btn-secondary" onClick={onClose}>
-                        ❌ Cancelar
-                    </button>
-                    <button className="btn-primary" onClick={onSave}>
-                        {saveButtonText}
-                    </button>
                 </div>
             </div>
         </div>
     );
 };
+
+export { Modal };
+export default Modal;

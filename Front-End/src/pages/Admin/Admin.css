@@ -1636,12 +1636,14 @@ input:checked + .slider:before {
 .modal-content {
     background: white;
     border-radius: 20px;
-    width: 90%;
-    max-width: 700px;
-    max-height: 85vh;
-    overflow-y: auto;
+    width: 95%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow: hidden;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: modalSlideIn 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes modalSlideIn {
@@ -1690,6 +1692,26 @@ input:checked + .slider:before {
 
 .modal-body {
     padding: 30px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #f39c12;
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #e67e22;
 }
 
 .client-form {
@@ -2088,5 +2110,839 @@ input:checked + .slider:before {
     
     .day-toggle {
         font-size: 1rem;
+    }
+}
+/* ===================================
+   PROMOCIONES STYLES
+   =================================== */
+
+.promociones {
+    width: 100%;
+}
+
+.promo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.promo-card {
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.promo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.promo-image {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.promo-status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-activa {
+    background: rgba(46, 204, 113, 0.9);
+    color: white;
+}
+
+.status-inactiva {
+    background: rgba(149, 165, 166, 0.9);
+    color: white;
+}
+
+.status-programada {
+    background: rgba(243, 156, 18, 0.9);
+    color: white;
+}
+
+.promo-content {
+    padding: 20px;
+}
+
+.promo-content h3 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    font-size: 1.3rem;
+}
+
+.promo-content p {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+}
+
+.promo-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.detail-item {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.detail-item strong {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #ecf0f1;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f39c12, #e67e22);
+    transition: width 0.3s ease;
+}
+
+.promo-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.btn-duplicate {
+    padding: 8px 14px;
+    background: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.btn-duplicate:hover {
+    background: #3498db;
+    color: white;
+}
+
+.btn-view {
+    padding: 8px 14px;
+    background: rgba(142, 68, 173, 0.2);
+    color: #8e44ad;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.btn-view:hover {
+    background: #8e44ad;
+    color: white;
+}
+
+.image-preview {
+    margin-top: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.image-preview img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.image-preview.small img {
+    max-width: 200px;
+}
+
+.checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+    cursor: pointer;
+}
+
+.checkbox-label:hover {
+    background: #f8f9fa;
+}
+
+.checkbox-label input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.checkbox-single {
+    margin: 15px 0;
+}
+
+.checkbox-single label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* ===================================
+   PLANES Y MEMBRES�AS STYLES
+   =================================== */
+
+.planes-membresias {
+    width: 100%;
+}
+
+.planes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.plan-card {
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-top: 4px solid;
+}
+
+.plan-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.plan-header {
+    padding: 30px 25px;
+    color: white;
+    text-align: center;
+}
+
+.plan-header h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.plan-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+}
+
+.plan-price .currency {
+    font-size: 1.5rem;
+    opacity: 0.9;
+}
+
+.plan-price .amount {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.plan-price .period {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.plan-savings {
+    margin-top: 10px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: inline-block;
+}
+
+.plan-content {
+    padding: 25px;
+}
+
+.plan-description {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.plan-benefits {
+    margin: 20px 0;
+}
+
+.plan-benefits h4 {
+    color: #2c3e50;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+}
+
+.plan-benefits ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.plan-benefits li {
+    padding: 8px 0;
+    font-size: 0.95rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.plan-services {
+    margin-top: 20px;
+}
+
+.services-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.service-tag {
+    padding: 6px 12px;
+    background: linear-gradient(135deg, rgba(243, 156, 18, 0.1), rgba(230, 126, 34, 0.1));
+    border: 1px solid rgba(243, 156, 18, 0.3);
+    color: #e67e22;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.service-tag.more {
+    background: #ecf0f1;
+    border-color: #bdc3c7;
+    color: #7f8c8d;
+}
+
+.plan-stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.plan-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+/* Modal Form Enhancements */
+.modal-form {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.form-section {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.form-section h3 {
+    color: #2c3e50;
+    font-size: 1.2rem;
+    margin: 0 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+/* ===================================
+   MEJORAS PARA MODAL FORMS
+   =================================== */
+
+.modal-form .form-section {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.modal-form .form-section:last-child {
+    margin-bottom: 0;
+}
+
+.modal-form .form-section h3 {
+    color: #2c3e50;
+    font-size: 1.1rem;
+    margin: 0 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.modal-form .form-row.three-cols {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.modal-form .form-group {
+    margin-bottom: 15px;
+}
+
+.modal-form .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.modal-form .form-group input,
+.modal-form .form-group select,
+.modal-form .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.modal-form .form-group input:focus,
+.modal-form .form-group select:focus,
+.modal-form .form-group textarea:focus {
+    border-color: #f39c12;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+}
+
+.modal-form .form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.modal-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #e0e0e0;
+}
+
+.modal-form .btn-save {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-form .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+}
+
+.modal-form .btn-cancel {
+    padding: 12px 30px;
+    background: #95a5a6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-form .btn-cancel:hover {
+    background: #7f8c8d;
+}
+
+.modal-form .checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.modal-form .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+    cursor: pointer;
+    background: white;
+    border: 2px solid #e0e0e0;
+}
+
+.modal-form .checkbox-label:hover {
+    background: #f8f9fa;
+    border-color: #f39c12;
+}
+
+.modal-form .checkbox-label input[type="checkbox"] {
+    cursor: pointer;
+    width: auto;
+    margin: 0;
+}
+
+.modal-form .image-preview {
+    margin-top: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+    max-width: 100%;
+    border: 2px solid #e0e0e0;
+}
+
+.modal-form .image-preview img {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 300px;
+    object-fit: cover;
+}
+
+.modal-form .time-inputs {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.modal-form .time-inputs .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 98%;
+        max-height: 95vh;
+    }
+    
+    .modal-form .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-form .form-row.three-cols {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-form .checkbox-group {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===================================
+   MEJORAS ADICIONALES PARA FORMULARIOS DE PLANES
+   =================================== */
+
+.modal-form .form-group input[type="text"],
+.modal-form .form-group input[type="number"],
+.modal-form .form-group input[type="date"],
+.modal-form .form-group input[type="time"],
+.modal-form .form-group input[type="color"],
+.modal-form .form-group select,
+.modal-form .form-group textarea {
+    padding: 14px 16px;
+    font-size: 1rem;
+    min-height: 48px;
+}
+
+.modal-form .form-group textarea {
+    min-height: 100px;
+    line-height: 1.6;
+}
+
+.modal-form .form-group label {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.modal-form .form-section {
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.modal-form .form-row {
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.modal-form .form-group {
+    margin-bottom: 20px;
+}
+
+/* Hacer el modal a�n m�s ancho para planes */
+.planes-membresias .modal-content {
+    max-width: 1000px;
+    width: 96%;
+}
+
+.promociones .modal-content {
+    max-width: 950px;
+    width: 96%;
+}
+
+/* Mejorar el espaciado de los checkboxes */
+.modal-form .checkbox-label {
+    padding: 12px 15px;
+    font-size: 0.95rem;
+}
+
+/* Inputs de n�mero m�s anchos */
+.modal-form .form-group input[type="number"] {
+    min-width: 120px;
+}
+
+/* Color picker m�s visible */
+.modal-form .form-group input[type="color"] {
+    height: 50px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+/* Mejorar select dropdowns */
+.modal-form .form-group select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns=''http://www.w3.org/2000/svg'' width=''12'' height=''12'' viewBox=''0 0 12 12''%3E%3Cpath fill=''%23333'' d=''M6 9L1 4h10z''/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px;
+}
+
+/* Espaciado entre elementos del form */
+.modal-form .form-section > * + * {
+    margin-top: 15px;
+}
+
+@media (max-width: 900px) {
+    .planes-membresias .modal-content,
+    .promociones .modal-content {
+        max-width: 95%;
+    }
+}
+
+
+
+/* ===================================
+   ESTILOS OPTIMIZADOS PARA FORMULARIOS DE PLANES Y PROMOCIONES
+   =================================== */
+
+/* Modal ancho unificado */
+.planes-membresias .modal-content,
+.promociones .modal-content {
+    max-width: 1100px !important;
+    width: 98% !important;
+}
+
+/* Padding del modal body */
+.planes-membresias .modal-body {
+    padding: 40px 25px 40px 25px !important;
+}
+
+.promociones .modal-body {
+    padding: 40px 45px !important;
+}
+
+/* Primera seccion con menos padding izquierdo */
+.planes-membresias .modal-form .form-section:first-child {
+    padding-left: 20px !important;
+}
+
+/* Nombre del plan - Grande y destacado */
+.planes-membresias .modal-form .form-section:first-child .form-group:nth-child(2) input[type="text"],
+.promociones .modal-form .form-section:first-child .form-group:nth-child(2) input[type="text"] {
+    width: 100% !important;
+    padding: 20px 24px !important;
+    font-size: 1.2rem !important;
+    min-height: 70px !important;
+    max-height: 70px !important;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-weight: 500;
+}
+
+/* Descripcion - Espaciosa */
+.planes-membresias .modal-form .form-section:first-child .form-group:nth-child(3) textarea,
+.promociones .modal-form .form-section:first-child .form-group:nth-child(3) textarea {
+    width: 100% !important;
+    padding: 16px 20px !important;
+    font-size: 1.05rem !important;
+    min-height: 110px !important;
+    max-height: 110px !important;
+    line-height: 1.6;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    box-sizing: border-box;
+    resize: none;
+}
+
+/* Labels de nombre y descripcion */
+.planes-membresias .modal-form .form-section:first-child .form-group:nth-child(2) label,
+.planes-membresias .modal-form .form-section:first-child .form-group:nth-child(3) label,
+.promociones .modal-form .form-section:first-child .form-group:nth-child(2) label,
+.promociones .modal-form .form-section:first-child .form-group:nth-child(3) label {
+    font-size: 1.15rem !important;
+    margin-bottom: 12px !important;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* Focus state para inputs principales */
+.planes-membresias .modal-form .form-section:first-child .form-group:nth-child(2) input:focus,
+.planes-membresias .modal-form .form-section:first-child .form-group:nth-child(3) textarea:focus,
+.promociones .modal-form .form-section:first-child .form-group:nth-child(2) input:focus,
+.promociones .modal-form .form-section:first-child .form-group:nth-child(3) textarea:focus {
+    border-color: #f39c12 !important;
+    box-shadow: 0 0 0 4px rgba(243, 156, 18, 0.15);
+}
+
+/* Espaciado entre campos */
+.planes-membresias .modal-form .form-section:first-child .form-group:nth-child(2),
+.promociones .modal-form .form-section:first-child .form-group:nth-child(2) {
+    margin-bottom: 25px !important;
+}
+
+.planes-membresias .modal-form .form-section:first-child .form-group:nth-child(3),
+.promociones .modal-form .form-section:first-child .form-group:nth-child(3) {
+    margin-bottom: 25px !important;
+}
+
+/* Checkboxes mejorados */
+.modal-form .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px !important;
+    margin-top: 20px !important;
+}
+
+.modal-form .checkbox-label {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px !important;
+    font-size: 1rem !important;
+    border-radius: 10px;
+    min-width: 180px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-form .checkbox-label input[type="checkbox"] {
+    margin-right: 12px !important;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.modal-form .checkbox-label:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Boton eliminar imagen - Optimizado */
+.btn-remove-image {
+    position: absolute !important;
+    top: 5px !important;
+    right: 5px !important;
+    width: 30px !important;
+    height: 30px !important;
+    padding: 0 !important;
+    background-color: rgba(231, 76, 60, 0.95) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
+    line-height: 30px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
+    z-index: 100 !important;
+}
+
+.btn-remove-image:hover {
+    background-color: rgba(192, 57, 43, 1) !important;
+    transform: scale(1.1) !important;
+}
+
+.image-preview.small {
+    position: relative !important;
+    overflow: visible !important;
+    max-width: 200px;
+}
+
+@media (max-width: 768px) {
+    .planes-membresias .modal-body,
+    .promociones .modal-body {
+        padding: 25px 20px !important;
     }
 }
