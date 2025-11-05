@@ -10,6 +10,8 @@ import Clientes from './components/Clientes';
 import Trabajadores from './components/Trabajadores';
 import Reportes from './components/Reportes';
 import Configuracion from './components/Configuracion';
+import Promociones from './components/Promociones';
+import PlanesMembresias from './components/PlanesMembresias';
 
 // Importar hooks personalizados
 import { useClienteData, useServicioData, useWorkersData, useStats } from './hooks/useAdminData';
@@ -70,6 +72,18 @@ const Admin = () => {
                         onClick={() => setActiveTab('servicios')}
                     >
                         💆‍♀️ Servicios
+                    </button>
+                    <button 
+                        className={`nav-item ${activeTab === 'promociones' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('promociones')}
+                    >
+                        🎉 Promociones
+                    </button>
+                    <button 
+                        className={`nav-item ${activeTab === 'planes' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('planes')}
+                    >
+                        💎 Planes y Membresías
                     </button>
                     <button 
                         className={`nav-item ${activeTab === 'reportes' ? 'active' : ''}`}
@@ -158,6 +172,14 @@ const Admin = () => {
 
                     {activeTab === 'reportes' && (
                         <Reportes />
+                    )}
+
+                    {activeTab === 'promociones' && (
+                        <Promociones />
+                    )}
+
+                    {activeTab === 'planes' && (
+                        <PlanesMembresias />
                     )}
 
                     {activeTab === 'config' && (

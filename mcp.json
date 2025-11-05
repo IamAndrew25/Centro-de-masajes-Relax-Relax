@@ -1,0 +1,23 @@
+// ...existing code...
+{
+  "name": "Centro-de-masajes-Relax-Relax",
+  "description": "Aplicación full stack para gestión de reservas y servicios de un centro de masajes.",
+  "include": [
+    "**/*"
+  ],
+  "exclude": [
+    "**/node_modules/**/*",
+    "Front-End/node_modules/**/*",
+    "backend/node_modules/**/*",
+    "**/dist/**/*",
+    "**/.env",
+    "**/.env.*",
+    ".git/**/*",
+    "**/*.pem",
+    "**/*.key",
+    "**/*.crt",
+    "secrets/**/*",
+    ".vscode/**/*"
+  ]
+}
+// ...existing code...
