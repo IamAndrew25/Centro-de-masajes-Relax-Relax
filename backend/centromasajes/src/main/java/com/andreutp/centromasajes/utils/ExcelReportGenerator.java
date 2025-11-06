@@ -21,28 +21,44 @@ public class ExcelReportGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(ExcelReportGenerator.class);
     //APACHE POI PARA EXCEL PORQUE NO DA PDF DIRECTAMENTE xd
+
     public static byte[] generarReportePagos(List<PaymentModel> pagos) {
         logger.info("Generando Excel para {} pagos", pagos.size());
 
         try (Workbook workbook = new XSSFWorkbook()) {
+            ExcelStyles styles = createStyles(workbook);
             Sheet sheet = workbook.createSheet("Pagos");
 
-            // Encabezado
+            // ENCABEZADOS
             Row header = sheet.createRow(0);
-            header.createCell(0).setCellValue("ID");
-            header.createCell(1).setCellValue("Cliente");
-            header.createCell(2).setCellValue("Monto");
-            header.createCell(3).setCellValue("Método");
-            header.createCell(4).setCellValue("Fecha");
+            String[] columnas = {"ID", "Cliente", "Monto", "Método", "Fecha"};
+            for (int i = 0; i < columnas.length; i++) {
+                Cell cell = header.createCell(i);
+                cell.setCellValue(columnas[i]);
+                cell.setCellStyle(styles.headerStyle);
+            }
 
+            // FILAS
             int rowNum = 1;
             for (PaymentModel p : pagos) {
-                Row row = sheet.createRow(rowNum++);
+                Row row = sheet.createRow(rowNum);
+                CellStyle rowStyle = (rowNum % 2 == 0) ? styles.normalStyle : styles.alternateStyle;
+
                 row.createCell(0).setCellValue(p.getId());
                 row.createCell(1).setCellValue(p.getUser().getUsername());
                 row.createCell(2).setCellValue(p.getAmount().doubleValue());
                 row.createCell(3).setCellValue(p.getMethod().toString());
                 row.createCell(4).setCellValue(p.getCreatedAt() != null ? p.getCreatedAt().toString() : "");
+
+                for (int i = 0; i < columnas.length; i++) {
+                    row.getCell(i).setCellStyle(rowStyle);
+                }
+
+                rowNum++;
+            }
+
+            for (int i = 0; i < columnas.length; i++) {
+                sheet.autoSizeColumn(i);
             }
 
             // Guardar a bytes
@@ -63,23 +79,25 @@ public class ExcelReportGenerator {
     }
 
 
-    // Clientes
     // --- Clientes ---
     public static byte[] generarReporteClientes(List<UserModel> clientes, IAppointmentRepository appointmentRepository) {
         try (Workbook workbook = new XSSFWorkbook()) {
+            ExcelStyles styles = createStyles(workbook);
             Sheet sheet = workbook.createSheet("Clientes");
-            Row header = sheet.createRow(0);
-            header.createCell(0).setCellValue("ID");
-            header.createCell(1).setCellValue("Nombre");
-            header.createCell(2).setCellValue("Email");
-            header.createCell(3).setCellValue("Teléfono");
-            header.createCell(4).setCellValue("Última Visita");
-            header.createCell(5).setCellValue("Servicios");
-            header.createCell(6).setCellValue("Tipo Masaje");
 
-            int i = 1;
+            String[] columnas = {"ID", "Nombre", "Email", "Teléfono", "Última Visita", "Servicios", "Tipo Masaje"};
+            Row header = sheet.createRow(0);
+            for (int i = 0; i < columnas.length; i++) {
+                Cell c = header.createCell(i);
+                c.setCellValue(columnas[i]);
+                c.setCellStyle(styles.headerStyle);
+            }
+
+            int rowNum = 1;
             for (UserModel c : clientes) {
-                Row row = sheet.createRow(i++);
+                Row row = sheet.createRow(rowNum);
+                CellStyle rowStyle = (rowNum % 2 == 0) ? styles.normalStyle : styles.alternateStyle;
+
                 row.createCell(0).setCellValue(c.getId());
                 row.createCell(1).setCellValue(c.getUsername());
                 row.createCell(2).setCellValue(c.getEmail());
@@ -96,7 +114,14 @@ public class ExcelReportGenerator {
                     row.createCell(5).setCellValue(0);
                     row.createCell(6).setCellValue("-");
                 }
+
+                for (int i = 0; i < columnas.length; i++) {
+                    row.getCell(i).setCellStyle(rowStyle);
+                }
+                rowNum++;
             }
+
+            for (int i = 0; i < columnas.length; i++) sheet.autoSizeColumn(i);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
@@ -111,20 +136,22 @@ public class ExcelReportGenerator {
     // Trabajadores
     public static byte[] generarReporteTrabajadores(List<UserModel> trabajadores) {
         try (Workbook workbook = new XSSFWorkbook()) {
+            ExcelStyles styles = createStyles(workbook);
             Sheet sheet = workbook.createSheet("Trabajadores");
-            Row header = sheet.createRow(0);
-            header.createCell(0).setCellValue("ID");
-            header.createCell(1).setCellValue("Nombre");
-            header.createCell(2).setCellValue("Email");
-            header.createCell(3).setCellValue("Teléfono");
-            header.createCell(4).setCellValue("DNI");
-            header.createCell(5).setCellValue("Especialidad");
-            header.createCell(6).setCellValue("Estado");
-            header.createCell(7).setCellValue("Experiencia");
 
-            int i = 1;
+            String[] columnas = {"ID", "Nombre", "Email", "Teléfono", "DNI", "Especialidad", "Estado", "Experiencia"};
+            Row header = sheet.createRow(0);
+            for (int i = 0; i < columnas.length; i++) {
+                Cell c = header.createCell(i);
+                c.setCellValue(columnas[i]);
+                c.setCellStyle(styles.headerStyle);
+            }
+
+            int rowNum = 1;
             for (UserModel w : trabajadores) {
-                Row row = sheet.createRow(i++);
+                Row row = sheet.createRow(rowNum);
+                CellStyle rowStyle = (rowNum % 2 == 0) ? styles.normalStyle : styles.alternateStyle;
+
                 row.createCell(0).setCellValue(w.getId());
                 row.createCell(1).setCellValue(w.getUsername());
                 row.createCell(2).setCellValue(w.getEmail());
@@ -133,7 +160,14 @@ public class ExcelReportGenerator {
                 row.createCell(5).setCellValue(w.getEspecialidad());
                 row.createCell(6).setCellValue(w.getEstado());
                 row.createCell(7).setCellValue(w.getExperiencia() != null ? w.getExperiencia() : 0);
+
+                for (int i = 0; i < columnas.length; i++) {
+                    row.getCell(i).setCellStyle(rowStyle);
+                }
+                rowNum++;
             }
+
+            for (int i = 0; i < columnas.length; i++) sheet.autoSizeColumn(i);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
@@ -146,20 +180,36 @@ public class ExcelReportGenerator {
     // Servicios
     public static byte[] generarReporteServicios(List<ServiceModel> servicios) {
         try (Workbook workbook = new XSSFWorkbook()) {
+            ExcelStyles styles = createStyles(workbook);
             Sheet sheet = workbook.createSheet("Servicios");
-            Row header = sheet.createRow(0);
-            header.createCell(0).setCellValue("ID");
-            header.createCell(1).setCellValue("Nombre");
-            header.createCell(2).setCellValue("Precio");
-            header.createCell(3).setCellValue("Duración");
 
-            int i = 1;
+            String[] columnas = {"ID", "Nombre", "Precio", "Duración"};
+            Row header = sheet.createRow(0);
+            for (int i = 0; i < columnas.length; i++) {
+                Cell c = header.createCell(i);
+                c.setCellValue(columnas[i]);
+                c.setCellStyle(styles.headerStyle);
+            }
+
+            int rowNum = 1;
             for (ServiceModel s : servicios) {
-                Row row = sheet.createRow(i++);
+                Row row = sheet.createRow(rowNum);
+                CellStyle rowStyle = (rowNum % 2 == 0) ? styles.normalStyle : styles.alternateStyle;
+
                 row.createCell(0).setCellValue(s.getId());
                 row.createCell(1).setCellValue(s.getName());
                 row.createCell(2).setCellValue(s.getBaseprice());
                 row.createCell(3).setCellValue(s.getDurationMin());
+
+                for (int i = 0; i < columnas.length; i++) {
+                    row.getCell(i).setCellStyle(rowStyle);
+                }
+
+                rowNum++;
+            }
+
+            for (int i = 0; i < columnas.length; i++) {
+                sheet.autoSizeColumn(i);
             }
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -173,25 +223,36 @@ public class ExcelReportGenerator {
     // Reservas
     public static byte[] generarReporteReservas(List<AppointmentModel> reservas) {
         try (Workbook workbook = new XSSFWorkbook()) {
+            ExcelStyles styles = createStyles(workbook);
             Sheet sheet = workbook.createSheet("Reservas");
-            Row header = sheet.createRow(0);
-            header.createCell(0).setCellValue("ID");
-            header.createCell(1).setCellValue("Cliente");
-            header.createCell(2).setCellValue("Trabajador");
-            header.createCell(3).setCellValue("Servicio");
-            header.createCell(4).setCellValue("Fecha y Hora");
-            header.createCell(5).setCellValue("Estado");
 
-            int i = 1;
+            String[] columnas = {"ID", "Cliente", "Trabajador", "Servicio", "Fecha y Hora", "Estado"};
+            Row header = sheet.createRow(0);
+            for (int i = 0; i < columnas.length; i++) {
+                Cell c = header.createCell(i);
+                c.setCellValue(columnas[i]);
+                c.setCellStyle(styles.headerStyle);
+            }
+
+            int rowNum = 1;
             for (AppointmentModel a : reservas) {
-                Row row = sheet.createRow(i++);
+                Row row = sheet.createRow(rowNum);
+                CellStyle rowStyle = (rowNum % 2 == 0) ? styles.normalStyle : styles.alternateStyle;
+
                 row.createCell(0).setCellValue(a.getId());
                 row.createCell(1).setCellValue(a.getUser().getUsername());
                 row.createCell(2).setCellValue(a.getWorker().getUsername());
                 row.createCell(3).setCellValue(a.getService().getName());
                 row.createCell(4).setCellValue(a.getAppointmentStart().toString());
                 row.createCell(5).setCellValue(a.getStatus().toString());
+
+                for (int i = 0; i < columnas.length; i++) {
+                    row.getCell(i).setCellStyle(rowStyle);
+                }
+                rowNum++;
             }
+
+            for (int i = 0; i < columnas.length; i++) sheet.autoSizeColumn(i);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);
@@ -200,5 +261,51 @@ public class ExcelReportGenerator {
             throw new RuntimeException("Error generando Excel de reservas", e);
         }
     }
+
+    private static class ExcelStyles {
+        CellStyle headerStyle;
+        CellStyle normalStyle;
+        CellStyle alternateStyle;
+    }
+
+    private static ExcelStyles createStyles(Workbook workbook) {
+        ExcelStyles styles = new ExcelStyles();
+
+        // Fuente para encabezado
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setColor(IndexedColors.WHITE.getIndex());
+
+        // Estilo encabezado
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFont(headerFont);
+        headerStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        headerStyle.setBorderBottom(BorderStyle.THIN);
+        headerStyle.setBorderTop(BorderStyle.THIN);
+        headerStyle.setBorderLeft(BorderStyle.THIN);
+        headerStyle.setBorderRight(BorderStyle.THIN);
+
+        // Estilo normal
+        CellStyle normalStyle = workbook.createCellStyle();
+        normalStyle.setBorderBottom(BorderStyle.THIN);
+        normalStyle.setBorderTop(BorderStyle.THIN);
+        normalStyle.setBorderLeft(BorderStyle.THIN);
+        normalStyle.setBorderRight(BorderStyle.THIN);
+
+        // Estilo alterno (para filas pares)
+        CellStyle alternateStyle = workbook.createCellStyle();
+        alternateStyle.cloneStyleFrom(normalStyle);
+        alternateStyle.setFillForegroundColor(IndexedColors.LIGHT_TURQUOISE.getIndex());
+        alternateStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        styles.headerStyle = headerStyle;
+        styles.normalStyle = normalStyle;
+        styles.alternateStyle = alternateStyle;
+        return styles;
+    }
+
+
 
 }

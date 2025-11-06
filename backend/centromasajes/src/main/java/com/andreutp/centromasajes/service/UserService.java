@@ -159,7 +159,7 @@ public class UserService {
 
         worker.setUsername(request.getUsername());
 
-        // 🔒 Solo cifrar si la contraseña fue cambiada
+        // Solo cifrar si la contraseña fue cambiada
         if (request.getPassword() != null && !request.getPassword().startsWith("$2a$")) {
             worker.setPassword(passwordEncoder.encode(request.getPassword()));
         }

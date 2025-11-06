@@ -11,6 +11,7 @@ import com.andreutp.centromasajes.model.ServiceModel;
 import com.andreutp.centromasajes.model.UserModel;
 import com.andreutp.centromasajes.utils.EmailService;
 import com.andreutp.centromasajes.utils.ExcelReportGenerator;
+import com.andreutp.centromasajes.utils.PdfGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -141,6 +142,35 @@ public class ReportService {
     public byte[] generarExcelReservas() {
         List<AppointmentModel> reservas = appointmentRepository.findAll();
         return ExcelReportGenerator.generarReporteReservas(reservas);
+    }
+
+
+    //PDF CON DISENO AL CORREO BOLETA
+    public void enviarBoletaPdf(String correo, String cliente, String descripcion,
+                                double total, String metodoPago) {
+        logger.info("Generando y enviando boleta PDF a {}", correo);
+
+        // Generar PDF con diseño       EL METODO Q TIENE DINSEO SE PUEDE CMABIAR PAR PROBAR EN TEXTO PLANO Y
+        byte[] pdfBytes = PdfGenerator.generateStyledInvoicePdf(
+                cliente,
+                "B" + System.currentTimeMillis(), // número de boleta único
+                descripcion,
+                1,
+                total,
+                metodoPago,
+                String.valueOf(System.currentTimeMillis())
+        );
+
+        // Enviar por correo
+        emailService.enviarCorreoConAdjunto(
+                correo,
+                "Boleta de pago - Relax Total",
+                "Adjuntamos su boleta electrónica. ¡Gracias por su preferencia!",
+                pdfBytes,
+                "BoletaRelaxTotal.pdf"
+        );
+
+        logger.info("Boleta PDF enviada correctamente a {}", correo);
     }
 
 }

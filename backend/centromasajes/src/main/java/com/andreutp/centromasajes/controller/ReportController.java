@@ -2,6 +2,7 @@ package com.andreutp.centromasajes.controller;
 
 
 import com.andreutp.centromasajes.service.ReportService;
+import com.andreutp.centromasajes.utils.PdfGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ public class ReportController {
     @Autowired
     private ReportService reportService;
 
-    //boleras por pdf por correo
+    //Pagos del user por pdf por correo
     @PostMapping("/pagos/{userId}")
     public ResponseEntity<String> enviarReporte(@PathVariable Long userId, @RequestParam String correo) {
         reportService.enviarReportePagosUsuario(userId, correo);
@@ -86,5 +87,51 @@ public class ReportController {
                 .body(excelBytes);
     }
 
+    // ====== NUEVOS ENDPOINTS DE PRUEBA PARA PDF DE PRUEBA ======
+    //texto plano vizualiser
+    @GetMapping("/boleta/demo")
+    public ResponseEntity<byte[]> descargarBoletaDemo() {
+        byte[] pdfBytes = PdfGenerator.generateSampleTicketPdf();
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=BoletaDemo.pdf")
+                .header("Content-Type", "application/pdf")
+                .body(pdfBytes);
+    }
+    // un poco mas de diseno
+    @GetMapping("/boleta/custom")
+    public ResponseEntity<byte[]> descargarBoletaDinamica(
+            @RequestParam String cliente,
+            @RequestParam String descripcion,
+            @RequestParam double total,
+            @RequestParam String metodoPago,
+            @RequestParam(defaultValue = "000123") String factura
+    ) {
+        byte[] pdfBytes = PdfGenerator.generateStyledInvoicePdf(
+                cliente, factura, descripcion, 1, total, metodoPago, "ORD12345"
+        );
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=BoletaPersonalizada.pdf")
+                .header("Content-Type", "application/pdf")
+                .body(pdfBytes);
+    }
+    //con datos test estaticos pero se puede cambiar los datos estticos al jso nq entrega el front
+    @GetMapping("/boleta/test")
+    public ResponseEntity<byte[]> descargarBoletaTest() {
+        byte[] pdfBytes = PdfGenerator.generateInvoicePdf("Juan Pérez", "INV-TEST-001", 200.50);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=BoletaTest.pdf")
+                .header("Content-Type", "application/pdf")
+                .body(pdfBytes);
+    }
+
+        //metood derek nuevo
+
+
+
+    
+    //metodo yherson
 
 }
