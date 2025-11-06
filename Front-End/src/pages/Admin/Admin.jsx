@@ -8,7 +8,6 @@ import Reservas from './components/Reservas';
 import Servicios from './components/Servicios';
 import Clientes from './components/Clientes';
 import Trabajadores from './components/Trabajadores';
-import Reportes from './components/Reportes';
 import Configuracion from './components/Configuracion';
 
 // Importar hooks personalizados
@@ -70,12 +69,6 @@ const Admin = () => {
                         onClick={() => setActiveTab('servicios')}
                     >
                         💆‍♀️ Servicios
-                    </button>
-                    <button 
-                        className={`nav-item ${activeTab === 'reportes' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('reportes')}
-                    >
-                        📈 Reportes
                     </button>
                     <button 
                         className={`nav-item ${activeTab === 'config' ? 'active' : ''}`}
@@ -154,10 +147,6 @@ const Admin = () => {
                             handleSaveEditWorker={workersHooks.handleSaveEditWorker}
                             handleSaveSchedule={workersHooks.handleSaveSchedule}
                         />
-                    )}
-
-                    {activeTab === 'reportes' && (
-                        <Reportes />
                     )}
 
                     {activeTab === 'config' && (
