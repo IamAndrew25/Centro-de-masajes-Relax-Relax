@@ -4,6 +4,7 @@ import com.andreutp.centromasajes.model.PaymentModel;
 import com.andreutp.centromasajes.model.UserModel;
 import com.andreutp.centromasajes.utils.EmailService;
 import com.andreutp.centromasajes.utils.ExcelReportGenerator;
+import com.andreutp.centromasajes.utils.PdfGenerator;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,16 +20,34 @@ public class TestEmailController {
         this.emailService = emailService;
     }
 
+    //TEST ENVIAR BOLETA AL USER
     @GetMapping("/test-email")
     public String testEmail() {
+        // Datos simulados
+        String cliente = "André Usuario";
+        String descripcion = "Masaje relajante premium";
+        double total = 120.50;
+        String metodoPago = "Tarjeta Visa";
+
         try {
-            emailService.enviarBoletaConPDF(
-                    "a2tsx1@gmail.com",          // tu correo de prueba
-                    "Boleta de prueba",
-                    "André Usuario",              // nombre del cliente
-                    "0001",                       // número de boleta
-                    120.50                        // total
+            byte[] pdfBytes = PdfGenerator.generateStyledInvoicePdf(
+                    cliente,
+                    "B" + System.currentTimeMillis(), // número de boleta único
+                    descripcion,
+                    1,                                // cantidad
+                    total,
+                    metodoPago,
+                    String.valueOf(System.currentTimeMillis()) // número de orden
             );
+            // Enviar correo con adjunto
+            emailService.enviarCorreoConAdjunto(
+                    "a2tsx1@gmail.com",               // correo de prueba
+                    "Boleta de pago - Relax Total",   // asunto
+                    "Adjuntamos su boleta electrónica con diseño. ¡Gracias por su preferencia!",
+                    pdfBytes,
+                    "BoletaRelaxTotal.pdf"
+            );
+
             return "Correo enviado correctamente!";
         } catch (Exception e) {
             e.printStackTrace();
