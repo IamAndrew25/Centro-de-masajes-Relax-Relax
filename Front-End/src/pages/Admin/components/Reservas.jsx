@@ -72,22 +72,26 @@ const Reservas = () => {
         const end = new Date(start.getTime() + 60 * 60 * 1000); 
 
         const appointmentData = {
-    userId: form.clienteId,
-    workerId: form.workerId,
-    serviceId: form.servicioId,
-    appointmentStart: start.toISOString(),
-    appointmentEnd: end.toISOString(),
-    status: form.estado,
-    notes: form.notas || ""
-};
-
+            userId: form.clienteId,
+            workerId: form.workerId,
+            serviceId: form.servicioId,
+            appointmentStart: start.toISOString(),
+            appointmentEnd: end.toISOString(),
+            status: form.estado,
+            notes: form.notas || ""
+        };
 
         console.log('Datos enviados a la API:', appointmentData);
 
         if (form.id) {
-            await updateAppointment(form.id, appointmentData);
+            const updatedReserva = await updateAppointment(form.id, appointmentData);
+            setReservas(prevReservas => 
+                prevReservas.map(r => r.id === updatedReserva.id ? updatedReserva : r)
+            );
+
         } else {
-            await createAppointment(appointmentData);
+            const nuevaReserva = await createAppointment(appointmentData);
+            setReservas(prevReservas => [...prevReservas, nuevaReserva]);
         }
 
         setShowModal(false);
@@ -102,7 +106,6 @@ const Reservas = () => {
             estado: 'PENDING'
         });
 
-        fetchData();
     } catch (error) {
         console.error('Error guardando la reserva:', error.response?.data || error);
         alert('Error guardando la reserva. Revisa la consola.');
