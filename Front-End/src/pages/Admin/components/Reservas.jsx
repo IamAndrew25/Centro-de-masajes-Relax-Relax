@@ -69,7 +69,7 @@ const Reservas = () => {
         }
 
         const start = new Date(`${form.fecha}T${form.hora}`);
-        const end = new Date(start.getTime() + 60 * 60 * 1000); // +1 hora
+        const end = new Date(start.getTime() + 60 * 60 * 1000); 
 
         const appointmentData = {
     userId: form.clienteId,
