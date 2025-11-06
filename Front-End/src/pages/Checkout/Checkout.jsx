@@ -8,9 +8,8 @@ import { createPayment } from '../../api/paymentApi';
 import { toast } from 'react-toastify';
 
 const Checkout = () => {
-  const { cartItems, totalCartPrice, clearCart } = useCart();
+  const { cartItems, totalCartPrice, clearCart, appointmentId} = useCart();
   const navigate = useNavigate();
-
 
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
@@ -20,7 +19,6 @@ const Checkout = () => {
   const [operationTime, setOperationTime] = useState('');
   const [orderNumber, setOrderNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
 
   // Efecto para generar datos de operación al cargar el componente
   useEffect(() => {
@@ -33,20 +31,26 @@ const Checkout = () => {
   // Manejador para enviar el formulario de pago
   const handlePayment = async (e) => {
     e.preventDefault();
-    setError('');
+
+    //Validacion de cita
+    if (!appointmentId) {
+      toast.error('Error: No se ha encontrado una cita. Por favor, reserva una hora antes de pagar.');
+      navigate('/reserva');
+      return;
+    }
 
     //Validaciones del formulario
     if (!cardNumber || !cardExpiry || !cardCvv) {
-      setError('Por favor, completa todos los campos de la tarjeta.');
+      toast.warn('Por favor, completa todos los campos de la tarjeta.');
       return;
     }
     const cleanedCardNumber = cardNumber.replace(/\s/g, '');
     if (cleanedCardNumber.length !== 16 || !/^\d+$/.test(cleanedCardNumber)) {
-        setError('El número de tarjeta debe tener 16 dígitos numéricos.');
+        toast.warn('El número de tarjeta debe tener 16 dígitos numéricos.');
         return;
     }
     if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
-        setError('La fecha de caducidad debe estar en formato MM/AA.');
+        toast.warn('La fecha de caducidad debe estar en formato MM/AA.');
         return;
     }
     // Validar que la fecha no este pasada
@@ -55,13 +59,13 @@ const Checkout = () => {
     const currentDate = new Date();
     currentDate.setDate(1);
     if (expiryDate < currentDate) {
-        setError('La tarjeta ha caducado.');
+        toast.warn('La tarjeta ha caducado.');
         return;
     }
 
     const cleanedCvv = cardCvv.replace(/\D/g, '');
-    if (cleanedCvv.length < 3 || cleanedCvv.length > 4) {
-        setError('El CVV debe tener 3 o 4 dígitos.');
+    if (cleanedCvv.length < 3 ) {
+        toast.warn('El CVV debe tener 3 dígitos.');
         return;
     }
 
@@ -71,6 +75,7 @@ const Checkout = () => {
       const paymentDetails = {
         amount: totalCartPrice,
         method: "CREDIT_CARD",
+        appointmentId: appointmentId
       };
 
       // Llama a la función importada createPayment
@@ -86,7 +91,7 @@ const Checkout = () => {
     } catch (apiError) {
       // Si hubo un error en la llamada a la API
       console.error("Error en el pago:", apiError);
-      setError(apiError.message || "Hubo un problema al procesar tu pago. Inténtalo de nuevo.");
+      toast.error(apiError.message || "Hubo un problema al procesar tu pago. Inténtalo de nuevo.");
     } finally {
       setIsLoading(false);
     }
@@ -162,7 +167,6 @@ const Checkout = () => {
 
             {/* Formulario de pago */}
             <form onSubmit={handlePayment} className="payment-form">
-              {error && <p className="auth-error-message" style={{ margin: '0 0 15px 0' }}>{error}</p>}
 
               <div className="input-group">
                 <FaCreditCard className="input-icon"/>
@@ -222,14 +226,13 @@ const Checkout = () => {
                   onClick={() => navigate(-1)}
                   disabled={isLoading}
                  >
-                    Cancelar
+                  Cancelar
                 </button>
                 <button
                   type="submit"
                   className="btn-pay"
                   disabled={isLoading}
                 >
-                  {/* Cambia texto del botón si está cargando */}
                   {isLoading ? 'Procesando...' : 'Pagar'}
                 </button>
               </div>
