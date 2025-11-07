@@ -13,13 +13,11 @@ const Promociones = () => {
         descripcion: '',
         descuento: '',
         tipo_descuento: 'porcentaje',
-        codigo: '',
         fecha_inicio: '',
         fecha_fin: '',
         estado: 'activa',
         imagen_url: '',
-        imagen_file: null,
-        condiciones: ''
+        imagen_file: null
     });
 
     useEffect(() => {
@@ -97,13 +95,11 @@ const Promociones = () => {
             descripcion: '',
             descuento: '',
             tipo_descuento: 'porcentaje',
-            codigo: '',
             fecha_inicio: '',
             fecha_fin: '',
             estado: 'activa',
             imagen_url: '',
-            imagen_file: null,
-            condiciones: ''
+            imagen_file: null
         });
         setShowModal(true);
         console.log('✓ Modal abierto:', true);
@@ -242,11 +238,6 @@ const Promociones = () => {
                                 </span>
                             </div>
 
-                            <div className="promocion-codigo">
-                                <strong>Código:</strong> 
-                                <span className="codigo-badge">{promocion.codigo}</span>
-                            </div>
-
                             <div className="promocion-fechas">
                                 <div>
                                     <small>Inicio:</small>
@@ -257,12 +248,6 @@ const Promociones = () => {
                                     <span>{new Date(promocion.fecha_fin).toLocaleDateString()}</span>
                                 </div>
                             </div>
-
-                            {promocion.condiciones && (
-                                <div className="promocion-condiciones">
-                                    <small><strong>Condiciones:</strong> {promocion.condiciones}</small>
-                                </div>
-                            )}
 
                             <button 
                                 className={`btn-toggle ${promocion.estado === 'activa' ? 'active' : ''}`}
@@ -286,33 +271,17 @@ const Promociones = () => {
                         
                         <div className="modal-body">
                             <form onSubmit={handleSave} className="promocion-form">
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>Nombre de la Promoción *</label>
-                                <input
-                                    type="text"
-                                    name="nombre"
-                                    value={formData.nombre}
-                                    onChange={handleInputChange}
-                                    required
-                                    placeholder="Ej: Descuento Verano 2024"
-                                    className="form-input"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Código Promocional *</label>
-                                <input
-                                    type="text"
-                                    name="codigo"
-                                    value={formData.codigo}
-                                    onChange={handleInputChange}
-                                    required
-                                    placeholder="Ej: VERANO2024"
-                                    className="form-input"
-                                    style={{ textTransform: 'uppercase' }}
-                                />
-                            </div>
+                        <div className="form-group">
+                            <label>Nombre de la Promoción *</label>
+                            <input
+                                type="text"
+                                name="nombre"
+                                value={formData.nombre}
+                                onChange={handleInputChange}
+                                required
+                                placeholder="Ej: Descuento Verano 2024"
+                                className="form-input"
+                            />
                         </div>
 
                         <div className="form-group">
@@ -417,18 +386,6 @@ const Promociones = () => {
                                     </button>
                                 </div>
                             )}
-                        </div>
-
-                        <div className="form-group">
-                            <label>Condiciones</label>
-                            <textarea
-                                name="condiciones"
-                                value={formData.condiciones}
-                                onChange={handleInputChange}
-                                rows="2"
-                                placeholder="Ej: Válido solo para reservas superiores a S/ 100"
-                                className="form-textarea"
-                            />
                         </div>
 
                         <div className="form-group">
@@ -834,23 +791,6 @@ const Promociones = () => {
                     font-size: 1.5em;
                     font-weight: bold;
                     border-radius: 12px;
-                }
-
-                .promocion-codigo {
-                    text-align: center;
-                    margin: 15px 0;
-                }
-
-                .codigo-badge {
-                    display: inline-block;
-                    padding: 8px 15px;
-                    background: #f8f9fa;
-                    border: 2px dashed #667eea;
-                    border-radius: 6px;
-                    font-weight: bold;
-                    color: #667eea;
-                    margin-left: 10px;
-                    letter-spacing: 1px;
                 }
 
                 .promocion-fechas {
