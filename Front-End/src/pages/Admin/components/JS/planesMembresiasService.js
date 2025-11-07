@@ -109,8 +109,8 @@ let planesData = [
 
 let nextId = 5;
 
-// Simular delay de API
-const delay = (ms = 500) => new Promise(resolve => setTimeout(resolve, ms));
+// Simular delay de API (optimizado para mejor UX)
+const delay = (ms = 50) => new Promise(resolve => setTimeout(resolve, ms));
 
 // GET - Obtener todos los planes
 export const getPlanes = async () => {
