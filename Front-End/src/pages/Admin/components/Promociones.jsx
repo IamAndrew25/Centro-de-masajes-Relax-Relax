@@ -70,7 +70,6 @@ const Promociones = () => {
                 }));
             };
             reader.readAsDataURL(file);
-            console.log('📷 Imagen seleccionada:', file.name);
         }
     };
 
@@ -83,11 +82,9 @@ const Promociones = () => {
         // Limpiar el input file
         const fileInput = document.querySelector('input[type="file"]');
         if (fileInput) fileInput.value = '';
-        console.log('🗑️ Imagen removida');
     };
 
     const handleNew = () => {
-        console.log('🆕 Abriendo modal para nueva promoción');
         setEditMode(false);
         setCurrentPromocion(null);
         setFormData({
@@ -102,11 +99,9 @@ const Promociones = () => {
             imagen_file: null
         });
         setShowModal(true);
-        console.log('✓ Modal abierto:', true);
     };
 
     const handleEdit = (promocion) => {
-        console.log('✏️ Editando promoción:', promocion);
         setEditMode(true);
         setCurrentPromocion(promocion);
         setFormData({
@@ -140,22 +135,18 @@ const Promociones = () => {
     };
 
     const handleDelete = async (id) => {
-        console.log('🗑️ Intentando eliminar promoción ID:', id);
         if (window.confirm('⚠️ ¿Estás seguro de eliminar esta promoción?\n\nEsta acción no se puede deshacer.')) {
             setLoading(true);
             try {
                 await deletePromocion(id);
-                console.log('✓ Promoción eliminada');
                 alert('✓ Promoción eliminada exitosamente');
                 loadPromociones();
             } catch (error) {
-                console.error('✗ Error al eliminar promoción:', error);
+                console.error('Error al eliminar promoción:', error);
                 alert('✗ Error al eliminar la promoción');
             } finally {
                 setLoading(false);
             }
-        } else {
-            console.log('❌ Eliminación cancelada');
         }
     };
 

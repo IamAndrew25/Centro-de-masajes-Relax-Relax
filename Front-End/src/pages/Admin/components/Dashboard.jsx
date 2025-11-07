@@ -2,11 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { StatCard } from './ui/Card';
 import { getWeeklyReservations, getMonthlyRevenue, getPopularServices } from './JS/dashboardService';
 
-const Dashboard = ({ stats, setActiveTab }) => {
+const Dashboard = ({ stats = {}, setActiveTab }) => {
     const [weeklyData, setWeeklyData] = useState([]);
     const [monthlyData, setMonthlyData] = useState([]);
     const [popularServices, setPopularServices] = useState([]);
     const [loading, setLoading] = useState(true);
+    
+    // Valores por defecto para stats
+    const defaultStats = {
+        reservasHoy: 0,
+        reservasSemana: 0,
+        ingresosMes: 0,
+        clientesNuevos: 0,
+        ...stats
+    };
 
     useEffect(() => {
         const loadDashboardData = async () => {
@@ -54,10 +63,10 @@ const Dashboard = ({ stats, setActiveTab }) => {
     }, []);
 
     const statsData = [
-        { icon: "📅", value: stats.reservasHoy, label: "Reservas Hoy" },
-        { icon: "📊", value: stats.reservasSemana, label: "Reservas Semana" },
-        { icon: "💰", value: `S/ ${stats.ingresosMes.toLocaleString()}`, label: "Ingresos Mes" },
-        { icon: "👥", value: stats.clientesNuevos, label: "Clientes Nuevos" }
+        { icon: "📅", value: defaultStats.reservasHoy || 0, label: "Reservas Hoy" },
+        { icon: "📊", value: defaultStats.reservasSemana || 0, label: "Reservas Semana" },
+        { icon: "💰", value: `S/ ${(defaultStats.ingresosMes || 0).toLocaleString()}`, label: "Ingresos Mes" },
+        { icon: "👥", value: defaultStats.clientesNuevos || 0, label: "Clientes Nuevos" }
     ];
 
     const getMaxValue = (data, key) => Math.max(...data.map(item => item[key]));

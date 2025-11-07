@@ -62,12 +62,6 @@ const PlanesMembresias = () => {
     }
   };
 
-  const handleSelect = (plan) => {
-    // Acción al seleccionar (puedes reemplazar por navegación o lógica real)
-    console.log('Plan seleccionado:', plan);
-    alert(`Has seleccionado: ${plan.nombre} — S/ ${plan.precio}`);
-  };
-
   const handleOpenModal = () => {
     setEditingPlan(null);
     setFormData({
@@ -227,7 +221,7 @@ const PlanesMembresias = () => {
           {planes.map((plan) => (
           <div
             key={plan.id}
-            className={`plan-card-horizontal ${plan.destacado ? 'destacado' : ''} ${plan.tipo === 'vip' ? 'vip' : ''}`}
+            className={`plan-card-horizontal ${plan.destacado ? 'destacado' : ''}`}
           >
             <div
               className="plan-header-horizontal"
@@ -236,26 +230,15 @@ const PlanesMembresias = () => {
               <div className="plan-header-top">
                 <span className="plan-icono-horizontal">{plan.icono || '💠'}</span>
                 <span className="plan-title-horizontal">{plan.nombre}</span>
-                {(plan.destacado || plan.tipo === 'vip') && (
-                  <span className={`plan-badge-horizontal ${plan.tipo === 'vip' ? 'exclusivo' : ''}`}>
-                    {plan.tipo === 'vip' ? 'EXCLUSIVO' : 'MÁS POPULAR'}
-                  </span>
+                {plan.destacado && (
+                  <span className="plan-badge-horizontal">MÁS POPULAR</span>
                 )}
               </div>
-              <button className="plan-type-btn">{plan.tipo === 'membresia' ? 'MEMBRESÍA' : plan.tipo === 'vip' ? 'VIP' : 'PLAN'}</button>
+              <button className="plan-type-btn">{plan.tipo === 'membresia' ? 'MEMBRESÍA' : 'PLAN'}</button>
             </div>
 
             <div className="plan-precio-horizontal">
-              <span
-                className="precio-valor-horizontal"
-                style={
-                  plan.tipo === 'vip'
-                    ? { WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', background: 'linear-gradient(90deg,#d4af37,#f4d03f)' }
-                    : plan.tipo === 'membresia'
-                    ? { color: '#334155' }
-                    : { color: '#111827' }
-                }
-              >
+              <span className="precio-valor-horizontal">
                 S/ {plan.precio}
               </span>
               <span className="precio-periodo-horizontal">/mes</span>
