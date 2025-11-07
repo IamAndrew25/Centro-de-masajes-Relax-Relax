@@ -69,7 +69,8 @@ const Reservas = () => {
       }
 
       const start = new Date(`${form.fecha}T${form.hora}`);
-      const end = new Date(start.getTime() + 60 * 60 * 1000);
+      // Asume 1 hora de duración
+      const end = new Date(start.getTime() + 60 * 60 * 1000); 
 
       if (isNaN(start.getTime())) {
         alert("Fecha u hora inválida.");
@@ -83,7 +84,7 @@ const Reservas = () => {
         appointmentStart: start.toISOString(),
         appointmentEnd: end.toISOString(),
         status: form.estado,
-        notes: form.notas || ""
+        // La línea de 'notes' ha sido eliminada como solicitaste
       };
 
       console.log(' Datos enviados a la API:', appointmentData);
@@ -143,7 +144,7 @@ const Reservas = () => {
       <SectionHeader title="Gestión de Reservas" buttonText="Nueva Reserva" onButtonClick={() => setShowModal(true)} />
       
       <button style={{ height: '40px', marginLeft: '10px' }} onClick={descargarExcelReservas}>
-        ⬇️ Descargar Excel
+        ⬇ Descargar Excel
       </button>
       <button style={{ height: '40px', marginLeft: '10px' }} onClick={enviarExcelReservas}>
         📊 Reporte Excel
@@ -174,8 +175,8 @@ const Reservas = () => {
                   </td>
                   <td>
                     <div className="action-buttons-small">
-                      <button className="btn-edit" onClick={() => handleEdit(reserva)}>✏️</button>
-                      <button className="btn-delete" onClick={() => handleDelete(reserva.id)}>🗑️</button>
+                      <button className="btn-edit" onClick={() => handleEdit(reserva)}>✏</button>
+                      <button className="btn-delete" onClick={() => handleDelete(reserva.id)}>🗑</button>
                     </div>
                   </td>
                 </tr>
@@ -188,7 +189,7 @@ const Reservas = () => {
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title={form.id ? "✏️ Editar Reserva" : "➕ Nueva Reserva"}
+        title={form.id ? "✏ Editar Reserva" : "➕ Nueva Reserva"}
         onSave={handleSave}
         saveButtonText="💾 Guardar Reserva"
       >
