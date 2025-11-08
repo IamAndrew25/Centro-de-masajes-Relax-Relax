@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { StatCard } from './ui/Card';
-import { getWeeklyReservations, getMonthlyRevenue, getPopularServices } from './JS/dashboardService';
+import { getPopularServices } from './JS/dashboardService';
 
 const Dashboard = ({ stats = {}, setActiveTab }) => {
-    const [weeklyData, setWeeklyData] = useState([]);
-    const [monthlyData, setMonthlyData] = useState([]);
     const [popularServices, setPopularServices] = useState([]);
     const [loading, setLoading] = useState(true);
     
@@ -21,32 +19,11 @@ const Dashboard = ({ stats = {}, setActiveTab }) => {
         const loadDashboardData = async () => {
             try {
                 setLoading(true);
-                const [weekly, monthly, services] = await Promise.all([
-                    getWeeklyReservations(4),
-                    getMonthlyRevenue(6),
-                    getPopularServices(5)
-                ]);
-                
-                setWeeklyData(weekly);
-                setMonthlyData(monthly);
+                const services = await getPopularServices(5);
                 setPopularServices(services);
             } catch (error) {
                 console.error('Error al cargar datos del dashboard:', error);
                 // Datos de ejemplo si falla
-                setWeeklyData([
-                    { semana: 'Semana 1', reservas: 12 },
-                    { semana: 'Semana 2', reservas: 15 },
-                    { semana: 'Semana 3', reservas: 10 },
-                    { semana: 'Semana 4', reservas: 18 }
-                ]);
-                setMonthlyData([
-                    { mes: 'Enero', ingresos: 45000 },
-                    { mes: 'Febrero', ingresos: 52000 },
-                    { mes: 'Marzo', ingresos: 48000 },
-                    { mes: 'Abril', ingresos: 55000 },
-                    { mes: 'Mayo', ingresos: 58500 },
-                    { mes: 'Junio', ingresos: 62000 }
-                ]);
                 setPopularServices([
                     { nombre: 'Masaje Relajante', cantidad: 45 },
                     { nombre: 'Masaje Deportivo', cantidad: 38 },
@@ -94,49 +71,6 @@ const Dashboard = ({ stats = {}, setActiveTab }) => {
                 </div>
             ) : (
                 <>
-                    {/* Gráficos y datos */}
-                    <div className="dashboard-charts">
-                        {/* Reservas por semana */}
-                        <div className="chart-card">
-                            <h3>📊 Reservas por Semana</h3>
-                            <div className="bar-chart">
-                                {weeklyData.map((item, index) => (
-                                    <div key={index} className="bar-item">
-                                        <div 
-                                            className="bar" 
-                                            style={{ 
-                                                height: `${(item.reservas / getMaxValue(weeklyData, 'reservas')) * 100}%` 
-                                            }}
-                                        >
-                                            <span className="bar-value">{item.reservas}</span>
-                                        </div>
-                                        <span className="bar-label">{item.semana}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Ingresos por mes */}
-                        <div className="chart-card">
-                            <h3>💰 Ingresos por Mes (S/)</h3>
-                            <div className="bar-chart">
-                                {monthlyData.map((item, index) => (
-                                    <div key={index} className="bar-item">
-                                        <div 
-                                            className="bar bar-revenue" 
-                                            style={{ 
-                                                height: `${(item.ingresos / getMaxValue(monthlyData, 'ingresos')) * 100}%` 
-                                            }}
-                                        >
-                                            <span className="bar-value">{(item.ingresos / 1000).toFixed(0)}K</span>
-                                        </div>
-                                        <span className="bar-label">{item.mes}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
                     {/* Segunda fila de información */}
                     <div className="dashboard-info">
                         {/* Servicios más populares */}
@@ -272,6 +206,7 @@ const Dashboard = ({ stats = {}, setActiveTab }) => {
                     display: grid;
                     grid-template-columns: 1fr;
                     gap: 25px;
+                    margin-top: 120px;
                 }
 
                 .info-card {

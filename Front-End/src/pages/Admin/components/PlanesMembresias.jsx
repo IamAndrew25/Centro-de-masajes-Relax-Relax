@@ -217,83 +217,74 @@ const PlanesMembresias = () => {
           </button>
         </div>
       ) : (
-        <div className="planes-grid-horizontal">
+        <div className="planes-grid-vertical">
           {planes.map((plan) => (
           <div
             key={plan.id}
-            className={`plan-card-horizontal ${plan.destacado ? 'destacado' : ''}`}
+            className={`plan-card-vertical ${plan.destacado ? 'destacado' : ''} ${plan.tipo === 'vip' ? 'vip' : ''}`}
           >
-            <div
-              className="plan-header-horizontal"
-              style={{ background: plan.color || undefined }}
-            >
-              <div className="plan-header-top">
-                <span className="plan-icono-horizontal">{plan.icono || '💠'}</span>
-                <span className="plan-title-horizontal">{plan.nombre}</span>
-                {plan.destacado && (
-                  <span className="plan-badge-horizontal">MÁS POPULAR</span>
-                )}
-              </div>
-              <button className="plan-type-btn">{plan.tipo === 'membresia' ? 'MEMBRESÍA' : 'PLAN'}</button>
+            {plan.destacado && (
+              <span className="plan-badge-destacado">⭐ Destacado</span>
+            )}
+            
+            <div className="plan-icon-wrapper">
+              <span className="plan-icon">{plan.icono || '💠'}</span>
+              <h3 className="plan-title">{plan.nombre}</h3>
+            </div>
+            
+            <div className="plan-price">
+              <span className="price-amount">S/ {plan.precio}</span>
+              <span className="price-period">/mes</span>
             </div>
 
-            <div className="plan-precio-horizontal">
-              <span className="precio-valor-horizontal">
-                S/ {plan.precio}
-              </span>
-              <span className="precio-periodo-horizontal">/mes</span>
+            <div className="plan-benefits">
+              <h4 className="benefits-title">Servicios Incluidos:</h4>
+              <ul className="benefits-list">
+                {(plan.servicios_incluidos || []).map((servicio, i) => (
+                  <li key={i}>
+                    <span className="checkmark">✓</span>
+                    {servicio}
+                  </li>
+                ))}
+              </ul>
+              
+              {plan.beneficios && plan.beneficios.length > 0 && (
+                <>
+                  <h4 className="benefits-title">Beneficios:</h4>
+                  <ul className="benefits-list">
+                    {plan.beneficios.map((beneficio, i) => (
+                      <li key={i}>
+                        <span className="checkmark">✓</span>
+                        {beneficio}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
 
-            <div className="plan-features-horizontal">
-              <div className="plan-servicios-horizontal">
-                <div className="features-title">SERVICIOS</div>
-                <ul>
-                  {(plan.servicios_incluidos || []).slice(0, 5).map((s, i) => (
-                    <li key={i} title={s}>
-                      <span className="check">✓</span>
-                      <span className="feature-text">{s}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="plan-beneficios-horizontal">
-                <div className="features-title">BENEFICIOS</div>
-                <ul>
-                  {(plan.beneficios || []).slice(0, 4).map((b, i) => (
-                    <li key={i} title={b}>
-                      <span className="star">⭐</span>
-                      <span className="feature-text">{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="plan-actions-horizontal">
-              <div className="admin-actions-horizontal">
-                <button 
-                  className="btn-icon-horizontal btn-edit-horizontal" 
-                  title="Editar plan" 
-                  onClick={() => handleEdit(plan)}
-                >
-                  ✏️
-                </button>
-                <button 
-                  className="btn-icon-horizontal btn-delete-horizontal" 
-                  title="Eliminar plan" 
-                  onClick={() => handleDelete(plan.id)}
-                >
-                  🗑️
-                </button>
-                <button 
-                  className="btn-icon-horizontal" 
-                  title={plan.destacado ? "Quitar destacado" : "Destacar plan"} 
-                  onClick={() => toggleDestacado(plan)}
-                >
-                  {plan.destacado ? '★' : '☆'}
-                </button>
-              </div>
+            <div className="plan-actions">
+              <button 
+                className="btn-action btn-edit" 
+                title="Editar plan" 
+                onClick={() => handleEdit(plan)}
+              >
+                ✏️ Editar
+              </button>
+              <button 
+                className="btn-action btn-delete" 
+                title="Eliminar plan" 
+                onClick={() => handleDelete(plan.id)}
+              >
+                🗑️ Eliminar
+              </button>
+              <button 
+                className="btn-action btn-destacar" 
+                title={plan.destacado ? "Quitar destacado" : "Destacar plan"} 
+                onClick={() => toggleDestacado(plan)}
+              >
+                {plan.destacado ? '★ Destacado' : '☆ Destacar'}
+              </button>
             </div>
           </div>
         ))}

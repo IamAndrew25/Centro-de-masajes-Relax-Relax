@@ -142,7 +142,7 @@ const Promociones = () => {
                 alert('✓ Promoción eliminada exitosamente');
                 loadPromociones();
             } catch (error) {
-                console.error('Error al eliminar promoción:', error);
+                console.error('✗ Error al eliminar promoción:', error);
                 alert('✗ Error al eliminar la promoción');
             } finally {
                 setLoading(false);
