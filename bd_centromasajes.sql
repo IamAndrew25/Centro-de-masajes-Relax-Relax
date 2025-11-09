@@ -9,8 +9,6 @@ INSERT INTO roles (name) VALUES ('ADMIN');
 INSERT INTO roles (name) VALUES ('USER');
 INSERT INTO roles (name) VALUES ('WORKER');
 
-Select * from users
-Select * from roles
 
 CREATE TABLE users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
