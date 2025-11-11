@@ -8,11 +8,7 @@ import axios from 'axios';
 
 // Datos de ejemplo (estáticos)
 const staticServicesData = {
-  Relajantes: [
-    { id: 's1', name: "Masaje Sueco", duration: "60 min", price: 85, description: "Técnica clásica para reducir el estrés y mejorar la circulación." },
-    { id: 's2', name: "Masaje de Aromaterapia", duration: "75 min", price: 95, description: "Utiliza aceites esenciales para calmar el sistema nervioso." },
-    { id: 's3', name: "Masaje con Piedras Calientes", duration: "90 min", price: 110, description: "El calor penetrante relaja los músculos profundos." },
-  ],
+  Relajantes: [],
   Terapeuticos: [
     { id: 's4', name: "Masaje Deportivo", duration: "45 min", price: 75, description: "Enfocado en la recuperación muscular y prevención de lesiones." },
     { id: 's5', name: "Drenaje Linfático", duration: "60 min", price: 90, description: "Suave masaje para estimular la circulación linfática y desintoxicación." },
@@ -40,29 +36,20 @@ const Services = () => {
       try {
         const response = await axios.get('http://localhost:8080/services');
         const backendServices = response.data;
-        const staticNames = staticServicesData.Relajantes.map(s => s.name);
-        const newServicesFromBackend = backendServices.filter(
-          service => !staticNames.includes(service.name)
-        );
-
-        const transformedServices = newServicesFromBackend.map(service => ({
+        const transformedServices = backendServices.map(service => ({
           id: service.id,
           name: service.name,
           duration: `${service.durationMin} min`,
           price: service.baseprice,
           description: service.description
         }));
-
-        if (transformedServices.length > 0) {
-          setServicesData({
-            ...staticServicesData,
-            Relajantes: [
-              ...staticServicesData.Relajantes,
-              ...transformedServices
-            ]
-          });
-        }
         
+        // mantengo las otras categorias estaticas por ahora
+        setServicesData(prevData => ({
+          ...prevData,
+          Relajantes: transformedServices
+        }));
+
       } catch (error) {
         console.error('Error cargando servicios del backend:', error);
         setServicesData(staticServicesData);
