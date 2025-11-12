@@ -37,8 +37,12 @@ export default function AppRouter() {
         {/* --- Rutas Protegidas (Requieren Login) --- */}
         <Route element={<ProtectedRoute />}>
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/admin" element={<Admin />} />
+          {/* <Route path="/admin" element={<Admin />} /> */}
         </Route>
+        
+        {/* Ruta Admin temporalmente desprotegida para desarrollo */}
+        <Route path="/admin" element={<Admin />} />
+        
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>

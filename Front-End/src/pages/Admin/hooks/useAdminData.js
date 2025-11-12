@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getDashboardStats } from '../components/JS/dashboardService';
 
 // Hook para manejar datos de clientes
 export const useClienteData = () => {
@@ -265,12 +266,44 @@ export const useWorkersData = () => {
 
 // Hook para estadísticas
 export const useStats = () => {
-    const stats = {
-        reservasHoy: 12,
-        reservasSemana: 45,
-        ingresosMes: 58500,
-        clientesNuevos: 8
-    };
+    const [stats, setStats] = useState({
+        reservasHoy: 0,
+        reservasSemana: 0,
+        ingresosMes: 0,
+        clientesNuevos: 0
+    });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    return { stats };
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                setLoading(true);
+                const data = await getDashboardStats();
+                setStats(data);
+                setError(null);
+            } catch (err) {
+                console.error('Error al cargar estadísticas:', err);
+                setError('Error al cargar estadísticas');
+                // Mantener datos de ejemplo si falla
+                setStats({
+                    reservasHoy: 12,
+                    reservasSemana: 45,
+                    ingresosMes: 58500,
+                    clientesNuevos: 8
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+        
+        // Actualizar cada 5 minutos
+        const interval = setInterval(fetchStats, 5 * 60 * 1000);
+        
+        return () => clearInterval(interval);
+    }, []);
+
+    return { stats, loading, error };
 };
