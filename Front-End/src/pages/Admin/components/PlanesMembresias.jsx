@@ -241,7 +241,6 @@ const PlanesMembresias = () => {
             
             <div className="plan-price">
               <span className="price-amount">S/ {plan.precio}</span>
-              <span className="price-period">/mes</span>
             </div>
 
             <div className="plan-benefits">
