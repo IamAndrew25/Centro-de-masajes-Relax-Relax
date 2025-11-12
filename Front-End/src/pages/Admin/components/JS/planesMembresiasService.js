@@ -4,47 +4,42 @@
 let planesData = [
     {
         id: 1,
-        nombre: 'Plan Básico',
-        descripcion: 'Perfecto para comenzar tu viaje de relajación',
+        nombre: '3 meses',
+        descripcion: 'Acceso a reservas online y descuentos exclusivos',
         tipo: 'plan',
-        precio: 89.99,
+        precio: 90,
         precio_anterior: null,
-        duracion: 1,
+        duracion: 3,
         duracion_unidad: 'meses',
         servicios_incluidos: [
-            '2 Masajes relajantes (60 min)',
-            '1 Masaje de piedras calientes',
-            'Acceso a sauna'
+            'Acceso a reservas online sin costo extra',
+            'Confirmación inmediata de disponibilidad'
         ],
         beneficios: [
-            '10% descuento en servicios adicionales',
-            'Reservas con prioridad'
+            '5% de descuento en compras de temporada'
         ],
         estado: 'activo',
         destacado: false,
         color: '#4facfe',
-        icono: '🌊'
+        icono: '📅'
     },
     {
         id: 2,
-        nombre: 'Plan Premium',
-        descripcion: 'La experiencia completa de relajación y bienestar',
+        nombre: '6 meses',
+        descripcion: 'Atención prioritaria y descuentos especiales',
         tipo: 'plan',
-        precio: 149.99,
-        precio_anterior: 199.99,
-        duracion: 1,
+        precio: 160,
+        precio_anterior: null,
+        duracion: 6,
         duracion_unidad: 'meses',
         servicios_incluidos: [
-            '4 Masajes de tu elección (60 min)',
-            '2 Masajes con aromaterapia',
-            '1 Tratamiento facial',
-            'Acceso ilimitado a sauna y jacuzzi'
+            'Todos los beneficios del plan básico',
+            'Atención prioritaria en reservas',
+            'Acceso anticipado a promociones'
         ],
         beneficios: [
-            '20% descuento en todos los servicios',
-            'Reservas con prioridad',
-            '1 invitación gratis para acompañante',
-            'Productos de spa con 15% descuento'
+            '10% de descuento en paquetes especiales',
+            '10% ahorro comparado al plan mensual'
         ],
         estado: 'activo',
         destacado: true,
@@ -53,61 +48,33 @@ let planesData = [
     },
     {
         id: 3,
-        nombre: 'Membresía VIP',
-        descripcion: 'Acceso ilimitado a todos nuestros servicios premium',
+        nombre: '1 año',
+        descripcion: 'Experiencia VIP completa con máximos beneficios',
         tipo: 'membresia',
-        precio: 299.99,
-        precio_anterior: 399.99,
-        duracion: 3,
+        precio: 350,
+        precio_anterior: null,
+        duracion: 12,
         duracion_unidad: 'meses',
         servicios_incluidos: [
-            'Masajes ilimitados (60 min)',
-            '8 Masajes premium (90 min)',
-            '4 Tratamientos faciales',
-            'Acceso VIP a todas las instalaciones',
-            'Terapia de pareja mensual'
+            'Todos los beneficios del plan Premium',
+            'Atención VIP personalizada',
+            'Eventos exclusivos para miembros',
+            'Regalo de bienvenida premium'
         ],
         beneficios: [
-            '30% descuento permanente',
-            'Reservas sin restricciones',
-            'Atención personalizada 24/7',
-            'Invitaciones ilimitadas',
-            'Kit de productos premium mensual',
-            'Acceso a eventos exclusivos'
+            '15% de descuento en todos los servicios',
+            '25% ahorro comparado al plan mensual',
+            'Acceso prioritario a nuevos servicios',
+            'Sesión de consulta personalizada gratuita'
         ],
         estado: 'activo',
         destacado: false,
         color: '#f093fb',
         icono: '👑'
-    },
-    {
-        id: 4,
-        nombre: 'Plan Parejas',
-        descripcion: 'Momentos especiales para compartir en pareja',
-        tipo: 'plan',
-        precio: 179.99,
-        precio_anterior: null,
-        duracion: 1,
-        duracion_unidad: 'meses',
-        servicios_incluidos: [
-            '2 Masajes en pareja (90 min)',
-            '1 Sesión de aromaterapia para dos',
-            'Acceso a sala VIP de parejas',
-            'Copa de champagne incluida'
-        ],
-        beneficios: [
-            '15% descuento en próximas sesiones',
-            'Fotografía romántica de cortesía',
-            'Reserva de aniversario gratis'
-        ],
-        estado: 'activo',
-        destacado: false,
-        color: '#ff6b6b',
-        icono: '💑'
     }
 ];
 
-let nextId = 5;
+let nextId = 4;
 
 // Simular delay de API (optimizado para mejor UX)
 const delay = (ms = 50) => new Promise(resolve => setTimeout(resolve, ms));

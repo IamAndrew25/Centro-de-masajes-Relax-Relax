@@ -11,7 +11,6 @@ const PlanesMembresias = () => {
     nombre: '',
     precio: '',
     tipo: 'plan',
-    icono: '💠',
     servicios_incluidos: '',
     beneficios: '',
     destacado: false
@@ -68,7 +67,6 @@ const PlanesMembresias = () => {
       nombre: '',
       precio: '',
       tipo: 'plan',
-      icono: '💠',
       servicios_incluidos: '',
       beneficios: '',
       destacado: false
@@ -82,7 +80,6 @@ const PlanesMembresias = () => {
       nombre: plan.nombre || '',
       precio: plan.precio || '',
       tipo: plan.tipo || 'plan',
-      icono: plan.icono || '💠',
       servicios_incluidos: Array.isArray(plan.servicios_incluidos) 
         ? plan.servicios_incluidos.join('\n') 
         : '',
@@ -116,12 +113,22 @@ const PlanesMembresias = () => {
 
     setLoading(true);
     try {
+      // Asignar ícono automáticamente según el nombre del plan
+      let icono = '💠'; // Por defecto
+      if (formData.nombre.includes('3 meses')) {
+        icono = '📅';
+      } else if (formData.nombre.includes('6 meses')) {
+        icono = '💎';
+      } else if (formData.nombre.includes('1 año') || formData.nombre.includes('año')) {
+        icono = '👑';
+      }
+
       const planData = {
         nombre: formData.nombre,
         descripcion: formData.nombre, // Usar el nombre como descripción por defecto
         tipo: formData.tipo,
         precio: parseFloat(formData.precio),
-        icono: formData.icono,
+        icono: icono,
         servicios_incluidos: formData.servicios_incluidos.split('\n').filter(s => s.trim()),
         beneficios: formData.beneficios.split('\n').filter(b => b.trim()),
         destacado: formData.destacado,
@@ -337,38 +344,17 @@ const PlanesMembresias = () => {
                 </div>
               </div>
 
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="tipo">Tipo de Plan</label>
-                  <select
-                    id="tipo"
-                    name="tipo"
-                    value={formData.tipo}
-                    onChange={handleInputChange}
-                  >
-                    <option value="plan">Plan</option>
-                    <option value="membresia">Membresía</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="icono">Ícono</label>
-                  <select
-                    id="icono"
-                    name="icono"
-                    value={formData.icono}
-                    onChange={handleInputChange}
-                  >
-                    <option value="💠">💠 Diamante</option>
-                    <option value="⭐">⭐ Estrella</option>
-                    <option value="👑">👑 Corona</option>
-                    <option value="💎">💎 Gema</option>
-                    <option value="🌟">🌟 Estrella Brillante</option>
-                    <option value="✨">✨ Destellos</option>
-                    <option value="🎯">🎯 Objetivo</option>
-                    <option value="🏆">🏆 Trofeo</option>
-                  </select>
-                </div>
+              <div className="form-group">
+                <label htmlFor="tipo">Tipo de Plan</label>
+                <select
+                  id="tipo"
+                  name="tipo"
+                  value={formData.tipo}
+                  onChange={handleInputChange}
+                >
+                  <option value="plan">Plan</option>
+                  <option value="membresia">Membresía</option>
+                </select>
               </div>
 
               <div className="form-group">
