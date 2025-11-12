@@ -89,8 +89,8 @@ public class PaymentService {
         InvoiceModel invoice = InvoiceModel.builder()
                 .payment(savedPayment)
                 .user(savedPayment.getUser())
-                .appointment(appointment) // <<--- ¡MUY IMPORTANTE! Asignar la cita
-                .type(InvoiceModel.Type.BOLETA) // O FACTURA según tu lógica
+                .appointment(appointment) // <<---
+                .type(InvoiceModel.Type.BOLETA) // O FACTURA segn lógica
                 .invoiceNumber(generateInvoiceNumber())
                 .customerName(user.getUsername())
                 .customerDoc(user.getDni()) // DNI del usuario

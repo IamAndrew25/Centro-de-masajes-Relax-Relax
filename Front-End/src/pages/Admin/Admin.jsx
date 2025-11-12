@@ -8,7 +8,6 @@ import Reservas from './components/Reservas';
 import Servicios from './components/Servicios';
 import Clientes from './components/Clientes';
 import Trabajadores from './components/Trabajadores';
-import Reportes from './components/Reportes';
 import Configuracion from './components/Configuracion';
 import Promociones from './components/Promociones';
 import PlanesMembresias from './components/PlanesMembresias';
