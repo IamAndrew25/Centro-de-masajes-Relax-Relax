@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "D:\\nuevo\\Centro-de-masajes-Relax-Relax\\Front-End\\src\\pages\\Admin"
+      ]
+    }
+  }
+}

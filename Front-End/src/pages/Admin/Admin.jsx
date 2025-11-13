@@ -85,12 +85,6 @@ const Admin = () => {
                         💎 Planes y Membresías
                     </button>
                     <button 
-                        className={`nav-item ${activeTab === 'reportes' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('reportes')}
-                    >
-                        📈 Reportes
-                    </button>
-                    <button 
                         className={`nav-item ${activeTab === 'config' ? 'active' : ''}`}
                         onClick={() => setActiveTab('config')}
                     >
@@ -167,10 +161,6 @@ const Admin = () => {
                             handleSaveEditWorker={workersHooks.handleSaveEditWorker}
                             handleSaveSchedule={workersHooks.handleSaveSchedule}
                         />
-                    )}
-
-                    {activeTab === 'reportes' && (
-                        <Reportes />
                     )}
 
                     {activeTab === 'promociones' && (
