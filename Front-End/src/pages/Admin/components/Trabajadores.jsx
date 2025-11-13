@@ -302,15 +302,16 @@ const Trabajadores = () => {
 
           <FormTextarea label="Notas" value={form.notas} onChange={e => handleInputChange('notas', e.target.value)} />
 
-          <h4>🗓️ Disponibilidad Semanal</h4>
+          <h4 style={{ color: 'black' }}>🗓️ Disponibilidad Semanal</h4>
           <div className="availability-section">
             {form.availability.map((a, i) => (
               <div key={i} className="availability-row">
-                <label style={{ width: '100px' }}>{a.day}</label>
+                <label style={{ width: '100px' , color: 'black' }}>{a.day}</label>
                 <input
                   type="checkbox"
                   checked={a.activo}
                   onChange={(e) => handleAvailabilityChange(i, 'activo', e.target.checked)}
+                  
                 />
                 <input
                   type="time"

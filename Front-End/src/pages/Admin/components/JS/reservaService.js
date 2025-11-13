@@ -25,7 +25,7 @@ export const getAllAppointments = async () => {
         const jsonPart = data.slice(firstBracket, lastBracket + 1);
         data = JSON.parse(jsonPart);
       } catch (parseError) {
-        console.error("⚠️ Error al intentar parsear los datos JSON:", parseError);
+        console.error(" Error al intentar parsear los datos JSON:", parseError);
         data = [];
       }
     }
