@@ -43,7 +43,7 @@ public class DashboardService {
         );
         double ingresosMes = reservasMes.stream()
             .filter(r -> r.getStatus().name().equalsIgnoreCase("COMPLETED") || r.getStatus().name().equalsIgnoreCase("CONFIRMED"))
-            .mapToDouble(r -> r.getService() != null ? r.getService().getPrice() : 0.0)
+            .mapToDouble(r -> r.getService() != null ? r.getService().getBaseprice() : 0.0)
             .sum();
         
         // Clientes nuevos este mes
@@ -91,7 +91,7 @@ public class DashboardService {
             
             double ingresos = reservasMes.stream()
                 .filter(r -> r.getStatus().name().equalsIgnoreCase("COMPLETED") || r.getStatus().name().equalsIgnoreCase("CONFIRMED"))
-                .mapToDouble(r -> r.getService() != null ? r.getService().getPrice() : 0.0)
+                .mapToDouble(r -> r.getService() != null ? r.getService().getBaseprice() : 0.0)
                 .sum();
             
             String mesNombre = monthStart.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES"));

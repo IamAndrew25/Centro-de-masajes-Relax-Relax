@@ -169,9 +169,9 @@ const Admin = () => {
                         />
                     )}
 
-                    {activeTab === 'reportes' && (
+                    {/*{activeTab === 'reportes' && (
                         <Reportes />
-                    )}
+                    )}*/}
 
                     {activeTab === 'promociones' && (
                         <Promociones />
