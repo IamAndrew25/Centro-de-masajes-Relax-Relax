@@ -79,7 +79,6 @@ export const enviarExcelReservas = async () => {
   try {
     const correo = prompt("Ingresa el correo al que enviar el Excel de reservas:");
     if (!correo) return;
-
     const response = await fetch(`${API_URL}/reports/reservas?correo=${correo}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${getToken()}` }

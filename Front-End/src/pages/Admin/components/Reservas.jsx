@@ -68,22 +68,15 @@ const Reservas = () => {
         return;
       }
 
-      const start = new Date(`${form.fecha}T${form.hora}`);
-      const end = new Date(start.getTime() + 60 * 60 * 1000);
-
-      if (isNaN(start.getTime())) {
-        alert("Fecha u hora inválida.");
-        return;
-      }
+      const appointmentStart = `${form.fecha}T${form.hora}:00`;
 
       const appointmentData = {
         userId: form.clienteId,
         workerId: form.workerId,
         serviceId: form.servicioId,
-        appointmentStart: start.toISOString(),
-        appointmentEnd: end.toISOString(),
+        appointmentStart: appointmentStart,
+        // El backend calculará el 'appointmentEnd'
         status: form.estado,
-        notes: form.notas || ""
       };
 
       console.log(' Datos enviados a la API:', appointmentData);
@@ -114,14 +107,16 @@ const Reservas = () => {
   };
 
   const handleEdit = (reserva) => {
-    const fecha = reserva.appointmentStart ? new Date(reserva.appointmentStart) : null;
+    const appointmentStart = reserva.appointmentStart || '';
+    const [fecha, horaCompleta] = appointmentStart.split('T');
+    const hora = horaCompleta ? horaCompleta.substring(0, 5) : '';
     setForm({
       id: reserva.id,
       clienteId: reserva.user?.id || null,
       workerId: reserva.worker?.id || null,
       servicioId: reserva.service?.id || null,
-      fecha: fecha ? fecha.toISOString().slice(0, 10) : '',
-      hora: fecha ? fecha.toTimeString().slice(0, 5) : '',
+      fecha: fecha || '',
+      hora: hora || '',
       estado: reserva.status || 'PENDING'
     });
     setShowModal(true);
@@ -143,7 +138,7 @@ const Reservas = () => {
       <SectionHeader title="Gestión de Reservas" buttonText="Nueva Reserva" onButtonClick={() => setShowModal(true)} />
       
       <button style={{ height: '40px', marginLeft: '10px' }} onClick={descargarExcelReservas}>
-        ⬇️ Descargar Excel
+        ⬇ Descargar Excel
       </button>
       <button style={{ height: '40px', marginLeft: '10px' }} onClick={enviarExcelReservas}>
         📊 Reporte Excel
@@ -174,8 +169,8 @@ const Reservas = () => {
                   </td>
                   <td>
                     <div className="action-buttons-small">
-                      <button className="btn-edit" onClick={() => handleEdit(reserva)}>✏️</button>
-                      <button className="btn-delete" onClick={() => handleDelete(reserva.id)}>🗑️</button>
+                      <button className="btn-edit" onClick={() => handleEdit(reserva)}>✏</button>
+                      <button className="btn-delete" onClick={() => handleDelete(reserva.id)}>🗑</button>
                     </div>
                   </td>
                 </tr>
@@ -188,7 +183,7 @@ const Reservas = () => {
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title={form.id ? "✏️ Editar Reserva" : "➕ Nueva Reserva"}
+        title={form.id ? "✏ Editar Reserva" : "➕ Nueva Reserva"}
         onSave={handleSave}
         saveButtonText="💾 Guardar Reserva"
       >

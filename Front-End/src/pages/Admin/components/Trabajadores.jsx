@@ -97,7 +97,7 @@ const Trabajadores = () => {
         savedWorker = await updateWorker(form.id, payload);
       } else {
         if (!form.password) {
-          alert('Contraseña es obligatoria para nuevo trabajador.');
+          alert('La contraseña es obligatoria para un nuevo trabajador');
           return;
         }
         savedWorker = await createWorker(payload);
@@ -116,7 +116,7 @@ const Trabajadores = () => {
         await saveWorkerAvailability(savedWorker.id || form.id, activeAvailability);
       }
 
-      alert("Trabajador y disponibilidad guardados correctamente xdd");
+      alert("Trabajador y disponibilidad guardados correctamente");
       setShowModal(false);
       setForm({
         id: null,

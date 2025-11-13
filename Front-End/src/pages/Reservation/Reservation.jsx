@@ -4,6 +4,7 @@ import MainLayout from "../../layouts/MainLayout";
 import { useCart } from "../../context/cartContext";
 import { getUserIdFromToken } from "../../api/authApi";
 import { createAppointment } from "../../api/appointmentApi";
+import { getAllWorkers } from "../Admin/components/JS/workerService"; 
 import { toast } from 'react-toastify';
 import "./Reservation.css";
 import heroImage from "../../assets/images/Banner.jpg";
@@ -22,24 +23,36 @@ const Reservation = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
+  const [workers, setWorkers] = useState([]); 
 
   const serviceToBook = cartItems.length > 0 ? cartItems[0] : null;
 
   useEffect(() => {
-    const id = getUserIdFromToken(); //
-    if (!id) {
-      toast.error("Por favor, inicia sesión para reservar.");
-      navigate("/login");
-      return;
-    }
+    const id = getUserIdFromToken();
     setUserId(id);
 
     if (!serviceToBook) {
-      toast.info("Por favor, selecciona un servicio primero.");
+      toast.info("Por favor, selecciona un servicio primero.", {
+        toastId: 'serviceError'
+      });
       navigate("/servicios/masajes");
       return;
     }
     setSubmitMessage("");
+
+    // Función para cargar los especialistas
+    const fetchWorkers = async () => {
+      try {
+        const workerList = await getAllWorkers();
+        setWorkers(workerList); 
+      } catch (error) {
+        console.error("Error al cargar especialistas:", error);
+        toast.error("No se pudo cargar la lista de especialistas.");
+      }
+    };
+
+    fetchWorkers();
+
   }, [serviceToBook, navigate]);
 
   const handleChange = (e) => {
@@ -68,7 +81,7 @@ const Reservation = () => {
       const appointmentData = {
         userId: userId,
         serviceId: serviceToBook.id,
-        workerId: parseInt(formData.workerId, 10),
+        workerId: parseInt(formData.workerId, 10), // Esto ya estaba correcto
         appointmentStart: appointmentStart,
         amount: totalCartPrice,
         status: "PENDING",
@@ -104,7 +117,7 @@ const Reservation = () => {
       <div className="reservation-container">
         <section
           className="hero-section"
-          style={{ backgroundImage: `url(${heroImage})` }} //
+          style={{ backgroundImage: `url(${heroImage})` }}
         >
           <div className="hero-overlay"></div>
           <h1>Reserva tu Cita</h1>
@@ -129,8 +142,12 @@ const Reservation = () => {
                   <label htmlFor="workerId">Especialista</label>
                   <select id="workerId" value={formData.workerId} onChange={handleChange} required>
                       <option value="">-- Seleccionar Especialista --</option>
-                      <option value="1">Especialista 1</option>{/*Se puede cambiar despues */}
-                      <option value="2">Especialista 2</option>
+                      {/* Mapea la lista de trabajadores obtenida del estado */}
+                      {workers.map(worker => (
+                        <option key={worker.id} value={worker.id}>
+                          {worker.username}
+                        </option>
+                      ))}
                   </select>
                   {errors.workerId && <p className="error-text">{errors.workerId}</p>}
                 </div>
