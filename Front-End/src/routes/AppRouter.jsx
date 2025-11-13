@@ -38,11 +38,7 @@ export default function AppRouter() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/reserva" element={<Reservation />} />{/*No mover */}
-        </Route>
-        
-        {/* Ruta Admin temporalmente desprotegida para desarrollo */}
-        <Route path="/admin" element={<Admin />} />
-        
+        </Route>   
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
