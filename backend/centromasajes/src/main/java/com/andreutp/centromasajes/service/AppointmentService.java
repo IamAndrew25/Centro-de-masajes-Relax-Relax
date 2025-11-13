@@ -61,7 +61,7 @@ public class AppointmentService {
         appointment.setWorker(worker);
         appointment.setService(service);
         appointment.setAppointmentStart(request.getAppointmentStart());
-        appointment.setAppointmentEnd(request.getAppointmentEnd());
+        /*appointment.setAppointmentEnd(request.getAppointmentEnd()); */
         appointment.setNotes(request.getNotes());
         appointment.setStatus(AppointmentModel.Status.PENDING);
 
@@ -112,7 +112,8 @@ public class AppointmentService {
         existing.setWorker(worker);
         existing.setService(service);
         existing.setAppointmentStart(request.getAppointmentStart());
-        existing.setAppointmentEnd(request.getAppointmentEnd());
+        /*existing.setAppointmentEnd(request.getAppointmentEnd());*/
+        existing.setAppointmentEnd(request.getAppointmentStart().plusMinutes(service.getDurationMin()));
         existing.setStatus(AppointmentModel.Status.valueOf(request.getStatus()));
         existing.setNotes(request.getNotes());
 
