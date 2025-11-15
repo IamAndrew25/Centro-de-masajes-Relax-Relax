@@ -89,7 +89,7 @@ public class AuthService {
         //obtenemos e usuario
         UserModel user = userOpt.get();
         //ahora el token
-        String token = jwtUtil.generateToken(user.getUsername()); // aca se genera el token , ahi dice generatetoken xd
+        String token = jwtUtil.generateToken(user); // aca se genera el token , ahi dice generatetoken xd
         // da bien si es pues correcto dx
         AuthResponse response = new AuthResponse();
 

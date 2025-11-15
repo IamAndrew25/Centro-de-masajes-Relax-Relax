@@ -39,7 +39,7 @@ const Home = () => {
                   <span>Sesiones de masaje personalizados</span>
                 </div>
               </div>
-              <Link to="/plans" className="btn-cta">Ver tarifas</Link>
+              <Link to="/servicios/planes" className="btn-cta">Ver tarifas</Link>
             </div>
             <div className="images">
               <div className="therapy-image-container">

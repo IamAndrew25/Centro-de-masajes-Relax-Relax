@@ -38,9 +38,12 @@ public class ServiceController {
 
     //Actualizar servicios
     @PutMapping("/{id}")
-    public ResponseEntity<ServiceModel> updateServiceById(@Valid @PathVariable Long id, ServiceModel  serviceModel){
-        return ResponseEntity.ok(serviceService.updateService(id,serviceModel));
+    public ResponseEntity<ServiceModel> updateServiceById(
+            @Valid @PathVariable Long id,
+            @RequestBody ServiceModel serviceModel) {
+        return ResponseEntity.ok(serviceService.updateService(id, serviceModel));
     }
+
 
     //elimiar servicio por id
     @DeleteMapping("/{id}")

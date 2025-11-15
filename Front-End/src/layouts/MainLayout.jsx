@@ -1,6 +1,9 @@
 import React from 'react';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
+import { FloatingWhatsApp } from 'react-floating-whatsapp';
+import logo from '../assets/images/logo.png';
+
 import './Main.css';
 
 //children representa un elemento o componente que se anide dentro de MainLayout cuando se use
@@ -20,6 +23,19 @@ const MainLayout = ({ children }) => {
 
       {/* Renderiza el componente Footer*/}
       <Footer />
+
+      <FloatingWhatsApp
+        phoneNumber="+51922955336"
+        accountName="Relax Total"
+        allowEsc={true}           
+        allowClickAway={true}     
+        notification={true}       
+        notificationSound={false} 
+        avatar={logo}             
+        chatMessage="¡Hola! 👋 ¿Cómo podemos ayudarte hoy?"
+        placeholder="Escribe tu mensaje..."
+        statusMessage="Normalmente responde en 1 hora"
+      />
     </div>
   );
 };
