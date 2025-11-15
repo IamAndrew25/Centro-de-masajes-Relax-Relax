@@ -134,4 +134,55 @@ public class ReportController {
     
     //metodo yherson
 
+    // FACTURA: DESCARGA (GET)
+@GetMapping("/factura/download")
+public ResponseEntity<byte[]> descargarFactura(
+        @RequestParam String cliente,
+        @RequestParam String descripcion,
+        @RequestParam double total,
+        @RequestParam String metodoPago,
+        @RequestParam(defaultValue = "F000-000001") String numero
+) {
+    byte[] pdfBytes = PdfGenerator.generateInvoiceA4Pdf(
+            cliente, numero, descripcion, 1, total, metodoPago, "ORD-" + System.currentTimeMillis()
+    );
+
+    return ResponseEntity.ok()
+            .header("Content-Disposition", "attachment; filename=Factura-" + numero + ".pdf")
+            .header("Content-Type", "application/pdf")
+            .body(pdfBytes);
+}
+
+//FACTURA: ENVÍO POR EMAIL (POST JSON) 
+@PostMapping("/factura/email")
+public ResponseEntity<String> enviarFacturaEmail(@RequestBody FacturaEmailRequest req) {
+    reportService.enviarFacturaPdf(
+            req.getCorreo(),
+            req.getCliente(),
+            req.getDescripcion(),
+            req.getTotal(),
+            req.getMetodoPago()
+    );
+    return ResponseEntity.accepted().body("Factura enviada a: " + req.getCorreo());
+}
+
+// DTO para el body del POST
+public static class FacturaEmailRequest {
+    private String correo;
+    private String cliente;
+    private String descripcion;
+    private double total;
+    private String metodoPago;
+
+    public String getCorreo() { return correo; }
+    public String getCliente() { return cliente; }
+    public void setCliente(String cliente) { this.cliente = cliente; }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public double getTotal() { return total; }
+    public void setTotal(double total) { this.total = total; }
+    public String getMetodoPago() { return metodoPago; }
+    public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }
+}
+
 }

@@ -172,5 +172,31 @@ public class ReportService {
 
         logger.info("Boleta PDF enviada correctamente a {}", correo);
     }
+    // PDF CON DISEÑO AL CORREO FACTURA-------------------------------- JIJIJI GO LEFT?
+public void enviarFacturaPdf(String correo, String cliente, String descripcion,
+                             double total, String metodoPago) {
+    logger.info("Generando y enviando FACTURA PDF a {}", correo);
+
+    byte[] pdfBytes = PdfGenerator.generateInvoiceA4Pdf(
+            cliente,
+            "F" + System.currentTimeMillis(), // número único
+            descripcion,
+            1,                                // cantidad se puede parametrizar
+            total,
+            metodoPago,
+            String.valueOf(System.currentTimeMillis())
+    );
+
+    emailService.enviarCorreoConAdjunto(
+            correo,
+            "Factura electrónica - Relax Total",
+            "Adjuntamos su factura electrónica. ¡Gracias por su preferencia!",
+            pdfBytes,
+            "FacturaRelaxTotal.pdf"
+    );
+
+    logger.info("Factura PDF enviada correctamente a {}", correo);
+}
+
 
 }
