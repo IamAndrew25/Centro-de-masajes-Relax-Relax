@@ -23,7 +23,7 @@ const Reservation = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
-  const [workers, setWorkers] = useState([]); 
+  const [workers, setWorkers] = useState([]);
 
   const serviceToBook = cartItems.length > 0 ? cartItems[0] : null;
 
@@ -44,7 +44,7 @@ const Reservation = () => {
     const fetchWorkers = async () => {
       try {
         const workerList = await getAllWorkers();
-        setWorkers(workerList); 
+        setWorkers(workerList);
       } catch (error) {
         console.error("Error al cargar especialistas:", error);
         toast.error("No se pudo cargar la lista de especialistas.");
@@ -134,25 +134,25 @@ const Reservation = () => {
             )}
 
             <form className="reservation-form" onSubmit={handleSubmit} noValidate>
-                <p className="service-summary">
+              <p className="service-summary">
                   Servicio: <strong>{serviceToBook.name}</strong> (S/ {totalCartPrice.toFixed(2)})
-                </p>
+              </p>
 
-                <div className="form-group">
-                  <label htmlFor="workerId">Especialista</label>
+              <div className="form-group">
+                <label htmlFor="workerId">Especialista</label>
                   <select id="workerId" value={formData.workerId} onChange={handleChange} required>
-                      <option value="">-- Seleccionar Especialista --</option>
+                  <option value="">-- Seleccionar Especialista --</option>
                       {/* Mapea la lista de trabajadores obtenida del estado */}
                       {workers.map(worker => (
-                        <option key={worker.id} value={worker.id}>
-                          {worker.username}
-                        </option>
-                      ))}
-                  </select>
+                    <option key={worker.id} value={worker.id}>
+                      {worker.username}
+                    </option>
+                  ))}
+                </select>
                   {errors.workerId && <p className="error-text">{errors.workerId}</p>}
-                </div>
+              </div>
 
-                <div className="form-group">
+              <div className="form-group">
                   <label htmlFor="date">Fecha</label>
                   <input
                     type="date"
@@ -172,14 +172,14 @@ const Reservation = () => {
                     id="time"
                     value={formData.time}
                     onChange={handleChange}
-                    required
-                  />
-                  {errors.time && <p className="error-text">{errors.time}</p>}
-                </div>
+                  required
+                />
+                {errors.time && <p className="error-text">{errors.time}</p>}
+              </div>
 
                 <button type="submit" className="btn-reserve" disabled={isLoading}>
-                  {isLoading ? "Registrando Reserva..." : "Confirmar Reserva"}
-                </button>
+                {isLoading ? "Registrando Reserva..." : "Confirmar Reserva"}
+              </button>
             </form>
           </div>
         </section>

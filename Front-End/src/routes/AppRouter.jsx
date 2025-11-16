@@ -32,6 +32,7 @@ export default function AppRouter() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/claims" element={<Claims />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* --- Rutas Protegidas (Requieren Login) --- */}
         <Route element={<ProtectedRoute />}>
@@ -39,7 +40,6 @@ export default function AppRouter() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/reserva" element={<Reservation />} />{/*No mover */}
         </Route>   
-        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   );

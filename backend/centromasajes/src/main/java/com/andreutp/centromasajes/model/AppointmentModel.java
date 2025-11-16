@@ -1,5 +1,6 @@
 package com.andreutp.centromasajes.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,14 +21,17 @@ public class AppointmentModel {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"availability", "hibernateLazyInitializer"})
     private UserModel user;
 
     @ManyToOne
     @JoinColumn(name = "worker_id", nullable = false)
+    @JsonIgnoreProperties({"availability", "hibernateLazyInitializer"})
     private UserModel worker;
 
     @ManyToOne
     @JoinColumn(name = "service_id", nullable = false)
+    @JsonIgnoreProperties({"availability", "hibernateLazyInitializer"})
     private ServiceModel service;
 
     @Column(name = "appointment_start", nullable = false)
