@@ -32,10 +32,16 @@ public class PromotionController {
     // ------------------------
     // LISTAR PROMOCIONES ACTIVAS (USER, ADMIN, WORKER)
     // ------------------------
-    @GetMapping
+   /* @GetMapping
     //@PreAuthorize("hasAnyRole('USER','WORKER','ADMIN')")
     public ResponseEntity<List<PromotionModel>> getActivePromotions() {
         return ResponseEntity.ok(promotionService.getActivePromotions());
+    }*/
+
+    @GetMapping
+    //@PreAuthorize("hasAnyRole('USER','WORKER','ADMIN')")
+    public List<PromotionModel> getAllPromotions() {
+        return promotionService.getAllPromotions();
     }
 
     // ------------------------

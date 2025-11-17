@@ -36,10 +36,21 @@ public class PlanService {
 
     public PlanModel updatePlan(Long id, PlanModel newPlan) {
         PlanModel existing = getPlanById(id);
+
         existing.setName(newPlan.getName());
         existing.setDescription(newPlan.getDescription());
         existing.setPrice(newPlan.getPrice());
         existing.setDurationDays(newPlan.getDurationDays());
+
+        existing.setTipo(newPlan.getTipo());
+        existing.setIcono(newPlan.getIcono());
+        existing.setServicios_incluidos(newPlan.getServicios_incluidos());
+        existing.setBeneficios(newPlan.getBeneficios());
+        existing.setDestacado(newPlan.getDestacado());
+        existing.setEstado(newPlan.getEstado());
+        existing.setDuracion(newPlan.getDuracion());
+        existing.setDuracion_unidad(newPlan.getDuracion_unidad());
+
         return planRepository.save(existing);
     }
 
