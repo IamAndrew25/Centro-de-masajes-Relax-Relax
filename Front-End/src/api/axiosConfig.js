@@ -7,4 +7,18 @@ const apiClient = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// Interceptor para agregar el token de autenticación a todas las peticiones
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export default apiClient;
