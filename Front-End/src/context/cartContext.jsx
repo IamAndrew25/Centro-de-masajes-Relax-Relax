@@ -41,9 +41,20 @@ export const CartProvider = ({ children }) => {
 
   // Calculamos el precio total
   const totalCartPrice = cartItems.reduce((total, item) => {
-    // Aseguramos que el precio sea un numero y no una cadena
-    const priceString = String(item.price).replace('S/ ', '');
+    
+    const rawPrice = item.precio !== undefined ? item.precio : item.price;
+    
+    if (rawPrice === undefined || rawPrice === null) {
+      return total; // Si no hay precio, no sumar nada
+    }
+
+    const priceString = String(rawPrice).replace('S/ ', '');
     const price = parseFloat(priceString);
+
+    if (isNaN(price)) {
+      return total;
+    }
+
     return total + (price * item.quantity);
   }, 0);
 
