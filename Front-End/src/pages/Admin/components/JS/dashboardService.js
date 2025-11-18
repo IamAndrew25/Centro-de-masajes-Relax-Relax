@@ -1,13 +1,40 @@
-import axios from '../../../../api/axiosConfig';
+import apiClient from '../../../../api/axiosConfig';
 
-const API_URL = '/admin/dashboard';
+const API_URL = 'http://localhost:8080/api/dashboard';
+
+// Función para obtener el token del localStorage
+const getToken = () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    console.warn('⚠️ No se encontró token en localStorage');
+  } else {
+    console.log('✅ Token encontrado:', token.substring(0, 20) + '...');
+  }
+  return token;
+};
+
+// Configuración de headers con token
+const getAuthHeaders = () => {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+// Obtener todos los servicios
+export const getAllServices = async () => {
+  const response = await apiClient.get(API_URL, {
+    headers: getAuthHeaders()
+  });
+  return response.data;
+};
 
 /**
  * Obtiene las estadísticas del dashboard desde el backend
  */
 export const getDashboardStats = async () => {
     try {
-        const response = await axios.get(`${API_URL}/stats`);
+        const response = await apiClient.get(`${API_URL}/stats`, {
+            headers: getAuthHeaders()
+        });
         return response.data;
     } catch (error) {
         console.error('Error al obtener estadísticas del dashboard:', error);
@@ -20,8 +47,9 @@ export const getDashboardStats = async () => {
  */
 export const getRecentReservations = async (limit = 10) => {
     try {
-        const response = await axios.get(`${API_URL}/reservations/recent`, {
-            params: { limit }
+        const response = await apiClient.get(`${API_URL}/reservations/recent`, {
+            params: { limit },
+            headers: getAuthHeaders()
         });
         return response.data;
     } catch (error) {
@@ -35,8 +63,9 @@ export const getRecentReservations = async (limit = 10) => {
  */
 export const getMonthlyRevenue = async (months = 6) => {
     try {
-        const response = await axios.get(`${API_URL}/revenue/monthly`, {
-            params: { months }
+        const response = await apiClient.get(`${API_URL}/revenue/monthly`, {
+            params: { months },
+            headers: getAuthHeaders()
         });
         return response.data;
     } catch (error) {
@@ -50,8 +79,9 @@ export const getMonthlyRevenue = async (months = 6) => {
  */
 export const getWeeklyReservations = async (weeks = 4) => {
     try {
-        const response = await axios.get(`${API_URL}/reservations/weekly`, {
-            params: { weeks }
+        const response = await apiClient.get(`${API_URL}/reservations/weekly`, {
+            params: { weeks },
+            headers: getAuthHeaders()
         });
         return response.data;
     } catch (error) {
@@ -65,8 +95,9 @@ export const getWeeklyReservations = async (weeks = 4) => {
  */
 export const getPopularServices = async (limit = 5) => {
     try {
-        const response = await axios.get(`${API_URL}/services/popular`, {
-            params: { limit }
+        const response = await apiClient.get(`${API_URL}/services/popular`, {
+            params: { limit },
+            headers: getAuthHeaders()
         });
         return response.data;
     } catch (error) {

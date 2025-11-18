@@ -71,29 +71,39 @@ const Dashboard = ({ stats = {}, setActiveTab }) => {
                 </div>
             ) : (
                 <>
-                    {/* Segunda fila de información */}
+                    {/* Servicios más populares */}
                     <div className="dashboard-info">
-                        {/* Servicios más populares */}
                         <div className="info-card info-card-full">
                             <h3>🏆 Servicios Más Populares (Este Mes)</h3>
                             <div className="popular-services">
-                                {popularServices.map((service, index) => (
-                                    <div key={index} className="service-item">
-                                        <div className="service-info">
-                                            <span className="service-rank">#{index + 1}</span>
-                                            <span className="service-name">{service.nombre}</span>
-                                        </div>
-                                        <div className="service-bar-container">
-                                            <div 
-                                                className="service-bar" 
-                                                style={{ 
-                                                    width: `${(service.cantidad / getMaxValue(popularServices, 'cantidad')) * 100}%` 
-                                                }}
-                                            ></div>
-                                            <span className="service-count">{service.cantidad}</span>
-                                        </div>
-                                    </div>
-                                ))}
+                                {popularServices.length > 0 ? (
+                                    popularServices.map((service, index) => {
+                                        const maxValue = getMaxValue(popularServices, 'cantidad');
+                                        const barWidth = maxValue > 0 ? (service.cantidad / maxValue) * 100 : 0;
+                                        return (
+                                            <div key={index} className="service-item">
+                                                <div className="service-info">
+                                                    <span className="service-rank">#{index + 1}</span>
+                                                    <span className="service-name">{service.nombre}</span>
+                                                </div>
+                                                <div className="service-bar-container">
+                                                    <div 
+                                                        className="service-bar" 
+                                                        style={{ 
+                                                            width: `${barWidth}%`,
+                                                            minWidth: barWidth > 0 ? '30px' : '0'
+                                                        }}
+                                                    ></div>
+                                                    <span className="service-count">{service.cantidad}</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <p style={{ textAlign: 'center', color: '#999', padding: '20px' }}>
+                                        No hay datos disponibles
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -206,7 +216,7 @@ const Dashboard = ({ stats = {}, setActiveTab }) => {
                     display: grid;
                     grid-template-columns: 1fr;
                     gap: 25px;
-                    margin-top: 120px;
+                    margin-top: 30px;
                 }
 
                 .info-card {
@@ -266,13 +276,15 @@ const Dashboard = ({ stats = {}, setActiveTab }) => {
                     display: flex;
                     align-items: center;
                     gap: 10px;
+                    flex: 1;
                 }
 
                 .service-bar {
-                    height: 8px;
+                    height: 12px;
                     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                     border-radius: 10px;
-                    transition: width 0.3s ease;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
                 }
 
                 .service-count {
