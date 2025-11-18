@@ -28,12 +28,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                 auth -> auth
                         .requestMatchers("/appointments/**").permitAll()
                         .requestMatchers("/user/**").permitAll()
                         .requestMatchers("/availability/**").permitAll()
                         .requestMatchers("/payments/**").permitAll()
+                        .requestMatchers("/admin/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
 
                         .requestMatchers("/auth/register/**","/auth/login/**","/auth/forgot-password/**", "/auth/reset-password/**").permitAll()
                         .requestMatchers("/services/**").permitAll()

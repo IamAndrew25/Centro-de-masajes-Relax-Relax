@@ -31,8 +31,8 @@ public interface IAppointmentRepository extends JpaRepository<AppointmentModel, 
     @Query("SELECT a FROM AppointmentModel a WHERE a.appointmentStart BETWEEN :startDate AND :endDate ORDER BY a.appointmentStart DESC")
     List<AppointmentModel> findByFechaBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-    @Query("SELECT a FROM AppointmentModel a ORDER BY a.createdAt DESC")
-    List<AppointmentModel> findTopByOrderByFechaCreacionDesc(@Param("limit") int limit);
+    @Query(value = "SELECT a FROM AppointmentModel a ORDER BY a.createdAt DESC")
+    List<AppointmentModel> findRecentAppointments(org.springframework.data.domain.Pageable pageable);
 
   /*  @Query("SELECT a FROM AppointmentModel a WHERE a.worker.id = :workerId AND FUNCTION('DATE', a.appointmentStart) = :day")
     List<AppointmentModel> findByWorkerIdAndDay(@Param("workerId") Long workerId, @Param("day") LocalDate day);*/
