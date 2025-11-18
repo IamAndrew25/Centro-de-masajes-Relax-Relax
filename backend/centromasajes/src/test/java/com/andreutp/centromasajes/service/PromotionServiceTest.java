@@ -1,23 +1,30 @@
 package com.andreutp.centromasajes.service;
 
-import com.andreutp.centromasajes.dao.IPromotionRepository;
-import com.andreutp.centromasajes.model.PromotionModel;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.andreutp.centromasajes.dao.IPromotionRepository;
+import com.andreutp.centromasajes.model.PromotionModel;
 
 @ExtendWith(MockitoExtension.class)
 class PromotionServiceTest {
@@ -38,8 +45,8 @@ class PromotionServiceTest {
         testPromotion.setDescription("Descuento en masajes");
         testPromotion.setDiscountPercent(new BigDecimal("20.00"));
         testPromotion.setDiscountAmount(BigDecimal.ZERO);
-        testPromotion.setStartDate(LocalDateTime.now());
-        testPromotion.setEndDate(LocalDateTime.now().plusDays(30));
+        testPromotion.setStartDate(LocalDate.now());
+        testPromotion.setEndDate(LocalDate.now().plusDays(30));
         testPromotion.setActive(true);
     }
 
@@ -132,8 +139,8 @@ class PromotionServiceTest {
         updatedPromotion.setDescription("Nueva descripción");
         updatedPromotion.setDiscountPercent(new BigDecimal("25.00"));
         updatedPromotion.setDiscountAmount(new BigDecimal("50.00"));
-        updatedPromotion.setStartDate(LocalDateTime.now().plusDays(1));
-        updatedPromotion.setEndDate(LocalDateTime.now().plusDays(31));
+        updatedPromotion.setStartDate(LocalDate.now().plusDays(1));
+        updatedPromotion.setEndDate(LocalDate.now().plusDays(31));
         updatedPromotion.setActive(false);
 
         when(promotionRepository.findById(1L)).thenReturn(Optional.of(testPromotion));
