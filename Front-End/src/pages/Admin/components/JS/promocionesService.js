@@ -6,7 +6,7 @@ const toDate = (value) => {
     if (!value) return null;
     const d = new Date(value);
     if (isNaN(d)) return null;
-    return d.toISOString().split("T")[0]; // 👉 SOLO LA FECHA
+    return d.toISOString().split("T")[0]; //SOLO LA FECHA
 };
 
 
@@ -50,4 +50,15 @@ export const updatePromocion = async (id, formData) => {
 export const deletePromocion = async (id) => {
     const res = await axios.delete(`${API_URL}/${id}`);
     return res.data;
+};
+
+export const uploadPromotionImage = async (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await axios.post("http://localhost:8080/upload/promotion-image", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+    });
+
+    return res.data; 
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from './ui/Card';
-import { getPromociones, createPromocion, updatePromocion, deletePromocion } from './JS/promocionesService';
+import { getPromociones, createPromocion, updatePromocion, deletePromocion,uploadPromotionImage } from './JS/promocionesService';
 import './Promociones.css'; 
 
 
@@ -67,29 +67,27 @@ const Promociones = () => {
     };
 
     const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            if (!file.type.startsWith('image/')) {
-                alert('⚠️ Por favor selecciona un archivo de imagen válido');
-                return;
-            }
+    const file = e.target.files[0];
+    if (!file) return;
 
-            if (file.size > 5 * 1024 * 1024) {
-                alert('⚠️ La imagen es muy grande. Máximo 5MB');
-                return;
-            }
+    if (!file.type.startsWith('image/')) {
+        alert("Archivo inválido");
+        return;
+    }
 
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setFormData(prev => ({
-                    ...prev,
-                    imagen_url: reader.result,
-                    imagen_file: file
-                }));
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+    if (file.size > 10 * 1024 * 1024) {
+        alert("La imagen debe ser menor a 10MB");
+        return;
+    }
+
+    setFormData(prev => ({
+        ...prev,
+        imagen_file: file,
+        // URL temporal solo para preview
+        imagen_url: URL.createObjectURL(file)
+    }));
+};
+
 
     const removeImage = () => {
         setFormData(prev => ({
@@ -139,25 +137,42 @@ const Promociones = () => {
     };
 
     const handleSave = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            if (editMode) {
-                await updatePromocion(currentPromocion.id, formData);
-                alert('✓ Promoción actualizada');
-            } else {
-                await createPromocion(formData);
-                alert('✓ Promoción creada');
-            }
-            setShowModal(false);
-            loadPromociones();
-        } catch (error) {
-            console.error('Error al guardar promoción:', error);
-            alert('✗ Error al guardar la promoción');
-        } finally {
-            setLoading(false);
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+        let imageUrl = formData.imagen_url;
+
+        // 1. Si hay archivo nuevo → subirlo
+        if (formData.imagen_file) {
+            const uploadedUrl = await uploadPromotionImage(formData.imagen_file);
+            imageUrl = uploadedUrl; // <-- actualizamos la URL real
         }
-    };
+
+        // 2. Guardar datos en backend
+        const body = {
+            ...formData,
+            imagen_url: imageUrl
+        };
+
+        if (editMode) {
+            await updatePromocion(currentPromocion.id, body);
+            alert('✓ Promoción actualizada');
+        } else {
+            await createPromocion(body);
+            alert('✓ Promoción creada');
+        }
+
+        setShowModal(false);
+        loadPromociones();
+    } catch (error) {
+        console.error("Error al guardar promoción:", error);
+        alert("✗ Error al guardar la promoción");
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     const handleDelete = async (id) => {
         if (window.confirm('⚠️ ¿Eliminar esta promoción?')) {
@@ -195,6 +210,15 @@ const Promociones = () => {
             }
         }
     };
+    
+    const getImageSrc = (url) => {
+    if (!url) return '';
+    // Si es URL absoluta o viene de los assets del frontend
+    if (url.startsWith('http') || url.startsWith('/assets/')) return url;
+    // Si es imagen subida al backend
+    return `http://localhost:8080${url}`;
+};
+
 
     return (
         <div className="admin-section">
@@ -237,7 +261,7 @@ const Promociones = () => {
 
                         {promocion.imagen_url && (
                             <div className="promocion-image">
-                                <img src={promocion.imagen_url} alt={promocion.nombre} />
+                                <img src={`http://localhost:8080${promocion.imagen_url}`} alt={promocion.nombre} />
                             </div>
                         )}
 
@@ -389,19 +413,21 @@ const Promociones = () => {
                                         <span className="file-info">Formatos: JPG, PNG, GIF (máx. 5MB)</span>
                                     </div>
                                     
-                                    {formData.imagen_url && (
-                                        <div className="image-preview">
-                                            <img src={formData.imagen_url} alt="Preview" />
-                                            <button 
-                                                type="button" 
-                                                className="remove-image-btn"
-                                                onClick={removeImage}
-                                                title="Eliminar imagen"
-                                            >
-                                                ✕
-                                            </button>
-                                        </div>
-                                    )}
+                                    {/* Imagen en el modal */}
+                                        {formData.imagen_url && (
+                                            <div className="promocion-image">
+                                                <img src={formData.imagen_file ? formData.imagen_url : getImageSrc(formData.imagen_url)} alt={formData.nombre} />
+                                                <button 
+                                                    type="button" 
+                                                    className="remove-image-btn"
+                                                    onClick={removeImage}
+                                                    title="Eliminar imagen"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
+                                        )}
+
                                 </div>
 
                                 <div className="form-group">

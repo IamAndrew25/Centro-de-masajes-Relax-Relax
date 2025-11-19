@@ -4,6 +4,8 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { useCart } from '../../context/cartContext';
 import './Header.css';
+import { getBusinessBasics } from '../../pages/Admin/components/JS/businessConfigService';
+
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -12,6 +14,7 @@ const Header = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [businessName, setBusinessName] = useState('Relax Total');
   const navigate = useNavigate();
   const { cartItems, removeFromCart, cartItemCount, totalCartPrice } = useCart();
 
@@ -31,6 +34,20 @@ const Header = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [isLoggedIn]); // Se ejecuta cuando el estado de login cambia
+useEffect(() => {
+  const fetchBusinessName = async () => {
+    try {
+      const data = await getBusinessBasics();
+      if (data && data.nombreSpa) {
+        setBusinessName(data.nombreSpa);
+      }
+    } catch (error) {
+      console.error('Error al cargar el nombre del spa:', error);
+    }
+  };
+
+  fetchBusinessName();
+}, []); // 👈 solo una vez al montar
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -77,7 +94,7 @@ const Header = () => {
           {/* Logo */}
           <div className="logo">
             <NavLink to="/" onClick={closeMenu}>
-              <h1>Relax Total</h1>
+              <h1>{businessName}</h1>
             </NavLink>
           </div>
 
