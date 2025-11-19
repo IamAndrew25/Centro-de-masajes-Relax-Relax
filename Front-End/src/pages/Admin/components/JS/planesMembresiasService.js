@@ -1,242 +1,122 @@
-// Servicio para gestión de Planes y Membresías
-// Mock data temporal - reemplazar con llamadas API reales cuando el backend esté listo
+import axios from 'axios';
 
-let planesData = [
-    {
-        id: 1,
-        nombre: '3 meses',
-        descripcion: 'Acceso a reservas online y descuentos exclusivos',
-        tipo: 'plan',
-        precio: 90,
-        precio_anterior: null,
-        duracion: 3,
-        duracion_unidad: 'meses',
-        servicios_incluidos: [
-            'Acceso a reservas online sin costo extra',
-            'Confirmación inmediata de disponibilidad'
-        ],
-        beneficios: [
-            '5% de descuento en compras de temporada'
-        ],
-        estado: 'activo',
-        destacado: false,
-        color: '#4facfe',
-        icono: '📅'
-    },
-    {
-        id: 2,
-        nombre: '6 meses',
-        descripcion: 'Atención prioritaria y descuentos especiales',
-        tipo: 'plan',
-        precio: 160,
-        precio_anterior: null,
-        duracion: 6,
-        duracion_unidad: 'meses',
-        servicios_incluidos: [
-            'Todos los beneficios del plan básico',
-            'Atención prioritaria en reservas',
-            'Acceso anticipado a promociones'
-        ],
-        beneficios: [
-            '10% de descuento en paquetes especiales',
-            '10% ahorro comparado al plan mensual'
-        ],
-        estado: 'activo',
-        destacado: true,
-        color: '#667eea',
-        icono: '💎'
-    },
-    {
-        id: 3,
-        nombre: '1 año',
-        descripcion: 'Experiencia VIP completa con máximos beneficios',
-        tipo: 'membresia',
-        precio: 350,
-        precio_anterior: null,
-        duracion: 12,
-        duracion_unidad: 'meses',
-        servicios_incluidos: [
-            'Todos los beneficios del plan Premium',
-            'Atención VIP personalizada',
-            'Eventos exclusivos para miembros',
-            'Regalo de bienvenida premium'
-        ],
-        beneficios: [
-            '15% de descuento en todos los servicios',
-            '25% ahorro comparado al plan mensual',
-            'Acceso prioritario a nuevos servicios',
-            'Sesión de consulta personalizada gratuita'
-        ],
-        estado: 'activo',
-        destacado: false,
-        color: '#f093fb',
-        icono: '👑'
+const API_URL = 'http://localhost:8080/plans';
+
+const getAuthHeader = () => {
+  const token = localStorage.getItem('token');
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`
     }
-];
+  };
+};
 
-let nextId = 4;
+/*
+  Backend model (PlanModel) fields we support:
+  {
+    id,
+    name,
+    description,
+    price,
+    durationDays,
+    tipo,
+    icono,
+    servicios_incluidos, // JSON array
+    beneficios,          // JSON array
+    destacado,
+    estado,
+    duracion,
+    duracion_unidad,
+    createdAt
+  }
+*/
 
-// Simular delay de API (optimizado para mejor UX)
-const delay = (ms = 50) => new Promise(resolve => setTimeout(resolve, ms));
+/* Convert frontend form (formData) -> backend payload */
+const mapToBackend = (form) => {
+  // servicios_incluidos / beneficios pueden llegar como string multilinea (desde el textarea)
+  const toArray = (v) => {
+    if (!v && v !== '') return [];
+    if (Array.isArray(v)) return v;
+    if (typeof v === 'string') {
+      return v.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+    }
+    return [];
+  };
 
-// GET - Obtener todos los planes
+  // durationDays en días en backend
+  const dur = Number(form.duracion || 0) || 0;
+  const duracion_unidad = form.duracion_unidad || 'meses';
+  const durationDays = duracion_unidad === 'meses' ? dur * 30 : dur;
+
+  return {
+    name: form.nombre,
+    description: form.descripcion || form.nombre,
+    price: Number(form.precio) || 0,
+    durationDays: Number(durationDays) || 0,
+    tipo: form.tipo || 'plan',
+    icono: form.icono || '💠',
+    servicios_incluidos: toArray(form.servicios_incluidos),
+    beneficios: toArray(form.beneficios),
+    destacado: Boolean(form.destacado),
+    estado: form.estado || 'activo',
+    duracion: Number(form.duracion) || 1,
+    duracion_unidad: duracion_unidad
+  };
+};
+
+/* Convert backend plan -> frontend-friendly object (used in lists and in form builder) */
+const mapFromBackend = (plan) => {
+  // plan.servicios_incluidos/beneficios pueden venir como array o como JSON-string dependiendo de DB/driver
+  const toArraySafe = (v) => {
+    if (!v) return [];
+    if (Array.isArray(v)) return v;
+    if (typeof v === 'string') {
+      try {
+        // si es JSON string (p.ej MySQL devuelve texto), intentar parse
+        const parsed = JSON.parse(v);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (e) { /* no-op */ }
+      // si es string multilinea separado por \n
+      return v.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+    }
+    return [];
+  };
+
+  return {
+    id: plan.id,
+    // fields para render y para buildFormFromPlan
+    nombre: plan.name,
+    descripcion: plan.description,
+    precio: plan.price,
+    tipo: plan.tipo || 'plan',
+    icono: plan.icono || '💠',
+    servicios_incluidos: toArraySafe(plan.servicios_incluidos),
+    beneficios: toArraySafe(plan.beneficios),
+    destacado: !!plan.destacado,
+    estado: plan.estado || 'activo',
+    duracion: plan.duracion ?? (plan.durationDays ? Math.round(plan.durationDays / 30) : 1),
+    duracion_unidad: plan.duracion_unidad || (plan.durationDays ? 'meses' : 'meses'),
+    createdAt: plan.createdAt
+  };
+};
+
 export const getPlanes = async () => {
-    await delay();
-    return [...planesData];
+  const res = await axios.get(API_URL, getAuthHeader());
+  return Array.isArray(res.data) ? res.data.map(mapFromBackend) : [];
 };
 
-// GET - Obtener un plan por ID
-export const getPlanById = async (id) => {
-    await delay();
-    const plan = planesData.find(p => p.id === parseInt(id));
-    if (!plan) {
-        throw new Error('Plan no encontrado');
-    }
-    return plan;
+export const createPlan = async (formData) => {
+  const body = mapToBackend(formData);
+  const res = await axios.post(API_URL, body, getAuthHeader());
+  return mapFromBackend(res.data);
 };
 
-// POST - Crear nuevo plan
-export const createPlan = async (planData) => {
-    await delay();
-    const newPlan = {
-        id: nextId++,
-        ...planData,
-        fecha_creacion: new Date().toISOString()
-    };
-    planesData.push(newPlan);
-    return newPlan;
+export const updatePlan = async (id, formData) => {
+  const body = mapToBackend(formData);
+  const res = await axios.put(`${API_URL}/${id}`, body, getAuthHeader());
+  return mapFromBackend(res.data);
 };
 
-// PUT - Actualizar plan existente
-export const updatePlan = async (id, planData) => {
-    await delay();
-    const index = planesData.findIndex(p => p.id === parseInt(id));
-    if (index === -1) {
-        throw new Error('Plan no encontrado');
-    }
-    planesData[index] = {
-        ...planesData[index],
-        ...planData,
-        fecha_actualizacion: new Date().toISOString()
-    };
-    return planesData[index];
-};
-
-// DELETE - Eliminar plan
 export const deletePlan = async (id) => {
-    await delay();
-    const index = planesData.findIndex(p => p.id === parseInt(id));
-    if (index === -1) {
-        throw new Error('Plan no encontrado');
-    }
-    planesData.splice(index, 1);
-    return { success: true, message: 'Plan eliminado correctamente' };
-};
-
-// GET - Obtener planes activos
-export const getPlanesActivos = async () => {
-    await delay();
-    return planesData.filter(p => p.estado === 'activo');
-};
-
-// GET - Obtener planes por tipo (plan/membresia)
-export const getPlanesPorTipo = async (tipo) => {
-    await delay();
-    return planesData.filter(p => p.tipo === tipo && p.estado === 'activo');
-};
-
-// GET - Obtener planes destacados
-export const getPlanesDestacados = async () => {
-    await delay();
-    return planesData.filter(p => p.destacado && p.estado === 'activo');
-};
-
-// GET - Obtener estadísticas de planes
-export const getEstadisticasPlanes = async () => {
-    await delay();
-    const activos = planesData.filter(p => p.estado === 'activo').length;
-    const planes = planesData.filter(p => p.tipo === 'plan').length;
-    const membresias = planesData.filter(p => p.tipo === 'membresia').length;
-    const destacados = planesData.filter(p => p.destacado).length;
-    
-    return {
-        total: planesData.length,
-        activos: activos,
-        inactivos: planesData.filter(p => p.estado === 'inactivo').length,
-        planes: planes,
-        membresias: membresias,
-        destacados: destacados
-    };
-};
-
-// POST - Calcular precio con descuento
-export const calcularPrecioConDescuento = async (planId, codigoPromocion) => {
-    await delay();
-    const plan = planesData.find(p => p.id === parseInt(planId));
-    if (!plan) {
-        throw new Error('Plan no encontrado');
-    }
-    
-    // Aquí se integraría con el servicio de promociones
-    // Por ahora retornamos el precio base
-    return {
-        precioBase: plan.precio,
-        descuento: 0,
-        precioFinal: plan.precio
-    };
-};
-
-// GET - Comparar planes
-export const compararPlanes = async (idsPlanes) => {
-    await delay();
-    const planes = planesData.filter(p => idsPlanes.includes(p.id));
-    
-    return {
-        planes: planes,
-        comparacion: {
-            precioMinimo: Math.min(...planes.map(p => p.precio)),
-            precioMaximo: Math.max(...planes.map(p => p.precio)),
-            serviciosTotales: [...new Set(planes.flatMap(p => p.servicios_incluidos))].length
-        }
-    };
-};
-
-// POST - Activar/Desactivar plan
-export const toggleEstadoPlan = async (id) => {
-    await delay();
-    const plan = planesData.find(p => p.id === parseInt(id));
-    if (!plan) {
-        throw new Error('Plan no encontrado');
-    }
-    
-    plan.estado = plan.estado === 'activo' ? 'inactivo' : 'activo';
-    return plan;
-};
-
-// POST - Destacar/Quitar destacado de plan
-export const toggleDestacadoPlan = async (id) => {
-    await delay();
-    const plan = planesData.find(p => p.id === parseInt(id));
-    if (!plan) {
-        throw new Error('Plan no encontrado');
-    }
-    
-    plan.destacado = !plan.destacado;
-    return plan;
-};
-
-export default {
-    getPlanes,
-    getPlanById,
-    createPlan,
-    updatePlan,
-    deletePlan,
-    getPlanesActivos,
-    getPlanesPorTipo,
-    getPlanesDestacados,
-    getEstadisticasPlanes,
-    calcularPrecioConDescuento,
-    compararPlanes,
-    toggleEstadoPlan,
-    toggleDestacadoPlan
+  return axios.delete(`${API_URL}/${id}`, getAuthHeader());
 };

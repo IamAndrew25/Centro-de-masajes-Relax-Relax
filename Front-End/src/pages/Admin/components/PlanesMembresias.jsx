@@ -2,18 +2,25 @@ import React, { useState, useEffect } from 'react';
 import './PlanesMembresias.css';
 import { getPlanes, createPlan, updatePlan, deletePlan } from './JS/planesMembresiasService';
 
+
 const PlanesMembresias = () => {
   const [planes, setPlanes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
+
   const [formData, setFormData] = useState({
     nombre: '',
+    descripcion: '',
     precio: '',
     tipo: 'plan',
+    icono: '💠',
     servicios_incluidos: '',
     beneficios: '',
-    destacado: false
+    destacado: false,
+    duracion: 1,
+    duracion_unidad: 'meses',
+    estado: 'activo'
   });
 
   useEffect(() => {
@@ -48,10 +55,39 @@ const PlanesMembresias = () => {
     }
   };
 
+  const buildFormFromPlan = (plan, overrides = {}) => {
+    return {
+        nombre: plan.nombre ?? plan.name ?? '',
+        descripcion: plan.descripcion ?? plan.description ?? '',
+        precio: plan.precio ?? plan.price ?? '',
+        tipo: plan.tipo ?? 'plan',
+        icono: plan.icono ?? '💠',
+
+        servicios_incluidos:
+          typeof plan.servicios_incluidos === 'string'
+            ? JSON.parse(plan.servicios_incluidos)
+            : plan.servicios_incluidos ?? [],
+
+        beneficios:
+          typeof plan.beneficios === 'string'
+            ? JSON.parse(plan.beneficios)
+            : plan.beneficios ?? [],
+
+        destacado: typeof plan.destacado === 'boolean' ? plan.destacado : !!plan.destacado,
+        duracion: plan.duracion ?? (plan.durationDays ? Math.round(plan.durationDays / 30) : 1),
+        duracion_unidad: plan.duracion_unidad ?? 'meses',
+        estado: plan.estado ?? 'activo',
+
+        ...overrides
+    };
+};
+
+
   const toggleDestacado = async (plan) => {
     setLoading(true);
     try {
-      await updatePlan(plan.id, { ...plan, destacado: !plan.destacado });
+      const form = buildFormFromPlan(plan, { destacado: !plan.destacado });
+      await updatePlan(plan.id, form);
       await loadPlanes();
     } catch (err) {
       console.error('Error actualizando destacado:', err);
@@ -65,29 +101,23 @@ const PlanesMembresias = () => {
     setEditingPlan(null);
     setFormData({
       nombre: '',
+      descripcion: '',
       precio: '',
       tipo: 'plan',
+      icono: '💠',
       servicios_incluidos: '',
       beneficios: '',
-      destacado: false
+      destacado: false,
+      duracion: 1,
+      duracion_unidad: 'meses',
+      estado: 'activo'
     });
     setShowModal(true);
   };
 
   const handleEdit = (plan) => {
     setEditingPlan(plan);
-    setFormData({
-      nombre: plan.nombre || '',
-      precio: plan.precio || '',
-      tipo: plan.tipo || 'plan',
-      servicios_incluidos: Array.isArray(plan.servicios_incluidos) 
-        ? plan.servicios_incluidos.join('\n') 
-        : '',
-      beneficios: Array.isArray(plan.beneficios) 
-        ? plan.beneficios.join('\n') 
-        : '',
-      destacado: plan.destacado || false
-    });
+    setFormData(buildFormFromPlan(plan));
     setShowModal(true);
   };
 
@@ -106,55 +136,84 @@ const PlanesMembresias = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.nombre || !formData.precio) {
-      alert('Por favor completa todos los campos obligatorios');
+
+    //  calidacion estricta para evitar error 400
+    if (!formData.nombre || formData.nombre.trim().length === 0) {
+      alert("El nombre del plan es obligatorio");
+      return;
+    }
+    if (formData.precio === '' || isNaN(Number(formData.precio))) {
+      alert("El precio es obligatorio y debe ser numérico");
       return;
     }
 
+    // Convertir servicios y beneficios de texto → array válido
+    // Soporte para CREAR (string) y EDITAR (array)
+const serviciosArray = Array.isArray(formData.servicios_incluidos)
+  ? formData.servicios_incluidos
+  : (formData.servicios_incluidos || "")
+      .split("\n")
+      .map(s => s.trim())
+      .filter(Boolean);
+
+const beneficiosArray = Array.isArray(formData.beneficios)
+  ? formData.beneficios
+  : (formData.beneficios || "")
+      .split("\n")
+      .map(s => s.trim())
+      .filter(Boolean);
+
+
     setLoading(true);
     try {
-      // Asignar ícono automáticamente según el nombre del plan
-      let icono = '💠'; // Por defecto
-      if (formData.nombre.includes('3 meses')) {
-        icono = '📅';
-      } else if (formData.nombre.includes('6 meses')) {
-        icono = '💎';
-      } else if (formData.nombre.includes('1 año') || formData.nombre.includes('año')) {
-        icono = '👑';
-      }
+      let icono = formData.icono || '💠';
+
+      // Iconos automáticos segun nombre
+      const lower = formData.nombre.toLowerCase();
+      if (lower.includes('3 meses')) icono = '📅';
+      if (lower.includes('6 meses')) icono = '💎';
+      if (lower.includes('año')) icono = '👑';
 
       const planData = {
-        nombre: formData.nombre,
-        descripcion: formData.nombre, // Usar el nombre como descripción por defecto
+        nombre: formData.nombre.trim(),
+        descripcion: formData.descripcion || formData.nombre,
+
         tipo: formData.tipo,
-        precio: parseFloat(formData.precio),
+        precio: Number(formData.precio),
         icono: icono,
-        servicios_incluidos: formData.servicios_incluidos.split('\n').filter(s => s.trim()),
-        beneficios: formData.beneficios.split('\n').filter(b => b.trim()),
-        destacado: formData.destacado,
-        estado: 'activo',
-        duracion: 1,
-        duracion_unidad: 'meses'
+
+        servicios_incluidos: serviciosArray,
+        beneficios: beneficiosArray,
+
+        destacado: Boolean(formData.destacado),
+        estado: formData.estado || 'activo',
+
+        duracion: Number(formData.duracion) || 1,
+        duracion_unidad: formData.duracion_unidad
       };
-      
+
       if (editingPlan) {
-        // Actualizar plan existente
         await updatePlan(editingPlan.id, planData);
         alert('✅ Plan actualizado exitosamente');
       } else {
-        // Crear nuevo plan
         await createPlan(planData);
         alert('✅ Plan creado exitosamente');
       }
-      
+
       handleCloseModal();
       await loadPlanes();
+
     } catch (err) {
-      console.error('Error guardando plan:', err);
-      alert('❌ Error al guardar el plan: ' + err.message);
-    } finally {
-      setLoading(false);
-    }
+  console.error('Error guardando plan:', err);
+
+  if (err.response) {
+    console.log("ERROR DEL BACKEND:", err.response.data);
+    alert("❌ Backend dice: " + JSON.stringify(err.response.data));
+  } else {
+    alert("❌ Error desconocido");
+  }
+}
+
   };
 
   return (
@@ -240,9 +299,17 @@ const PlanesMembresias = () => {
             </div>
             
             <div className="plan-price">
-              <span className="price-amount">S/ {plan.precio}</span>
+              <span className="price-amount">
+                S/ {plan.precio} 
+                {plan.duracion && plan.duracion_unidad ? (
+                  ` / ${plan.duracion} ${
+                    plan.duracion === 1 
+                      ? plan.duracion_unidad.replace("es","")   // mes / día
+                      : plan.duracion_unidad                    // meses / días
+                  }`
+                ) : ""}
+              </span>
             </div>
-
             <div className="plan-benefits">
               <h4 className="benefits-title">Servicios Incluidos:</h4>
               <ul className="benefits-list">
@@ -344,6 +411,18 @@ const PlanesMembresias = () => {
               </div>
 
               <div className="form-group">
+                <label htmlFor="descripcion">Descripción (opcional)</label>
+                <input
+                  type="text"
+                  id="descripcion"
+                  name="descripcion"
+                  value={formData.descripcion}
+                  onChange={handleInputChange}
+                  placeholder="Breve descripción"
+                />
+              </div>
+
+              <div className="form-group">
                 <label htmlFor="tipo">Tipo de Plan</label>
                 <select
                   id="tipo"
@@ -353,7 +432,30 @@ const PlanesMembresias = () => {
                 >
                   <option value="plan">Plan</option>
                   <option value="membresia">Membresía</option>
+                  <option value="vip">VIP</option>
                 </select>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="icono">Icono</label>
+                  <input
+                    type="text"
+                    id="icono"
+                    name="icono"
+                    value={formData.icono}
+                    onChange={handleInputChange}
+                    placeholder="Ej: 💎"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="estado">Estado</label>
+                  <select id="estado" name="estado" value={formData.estado} onChange={handleInputChange}>
+                    <option value="activo">Activo</option>
+                    <option value="inactivo">Inactivo</option>
+                  </select>
+                </div>
               </div>
 
               <div className="form-group">
@@ -365,7 +467,7 @@ const PlanesMembresias = () => {
                   onChange={handleInputChange}
                   placeholder="Masaje relajante 60min&#10;Aromaterapia&#10;Música ambiente"
                   rows="4"
-                ></textarea>
+                />
               </div>
 
               <div className="form-group">
@@ -377,7 +479,34 @@ const PlanesMembresias = () => {
                   onChange={handleInputChange}
                   placeholder="5% descuento&#10;Toalla gratis&#10;Bebidas incluidas"
                   rows="4"
-                ></textarea>
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="duracion">Duración (cantidad)</label>
+                  <input
+                    type="number"
+                    id="duracion"
+                    name="duracion"
+                    value={formData.duracion}
+                    onChange={handleInputChange}
+                    min="1"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="duracion_unidad">Unidad</label>
+                  <select
+                    id="duracion_unidad"
+                    name="duracion_unidad"
+                    value={formData.duracion_unidad}
+                    onChange={handleInputChange}
+                  >
+                    <option value="meses">Meses</option>
+                    <option value="dias">Días</option>
+                  </select>
+                </div>
               </div>
 
               <div className="form-group-checkbox">

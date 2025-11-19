@@ -29,15 +29,12 @@ const Reservation = () => {
 
   useEffect(() => {
     const id = getUserIdFromToken();
-    if (!id) {
-      toast.error("Por favor, inicia sesión para reservar.");
-      navigate("/login");
-      return;
-    }
     setUserId(id);
 
     if (!serviceToBook) {
-      toast.info("Por favor, selecciona un servicio primero.");
+      toast.info("Por favor, selecciona un servicio primero.", {
+        toastId: 'serviceError'
+      });
       navigate("/servicios/masajes");
       return;
     }

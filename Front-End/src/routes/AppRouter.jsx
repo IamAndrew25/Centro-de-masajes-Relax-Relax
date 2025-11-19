@@ -32,17 +32,13 @@ export default function AppRouter() {
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/claims" element={<Claims />} />
-        <Route path="/reserva" element={<Reservation />} />
 
         {/* --- Rutas Protegidas (Requieren Login) --- */}
         <Route element={<ProtectedRoute />}>
           <Route path="/checkout" element={<Checkout />} />
-          {/* <Route path="/admin" element={<Admin />} /> */}
-        </Route>
-        
-        {/* Ruta Admin temporalmente desprotegida para desarrollo */}
-        <Route path="/admin" element={<Admin />} />
-        
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/reserva" element={<Reservation />} />{/*No mover */}
+        </Route>   
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
