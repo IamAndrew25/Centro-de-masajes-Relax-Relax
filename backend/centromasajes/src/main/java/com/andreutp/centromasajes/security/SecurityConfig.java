@@ -40,6 +40,8 @@ public class SecurityConfig {
                         .requestMatchers("/services/**").permitAll()
                         .requestMatchers("/upload/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/availability/**").permitAll()
+
                         .requestMatchers("/api/**").permitAll()
                         .requestMatchers("/config/**").permitAll()
                         //SERVICIOS ENDPOINS

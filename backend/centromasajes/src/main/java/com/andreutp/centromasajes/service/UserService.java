@@ -178,34 +178,39 @@ public class UserService {
     }
 
 
-    public List<String> getAvailableSlots(Long workerId, String day, int durationMinutes) {
+    public List<String> getAvailableSlots(Long workerId, String dateString, int durationMinutes) {
+
+        // Convertir string a fecha real
+        LocalDate fecha = LocalDate.parse(dateString);
+
+        // Obtener nombre del día en mayúsculas (LUNES, MARTES...)
+        String dayName = fecha.getDayOfWeek().name(); // LUNES, MARTES...
+
         Optional<UserModel> workerOpt = userRepository.findById(workerId);
         if (workerOpt.isEmpty()) return new ArrayList<>();
 
         UserModel worker = workerOpt.get();
 
-        // Buscar disponibilidad del día
+        // Buscar disponibilidad de ese día
         WorkerAvailabilityModel availability = worker.getAvailability().stream()
-                .filter(a -> a.getDay().equalsIgnoreCase(day) && Boolean.TRUE.equals(a.getActivo()))
+                .filter(a -> a.getDay().equalsIgnoreCase(dayName) && Boolean.TRUE.equals(a.getActivo()))
                 .findFirst()
                 .orElse(null);
 
         if (availability == null) return new ArrayList<>();
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
         LocalTime inicio = LocalTime.parse(availability.getInicio(), formatter);
         LocalTime fin = LocalTime.parse(availability.getFin(), formatter);
 
-        // Convertir 'day' a LocalDate
-        LocalDate fecha = LocalDate.parse(day, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        // Filtrar citas del día
+        // Filtrar citas de ese día
         List<AppointmentModel> citas = appointmentRepository.findByWorkerId(workerId)
                 .stream()
                 .filter(a -> a.getAppointmentStart().toLocalDate().equals(fecha))
                 .collect(Collectors.toList());
 
-        // Crear lista de intervalos ocupados
+        // Intervalos ocupados
         List<TimeInterval> ocupados = citas.stream()
                 .map(c -> new TimeInterval(
                         c.getAppointmentStart().toLocalTime(),
@@ -216,9 +221,11 @@ public class UserService {
         List<String> availableSlots = new ArrayList<>();
         LocalTime current = inicio;
 
+        // Generar bloques del tamaño de la duración
         while (!current.plusMinutes(durationMinutes).isAfter(fin)) {
-            final LocalTime slotStart = current;
-            LocalTime slotEnd = slotStart.plusMinutes(durationMinutes);
+
+            LocalTime slotStart = current;
+            LocalTime slotEnd = current.plusMinutes(durationMinutes);
 
             boolean conflict = ocupados.stream().anyMatch(ti ->
                     !(slotEnd.isBefore(ti.getStart()) || slotStart.isAfter(ti.getEnd()))
@@ -228,14 +235,16 @@ public class UserService {
                 availableSlots.add(slotStart.format(formatter));
             }
 
-            current = current.plusMinutes(10); // avanzar margen
+            // Avanza exactamente en la duración del servicio
+            current = current.plusMinutes(durationMinutes);
         }
 
         return availableSlots;
     }
 
+
     // Clase auxiliar
-    private static class TimeInterval {
+    public static class TimeInterval {
         private final LocalTime start;
         private final LocalTime end;
 

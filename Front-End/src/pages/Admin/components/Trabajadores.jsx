@@ -85,7 +85,7 @@ const Trabajadores = () => {
         notas: form.notas || '',
         password: form.password || '123456789',
         enabled: true,
-        role: { id: 3 }, // Worker
+        role: { id: 3 },
         especialidad: form.especialidad || '',
         experiencia: form.experiencia || '',
         created_at: now,
@@ -103,18 +103,15 @@ const Trabajadores = () => {
         savedWorker = await createWorker(payload);
       }
 
-      // Filtramos los días activos antes de guardar
-      const activeAvailability = form.availability
-        .filter(a => a.activo && a.inicio && a.fin)
-        .map(a => ({
-          day: a.day,
-          inicio: a.inicio,
-          fin: a.fin
-        }));
+      // Guardamos toda la semana, incluso días inactivos
+      const availabilityPayload = form.availability.map(a => ({
+        day: a.day,
+        inicio: a.inicio || null,
+        fin: a.fin || null,
+        activo: a.activo
+      }));
 
-      if (activeAvailability.length > 0) {
-        await saveWorkerAvailability(savedWorker.id || form.id, activeAvailability);
-      }
+      await saveWorkerAvailability(savedWorker.id || form.id, availabilityPayload);
 
       alert("Trabajador y disponibilidad guardados correctamente");
       setShowModal(false);
@@ -155,12 +152,15 @@ const Trabajadores = () => {
       password: '',
       especialidad: worker.especialidad || '',
       experiencia: worker.experiencia || '',
-      availability: DIAS_SEMANA.map(day => ({
-        day,
-        activo: worker.availability?.some(a => a.day === day) || false,
-        inicio: worker.availability?.find(a => a.day === day)?.inicio || '',
-        fin: worker.availability?.find(a => a.day === day)?.fin || ''
-      }))
+      availability: DIAS_SEMANA.map(day => {
+        const slot = worker.availability?.find(a => a.day === day);
+        return {
+          day,
+          activo: slot?.activo || false,
+          inicio: slot?.inicio || '',
+          fin: slot?.fin || ''
+        };
+      })
     });
     setShowModal(true);
   };
@@ -177,8 +177,8 @@ const Trabajadores = () => {
   };
 
   const WorkerAvailability = ({ availability }) => {
-    if (!Array.isArray(availability)) return <p>🕒 Sin horarios registrados</p>;
-    if (!availability.length) return <p>🕒 Sin horarios registrados</p>;
+    if (!Array.isArray(availability) || !availability.length) 
+      return <p>🕒 Sin horarios registrados</p>;
 
     return (
       <div className="availability-list">
@@ -186,7 +186,7 @@ const Trabajadores = () => {
         <ul>
           {availability.map((slot, index) => (
             <li key={index}>
-              {slot.day}: {slot.inicio} - {slot.fin}
+              {slot.day}: {slot.inicio || '—'} - {slot.fin || '—'}
             </li>
           ))}
         </ul>
@@ -196,24 +196,18 @@ const Trabajadores = () => {
 
   return (
     <div className="trabajadores">
-        
       <SectionHeader 
         title="Gestión de Trabajadores"      
         buttonText="Nuevo Trabajador" 
         onButtonClick={() => setShowModal(true)} 
       />
-<button 
-    style={{ height: '40px', marginLeft: '10px' }} 
-    onClick={enviarExcelTrabajadores} 
-  >
-    📊 Reporte Excel
-  </button>
-  <button 
-    style={{ height: '40px', marginLeft: '10px' }} 
-    onClick={descargarExcelTrabajadores} 
-  >
-    ⬇️ Descargar Excel
-  </button>
+      <button style={{ height: '40px', marginLeft: '10px' }} onClick={enviarExcelTrabajadores}>
+        📊 Reporte Excel
+      </button>
+      <button style={{ height: '40px', marginLeft: '10px' }} onClick={descargarExcelTrabajadores}>
+        ⬇️ Descargar Excel
+      </button>
+
       <div className="workers-grid">
         {workers.map(worker => (
           <div key={worker.id} className="worker-card">
@@ -245,89 +239,36 @@ const Trabajadores = () => {
         saveButtonText="💾 Guardar"
       >
         <div className="worker-form">
+          {/* Formulario como antes */}
           <FormRow>
-            <FormInput label="Nombre"
-             value={form.username} 
-             onChange={(e) => {
-             const soloLetras = e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');   
-             handleInputChange('username', soloLetras)
-             }} 
-             required />
-            <FormInput label="Teléfono" 
-            value={form.phone} 
-            onChange={(e) =>{
-                const soloNumeros = e.target.value.replace(/[^0-9.]/g, '');    
-                handleInputChange('phone', soloNumeros)
-            }} 
-            required />
+            <FormInput label="Nombre" value={form.username} onChange={e => handleInputChange('username', e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, ''))} required />
+            <FormInput label="Teléfono" value={form.phone} onChange={e => handleInputChange('phone', e.target.value.replace(/[^0-9.]/g, ''))} required />
           </FormRow>
-
           <FormRow>
-            <FormInput label="DNI" 
-            value={form.dni} 
-            onChange={(e) =>{ 
-            const soloNumeros = e.target.value.replace(/[^0-9]/g, '');          
-            handleInputChange('dni', soloNumeros)
-        }} 
-            required />
+            <FormInput label="DNI" value={form.dni} onChange={e => handleInputChange('dni', e.target.value.replace(/[^0-9]/g, ''))} required />
             <FormInput label="Email" type="email" value={form.email} onChange={e => handleInputChange('email', e.target.value)} required />
           </FormRow>
-
           <FormRow>
             <FormSelect label="Estado" value={form.estado} onChange={e => handleInputChange('estado', e.target.value)} options={TRABAJADORES_ESTADOS} />
           </FormRow>
-
           {!form.id && (
             <FormRow>
               <FormInput label="Contraseña" type="password" value={form.password} onChange={e => handleInputChange('password', e.target.value)} required />
             </FormRow>
           )}
-
           <FormRow>
-            <FormInput label="Especialidad" 
-            value={form.especialidad} 
-            onChange={(e) => {
-            const soloLetras = e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
-            handleInputChange('especialidad', soloLetras)
-            }} 
-            required/>
-            <FormInput label="Experiencia (años)" 
-            value={form.experiencia} 
-            onChange={(e) => {
-            const soloNumeros = e.target.value.replace(/[^0-9.]/g, '');    
-            handleInputChange('experiencia', soloNumeros)
-            }} 
-            required/>
+            <FormInput label="Especialidad" value={form.especialidad} onChange={e => handleInputChange('especialidad', e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, ''))} required />
+            <FormInput label="Experiencia (años)" value={form.experiencia} onChange={e => handleInputChange('experiencia', e.target.value.replace(/[^0-9.]/g, ''))} required />
           </FormRow>
-
           <FormTextarea label="Notas" value={form.notas} onChange={e => handleInputChange('notas', e.target.value)} />
-
           <h4 style={{ color: 'black' }}>🗓️ Disponibilidad Semanal</h4>
           <div className="availability-section" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '15px' }}>
             {form.availability.map((a, i) => (
-              <div key={i} className="availability-row" style={{display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', background: '#f9f9f9', borderRadius: '6px'}}>
-                <label style={{ width: '100px' , flexShrink: '0', color: 'black' }}>{a.day}</label>
-                <input
-                  type="checkbox"
-                  checked={a.activo}
-                  onChange={(e) => handleAvailabilityChange(i, 'activo', e.target.checked)}
-                  style={{width: '15px', height: '15px', flexShrink: '0'}}
-                  
-                />
-                <input
-                  type="time"
-                  value={a.inicio}
-                  onChange={(e) => handleAvailabilityChange(i, 'inicio', e.target.value)}
-                  disabled={!a.activo}
-                  style={{padding:'8px' , border: '1px solid #ccc', borderRadius: '4px', opacity: a.activo ? 1 : 0.6}}
-                />
-                <input
-                  type="time"
-                  value={a.fin}
-                  onChange={(e) => handleAvailabilityChange(i, 'fin', e.target.value)}
-                  disabled={!a.activo}
-                  style={{padding:'8px' , border: '1px solid #ccc', borderRadius: '4px', opacity: a.activo ? 1 : 0.6}}
-                />
+              <div key={i} className="availability-row">
+                <label style={{ width: '100px', color: 'black' }}>{a.day}</label>
+                <input type="checkbox" checked={a.activo} onChange={e => handleAvailabilityChange(i, 'activo', e.target.checked)} />
+                <input type="time" value={a.inicio} onChange={e => handleAvailabilityChange(i, 'inicio', e.target.value)} disabled={!a.activo} />
+                <input type="time" value={a.fin} onChange={e => handleAvailabilityChange(i, 'fin', e.target.value)} disabled={!a.activo} />
               </div>
             ))}
           </div>
