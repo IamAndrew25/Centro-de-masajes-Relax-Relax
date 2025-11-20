@@ -61,10 +61,15 @@ const mapFromBackendPromotions = (p) => {
     ? `Válido hasta ${new Date(p.endDate).toLocaleDateString('es-ES')}` 
     : "";
 
+  let imageUrl = p.imageUrl;
+    if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('/assets')) {
+      imageUrl = `http://localhost:8080${imageUrl}`;
+    }
+
   return {
     id: p.id,
     name: p.name,
-    image: p.imageUrl,
+    image: imageUrl,
     price: priceString,
     details: detailsArray,
     note: noteString,
