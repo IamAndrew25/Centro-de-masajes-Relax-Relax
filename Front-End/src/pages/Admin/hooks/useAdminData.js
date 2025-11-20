@@ -275,35 +275,29 @@ export const useStats = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                setLoading(true);
-                const data = await getDashboardStats();
-                setStats(data);
-                setError(null);
-            } catch (err) {
-                console.error('Error al cargar estadísticas:', err);
-                setError('Error al cargar estadísticas');
-                // Mantener datos de ejemplo si falla
-                setStats({
-                    reservasHoy: 12,
-                    reservasSemana: 45,
-                    ingresosMes: 58500,
-                    clientesNuevos: 8
-                });
-            } finally {
-                setLoading(false);
-            }
-        };
+    // Definimos la función fuera del useEffect para poder exportarla
+    const fetchStats = async () => {
+        try {
+            setLoading(true);
+            const data = await getDashboardStats();
+            setStats(data);
+            setError(null);
+        } catch (err) {
+            console.error('Error al cargar estadísticas:', err);
+            setError('Error al cargar estadísticas');
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchStats();
         
-        // Actualizar cada 5 minutos
+        // Actualizar cada 5 minutos automáticamente
         const interval = setInterval(fetchStats, 5 * 60 * 1000);
-        
         return () => clearInterval(interval);
     }, []);
 
-    return { stats, loading, error };
+    // Retornamos fetchStats (puedes renombrarlo a refreshStats para mayor claridad)
+    return { stats, loading, error, refreshStats: fetchStats };
 };

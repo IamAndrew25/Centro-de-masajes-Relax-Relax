@@ -37,7 +37,7 @@ const Dashboard = ({ stats = {}, setActiveTab }) => {
         };
 
         loadDashboardData();
-    }, []);
+    }, [stats]);
 
     const statsData = [
         { icon: "📅", value: defaultStats.reservasHoy || 0, label: "Reservas Hoy" },

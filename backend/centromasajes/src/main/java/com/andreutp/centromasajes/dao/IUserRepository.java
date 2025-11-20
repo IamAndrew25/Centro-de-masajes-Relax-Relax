@@ -17,6 +17,6 @@ public interface IUserRepository extends JpaRepository<UserModel,Long> {
     List<UserModel> findByRoleName(String roleName);
     
     // Método para contar clientes nuevos por rango de fechas
-    @Query("SELECT COUNT(u) FROM UserModel u WHERE u.role.name = 'ROLE_USER' AND u.createdAt BETWEEN :startDate AND :endDate")
+    @Query("SELECT COUNT(u) FROM UserModel u WHERE u.role.name = 'USER' AND u.createdAt BETWEEN :startDate AND :endDate")
     int countByFechaRegistroBetween(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }
