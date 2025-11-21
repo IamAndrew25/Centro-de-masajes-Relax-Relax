@@ -20,7 +20,7 @@ const Admin = () => {
     const navigate = useNavigate();
     
     // Usar hooks personalizados para manejar estados
-    const { stats } = useStats();
+    const { stats, refreshStats } = useStats();
     const clienteHooks = useClienteData();
     const servicioHooks = useServicioData();
     const workersHooks = useWorkersData();
@@ -114,7 +114,7 @@ const Admin = () => {
                     )}
 
                     {activeTab === 'reservas' && (
-                        <Reservas />
+                        <Reservas onReservationCreated={refreshStats} />
                     )}
 
                     {activeTab === 'servicios' && (

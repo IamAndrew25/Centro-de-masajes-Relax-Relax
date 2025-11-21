@@ -262,13 +262,13 @@ const Trabajadores = () => {
           </FormRow>
           <FormTextarea label="Notas" value={form.notas} onChange={e => handleInputChange('notas', e.target.value)} />
           <h4 style={{ color: 'black' }}>🗓️ Disponibilidad Semanal</h4>
-          <div className="availability-section">
+          <div className="availability-section" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '15px' }}>
             {form.availability.map((a, i) => (
-              <div key={i} className="availability-row">
-                <label style={{ width: '100px', color: 'black' }}>{a.day}</label>
-                <input type="checkbox" checked={a.activo} onChange={e => handleAvailabilityChange(i, 'activo', e.target.checked)} />
-                <input type="time" value={a.inicio} onChange={e => handleAvailabilityChange(i, 'inicio', e.target.value)} disabled={!a.activo} />
-                <input type="time" value={a.fin} onChange={e => handleAvailabilityChange(i, 'fin', e.target.value)} disabled={!a.activo} />
+              <div key={i} className="availability-row" style={{display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', background: '#f9f9f9', borderRadius: '6px'}}>
+                <label style={{ width: '100px', flexShrink: '0', color: 'black'}}>{a.day}</label>
+                <input type="checkbox" checked={a.activo} onChange={e => handleAvailabilityChange(i, 'activo', e.target.checked)} style={{width: '15px', height: '15px', flexShrink: '0'}}/>
+                <input type="time" value={a.inicio} onChange={e => handleAvailabilityChange(i, 'inicio', e.target.value)} disabled={!a.activo} style={{padding:'8px' , border: '1px solid #ccc', borderRadius: '4px', opacity: a.activo ? 1 : 0.6}}/>
+                <input type="time" value={a.fin} onChange={e => handleAvailabilityChange(i, 'fin', e.target.value)} disabled={!a.activo} style={{padding:'8px' , border: '1px solid #ccc', borderRadius: '4px', opacity: a.activo ? 1 : 0.6}}/>
               </div>
             ))}
           </div>

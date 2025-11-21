@@ -260,9 +260,9 @@ const Reservation = () => {
             )}
 
             <form className="reservation-form" onSubmit={handleSubmit} noValidate>
-                <p className="service-summary">
+              <p className="service-summary">
                   Servicio: <strong>{serviceToBook.name}</strong> (S/ {totalCartPrice.toFixed(2)})
-                </p>
+              </p>
 
                 {/* Especialista */}
                 <div className="form-group">
@@ -276,7 +276,7 @@ const Reservation = () => {
                       ))}
                   </select>
                   {errors.workerId && <p className="error-text">{errors.workerId}</p>}
-                </div>
+              </div>
 
                 {/* Fecha */}
                 <div className="form-group">
@@ -309,8 +309,8 @@ const Reservation = () => {
                 </div>
 
                 <button type="submit" className="btn-reserve" disabled={isLoading}>
-                  {isLoading ? "Registrando Reserva..." : "Confirmar Reserva"}
-                </button>
+                {isLoading ? "Registrando Reserva..." : "Confirmar Reserva"}
+              </button>
             </form>
           </div>
         </section>

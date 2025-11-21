@@ -14,7 +14,8 @@ import {
   descargarExcelReservas
 } from './JS/reservaService';
 
-const Reservas = () => {
+// 1. AÑADIR: Recibir la prop 'onReservationCreated'
+const Reservas = ({ onReservationCreated }) => {
   const tableHeaders = ["Cliente", "Servicio", "Fecha", "Hora", "Estado", "Acciones"];
 
   const [showModal, setShowModal] = useState(false);
@@ -87,7 +88,14 @@ const Reservas = () => {
         await createAppointment(appointmentData);
       }
 
+      // Actualizar la tabla local
       await fetchData();
+
+      // 2. AÑADIR: Notificar al Dashboard padre que hay una nueva reserva
+      if (onReservationCreated) {
+          console.log("Notificando al dashboard de la nueva reserva...");
+          onReservationCreated();
+      }
 
       setShowModal(false);
       setForm({
@@ -126,7 +134,15 @@ const Reservas = () => {
     if (!window.confirm("¿Estás seguro de eliminar esta reserva?")) return;
     try {
       await deleteAppointment(id);
+      
+      // Actualizar tabla local
       await fetchData();
+
+      // 3. OPCIONAL: También podrías actualizar los contadores al borrar
+      if (onReservationCreated) {
+        onReservationCreated();
+      }
+
     } catch (error) {
       console.error(' Error eliminando la reserva:', error);
       alert('No se pudo eliminar la reserva. Revisa la consola.');
