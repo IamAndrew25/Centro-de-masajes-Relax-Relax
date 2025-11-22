@@ -4,6 +4,7 @@ import com.andreutp.centromasajes.dao.IPromotionRepository;
 import com.andreutp.centromasajes.model.PromotionModel;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,12 +21,13 @@ public class PromotionService {
     // Crear promoción
     public PromotionModel createPromotion(PromotionModel promotion) {
         if (promotion.getStartDate() == null) {
-            promotion.setStartDate(LocalDateTime.now());
+            promotion.setStartDate(LocalDate.now());
         }
         if (promotion.getEndDate() == null) {
             promotion.setEndDate(promotion.getStartDate().plusDays(7)); // ejemplo: 1 semana de vigencia -- si es que nos olvidamos de poner los datos
                                                                         // se asigna automaticamente
         }
+        promotion.setImageUrl(promotion.getImageUrl());
 
         return promotionRepository.save(promotion);
     }
@@ -33,6 +35,11 @@ public class PromotionService {
     // Listar todas las promociones activas
     public List<PromotionModel> getActivePromotions() {
         return promotionRepository.findByActiveTrue();
+    }
+
+    // Listar TODAS las promociones (activas e inactivas)
+    public List<PromotionModel> getAllPromotions() {
+        return promotionRepository.findAll();
     }
 
     // Obtener promoción por ID
@@ -54,6 +61,8 @@ public class PromotionService {
         existing.setStartDate(updated.getStartDate());
         existing.setEndDate(updated.getEndDate());
         existing.setActive(updated.getActive());
+        existing.setImageUrl(updated.getImageUrl());
+
 
         // Validamos fechas: si vienen nulas, mantenemos las existentes
         if (updated.getStartDate() != null) {

@@ -4,6 +4,8 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { useCart } from '../../context/cartContext';
 import './Header.css';
+import { getBusinessBasics } from '../../pages/Admin/components/JS/businessConfigService';
+
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -12,6 +14,7 @@ const Header = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [businessName, setBusinessName] = useState('Relax Total');
   const navigate = useNavigate();
   const { cartItems, removeFromCart, cartItemCount, totalCartPrice } = useCart();
 
@@ -31,6 +34,20 @@ const Header = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [isLoggedIn]); // Se ejecuta cuando el estado de login cambia
+useEffect(() => {
+  const fetchBusinessName = async () => {
+    try {
+      const data = await getBusinessBasics();
+      if (data && data.nombreSpa) {
+        setBusinessName(data.nombreSpa);
+      }
+    } catch (error) {
+      console.error('Error al cargar el nombre del spa:', error);
+    }
+  };
+
+  fetchBusinessName();
+}, []); // 👈 solo una vez al montar
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -77,7 +94,7 @@ const Header = () => {
           {/* Logo */}
           <div className="logo">
             <NavLink to="/" onClick={closeMenu}>
-              <h1>Relax Total</h1>
+              <h1>{businessName}</h1>
             </NavLink>
           </div>
 
@@ -174,20 +191,31 @@ const Header = () => {
           {cartItemCount === 0 ? (
             <p>Tu carrito está vacío</p>
           ) : (
-            cartItems.map(item => (
-              <div key={item.id} className="cart-item">
-                <div className="cart-item-details">
-                  <p>{item.name || item.title}</p>
-                  <span>S/ {String(item.price).replace('S/ ', '')}</span>
+            cartItems.map(item => {
+              const rawPrice = item.precio !== undefined ? item.precio : item.price;
+
+              return (
+                <div key={item.id} className="cart-item">
+                  <div className="cart-item-details">
+                    <p>{item.name || item.title}</p>
+                    
+                    <span>
+                      {typeof rawPrice === 'number'
+                        ? `S/ ${rawPrice.toFixed(2)}`
+                        : rawPrice // Mostrar '30% Descuento' o '2x1' tal cual
+                      }
+                    </span>
+
+                  </div>
+                  {/*Boton para eliminar */}
+                  <FaTimes 
+                    size={18} 
+                    className="cart-item-remove" 
+                    onClick={() => removeFromCart(item.id)}
+                  />
                 </div>
-                {/*Boton para elimianr */}
-                <FaTimes 
-                  size={18} 
-                  className="cart-item-remove" 
-                  onClick={() => removeFromCart(item.id)}
-                />
-              </div>
-            ))
+              );
+            })
           )}
         </div>
         {cartItemCount > 0 && (

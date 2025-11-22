@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -27,6 +28,9 @@ public class PromotionModel {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Column(name = "discount_percent", precision = 5, scale = 2)
     private BigDecimal discountPercent = BigDecimal.ZERO;
 
@@ -34,10 +38,10 @@ public class PromotionModel {
     private BigDecimal discountAmount = BigDecimal.ZERO;
 
     @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @Column(nullable = false)
     private Boolean active = true;

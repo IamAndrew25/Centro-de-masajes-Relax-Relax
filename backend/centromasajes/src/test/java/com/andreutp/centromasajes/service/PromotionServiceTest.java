@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -38,8 +38,8 @@ class PromotionServiceTest {
         testPromotion.setDescription("Descuento en masajes");
         testPromotion.setDiscountPercent(new BigDecimal("20.00"));
         testPromotion.setDiscountAmount(BigDecimal.ZERO);
-        testPromotion.setStartDate(LocalDateTime.now());
-        testPromotion.setEndDate(LocalDateTime.now().plusDays(30));
+        testPromotion.setStartDate(LocalDate.now());
+        testPromotion.setEndDate(LocalDate.now().plusDays(30));
         testPromotion.setActive(true);
     }
 
@@ -132,8 +132,8 @@ class PromotionServiceTest {
         updatedPromotion.setDescription("Nueva descripción");
         updatedPromotion.setDiscountPercent(new BigDecimal("25.00"));
         updatedPromotion.setDiscountAmount(new BigDecimal("50.00"));
-        updatedPromotion.setStartDate(LocalDateTime.now().plusDays(1));
-        updatedPromotion.setEndDate(LocalDateTime.now().plusDays(31));
+        updatedPromotion.setStartDate(LocalDate.now().plusDays(1));
+        updatedPromotion.setEndDate(LocalDate.now().plusDays(31));
         updatedPromotion.setActive(false);
 
         when(promotionRepository.findById(1L)).thenReturn(Optional.of(testPromotion));

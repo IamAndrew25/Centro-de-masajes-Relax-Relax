@@ -28,18 +28,20 @@ public class DashboardService {
     public DashboardStatsDTO getDashboardStats() {
         LocalDate today = LocalDate.now();
         LocalDate startOfWeek = today.with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1);
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
         LocalDate startOfMonth = today.withDayOfMonth(1);
+        LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
         
         // Reservas de hoy
         int reservasHoy = appointmentRepository.countByFecha(today);
         
         // Reservas de esta semana
-        int reservasSemana = appointmentRepository.countByFechaBetween(startOfWeek, today);
+        int reservasSemana = appointmentRepository.countByFechaBetween(startOfWeek, endOfWeek);
         
         // Ingresos del mes actual
         List<AppointmentModel> reservasMes = appointmentRepository.findByFechaBetween(
             startOfMonth.atStartOfDay(),
-            today.atTime(23, 59, 59)
+            endOfMonth.atTime(23, 59, 59)
         );
         double ingresosMes = reservasMes.stream()
             .filter(r -> r.getStatus().name().equalsIgnoreCase("COMPLETED") || r.getStatus().name().equalsIgnoreCase("CONFIRMED"))
@@ -49,7 +51,7 @@ public class DashboardService {
         // Clientes nuevos este mes
         int clientesNuevos = userRepository.countByFechaRegistroBetween(
             startOfMonth.atStartOfDay(),
-            today.atTime(23, 59, 59)
+            endOfMonth.atTime(23, 59, 59)
         );
         
         return new DashboardStatsDTO(reservasHoy, reservasSemana, ingresosMes, clientesNuevos);
@@ -105,12 +107,13 @@ public class DashboardService {
      * Obtiene los servicios más populares
      */
     public List<PopularServiceDTO> getPopularServices(int limit) {
-        LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
         LocalDate today = LocalDate.now();
+        LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
+        LocalDate endOfMonth = today.with(TemporalAdjusters.lastDayOfMonth());
         
         List<AppointmentModel> reservas = appointmentRepository.findByFechaBetween(
             startOfMonth.atStartOfDay(),
-            today.atTime(23, 59, 59)
+            endOfMonth.atTime(23, 59, 59)
         );
         
         Map<String, Long> serviceCounts = reservas.stream()
