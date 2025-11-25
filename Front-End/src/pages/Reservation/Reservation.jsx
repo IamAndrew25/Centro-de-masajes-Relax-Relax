@@ -90,7 +90,7 @@ const getDurationMinutes = (service) => {
 
 const Reservation = () => {
   const navigate = useNavigate();
-  const { cartItems, totalCartPrice } = useCart();
+  const { cartItems, totalCartPrice, setAppointmentId } = useCart();
 
   const [formData, setFormData] = useState({
     date: "",
@@ -219,11 +219,29 @@ const Reservation = () => {
 
       try {
         console.log("Enviando datos de cita:", appointmentData);
-        await createAppointment(appointmentData);
-        setSubmitMessage("¡Tu reserva ha sido registrada con éxito! Será revisada por un administrador.");
-        toast.success("Reserva registrada.");
-        setFormData({ date: "", time: "", workerId: "" });
-        setAvailableHours([]);
+        
+        // 1. CAPTURAMOS LA RESPUESTA DE LA API (que contiene el ID de la cita creada)
+        const newAppointment = await createAppointment(appointmentData);
+        
+        console.log("Cita creada:", newAppointment);
+
+        // 2. GUARDAMOS EL ID EN EL CONTEXTO
+        // Nota: Verifica si tu backend devuelve el objeto con campo 'id' o 'appointmentId'. 
+        // Normalmente es 'id'.
+        if (newAppointment && newAppointment.id) {
+            setAppointmentId(newAppointment.id);
+        } else {
+            console.warn("La respuesta no tenía ID:", newAppointment);
+        }
+
+        setSubmitMessage("¡Tu reserva ha sido registrada con éxito!");
+        toast.success("Reserva registrada. Redirigiendo al pago...");
+        
+        // 3. REDIRIGIMOS AUTOMÁTICAMENTE AL CHECKOUT
+        setTimeout(() => {
+            navigate('/checkout');
+        }, 1500);
+
       } catch (apiError) {
         console.error("Error al registrar la reserva:", apiError);
         toast.error(apiError.message || "No se pudo registrar la reserva.");

@@ -2090,3 +2090,27 @@ input:checked + .toggle-slider:before {
         font-size: 1rem;
     }
 }
+
+.btn-save-config {
+  margin-top: 20px;
+  padding: 10px 25px;
+  background-color: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: inline-block; 
+  width: auto; 
+}
+
+.btn-save-config:hover {
+  background-color: #16a34a;
+}
+
+.btn-save-config:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}

@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from './ui/Card';
 import { getPromociones, createPromocion, updatePromocion, deletePromocion,uploadPromotionImage } from './JS/promocionesService';
+import { toast } from 'react-toastify';
 import './Promociones.css'; 
 
+// max campos 
+const FIELD_MAX_LENGTHS = {
+  nombre: 80,
+  descripcion: 255,
+  descuento: 4,      // ej: "99.9"
+  fecha_inicio: 10,  // YYYY-MM-DD
+  fecha_fin: 10      // YYYY-MM-DD
+};
 
 const Promociones = () => {
     const [promociones, setPromociones] = useState([]);
@@ -58,13 +67,28 @@ const Promociones = () => {
         }
     };
 
+// max lenght
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+    const { name, value } = e.target;
+
+    const max = FIELD_MAX_LENGTHS[name];
+    let finalValue = value;
+
+    // Para descuento permitimos solo números y punto
+    if (name === 'descuento') {
+      finalValue = value.replace(/[^0-9.]/g, '');
+    }
+
+    if (max && typeof finalValue === 'string') {
+      finalValue = finalValue.slice(0, max);
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: finalValue
+    }));
+  };
+
 
     const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -138,6 +162,26 @@ const Promociones = () => {
 
     const handleSave = async (e) => {
     e.preventDefault();
+
+    //Validaciones
+    const descuentoVal = parseFloat(formData.descuento);
+        if (formData.tipo_descuento === 'porcentaje') {
+            if (descuentoVal < 0 || descuentoVal > 100) {
+                toast.warn('  El porcentaje debe estar entre 0% y 100%');
+                return;
+            }
+        } else if (formData.tipo_descuento === 'monto') {
+            if (descuentoVal < 0) {
+                toast.warn('El monto no puede ser negativo');
+                return;
+            }
+            // Opcional: Evitar descuentos absurdos xD ejemplo + de 10000
+            if (descuentoVal > 5000) {
+                if(!window.confirm(' El descuento es muy alto (S/ ' + descuentoVal + '). ¿Estás seguro?')) {
+                    return;
+                }
+            }
+        }
     setLoading(true);
 
     try {
@@ -157,17 +201,17 @@ const Promociones = () => {
 
         if (editMode) {
             await updatePromocion(currentPromocion.id, body);
-            alert('✓ Promoción actualizada');
+            toast.success('✓ Promoción actualizada correctamente');
         } else {
             await createPromocion(body);
-            alert('✓ Promoción creada');
+            toast.success('✓ Promoción creada con exito');
         }
 
         setShowModal(false);
         loadPromociones();
     } catch (error) {
         console.error("Error al guardar promoción:", error);
-        alert("✗ Error al guardar la promoción");
+        toast.error("✗ Error al guardar la promoción");
     } finally {
         setLoading(false);
     }
@@ -179,11 +223,11 @@ const Promociones = () => {
             setLoading(true);
             try {
                 await deletePromocion(id);
-                alert('✓ Promoción eliminada');
+                toast.success('✓ Promoción eliminada');
                 loadPromociones();
             } catch (error) {
                 console.error('✗ Error al eliminar promoción:', error);
-                alert('✗ Error al eliminar la promoción');
+                toast.error('✗ Error al eliminar la promoción');
             } finally {
                 setLoading(false);
             }
@@ -200,11 +244,11 @@ const Promociones = () => {
             setLoading(true);
             try {
                 await updatePromocion(promocion.id, { ...promocion, estado: nuevoEstado });
-                alert(`✓ Estado actualizado`);
+                toast.success(`✓ Estado actualizado`);
                 loadPromociones();
             } catch (error) {
                 console.error('Error al cambiar estado:', error);
-                alert('✗ Error al cambiar el estado');
+                toast.error('✗ Error al cambiar el estado');
             } finally {
                 setLoading(false);
             }
@@ -361,6 +405,7 @@ const Promociones = () => {
                                                 onChange={handleInputChange}
                                                 required
                                                 min="0"
+                                                max={formData.tipo_descuento === 'porcentaje' ? "100" : undefined}
                                                 step="0.01"
                                                 placeholder={formData.tipo_descuento === 'porcentaje' ? '20' : '50.00'}
                                                 className={`form-input ${formData.tipo_descuento === 'monto' ? 'with-prefix' : ''}`}
@@ -391,6 +436,7 @@ const Promociones = () => {
                                             value={formData.fecha_fin}
                                             onChange={handleInputChange}
                                             required
+                                            min={formData.fecha_inicio}
                                             className="form-input"
                                         />
                                     </div>
@@ -410,7 +456,7 @@ const Promociones = () => {
                                         <label htmlFor="imagen-upload" className="file-input-label">
                                             📁 Seleccionar Imagen
                                         </label>
-                                        <span className="file-info">Formatos: JPG, PNG, GIF (máx. 5MB)</span>
+                                        <span className="file-info">Formatos: JPG, PNG, GIF (máx. 10MB)</span>
                                     </div>
                                     
                                     {/* Imagen en el modal */}

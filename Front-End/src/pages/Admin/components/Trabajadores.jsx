@@ -11,6 +11,8 @@ import {
   enviarExcelTrabajadores,
   descargarExcelTrabajadores
 } from './JS/workerService';
+import { toast } from 'react-toastify';
+
 
 const TRABAJADORES_ESTADOS = [
   { value: "ACTIVO", label: "Activo" },
@@ -19,7 +21,20 @@ const TRABAJADORES_ESTADOS = [
   { value: "INACTIVO", label: "Inactivo" }
 ];
 
+
 const DIAS_SEMANA = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO"];
+
+// limte de campo
+const FIELD_MAX_LENGTHS = {
+  username: 60,       // Nombre
+  phone: 9,          // Teléfono
+  dni: 8,             // DNI (Perú)
+  email: 100,         // Email
+  password: 30,       // Contraseña
+  especialidad: 60,   // Especialidad
+  experiencia: 2,     // Años (00-99)
+  notas: 255          // Notas
+};
 
 const Trabajadores = () => {
   const [workers, setWorkers] = useState([]);
@@ -53,11 +68,18 @@ const Trabajadores = () => {
       setWorkers(data);
     } catch (error) {
       console.error('Error cargando trabajadores:', error);
+      toast.error("Error al cargar la lista de trabajadores");
     }
   };
 
   const handleInputChange = (field, value) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    const max = FIELD_MAX_LENGTHS[field];
+    const finalValue = max ? value.slice(0, max) : value;
+
+    setForm(prev => ({
+      ...prev,
+      [field]: finalValue
+    }));
   };
 
   const handleAvailabilityChange = (index, field, value) => {
@@ -71,7 +93,7 @@ const Trabajadores = () => {
   const handleSave = async () => {
     try {
       if (!form.username || !form.email || !form.phone || !form.dni) {
-        alert("Nombre, Email, Teléfono y DNI son obligatorios.");
+        toast.warn("Nombre, Email, Teléfono y DNI son obligatorios.");
         return;
       }
 
@@ -97,7 +119,7 @@ const Trabajadores = () => {
         savedWorker = await updateWorker(form.id, payload);
       } else {
         if (!form.password) {
-          alert('La contraseña es obligatoria para un nuevo trabajador');
+          toast.warn('La contraseña es obligatoria para un nuevo trabajador');
           return;
         }
         savedWorker = await createWorker(payload);
@@ -113,7 +135,7 @@ const Trabajadores = () => {
 
       await saveWorkerAvailability(savedWorker.id || form.id, availabilityPayload);
 
-      alert("Trabajador y disponibilidad guardados correctamente");
+      toast.success("Trabajador y disponibilidad guardados correctamente");
       setShowModal(false);
       setForm({
         id: null,
@@ -136,7 +158,7 @@ const Trabajadores = () => {
       fetchWorkers();
     } catch (error) {
       console.error('Error guardando trabajador:', error.response?.data || error);
-      alert('Error guardando trabajador. Revisa la consola.');
+      toast.error('Error guardando trabajador. Revisa la consola.');
     }
   };
 
@@ -169,12 +191,35 @@ const Trabajadores = () => {
     if (!window.confirm("¿Seguro que quieres eliminar este trabajador?")) return;
     try {
       await deleteWorker(id);
+      toast.success(" Trabajador eliminado correctamente");
       fetchWorkers();
     } catch (error) {
       console.error('Error eliminando trabajador:', error);
-      alert('No se pudo eliminar. Revisa la consola.');
+      toast.error('No se pudo eliminar el trabajador');
     }
   };
+  // Para los botones de excel
+  const handleDescargarExcel = async () => {
+    try {
+        await descargarExcelTrabajadores();
+        toast.success(" Excel descargado correctamente");
+    } catch (error) {
+        console.error(error);
+        toast.error("Error al descargar el Excel");
+    }
+  };
+
+  const handleEnviarExcel = async () => {
+    try {
+        const resultado = await enviarExcelTrabajadores();
+        if (resultado) {
+            toast.success(" Reporte enviado por correo");
+        }
+    } catch (error) {
+        console.error(error);
+        toast.error("Error al enviar el reporte");
+    }
+  }
 
   const WorkerAvailability = ({ availability }) => {
     if (!Array.isArray(availability) || !availability.length) 
@@ -201,10 +246,10 @@ const Trabajadores = () => {
         buttonText="Nuevo Trabajador" 
         onButtonClick={() => setShowModal(true)} 
       />
-      <button style={{ height: '40px', marginLeft: '10px' }} onClick={enviarExcelTrabajadores}>
+      <button style={{ height: '40px', marginLeft: '10px' }} onClick={handleEnviarExcel}>
         📊 Reporte Excel
       </button>
-      <button style={{ height: '40px', marginLeft: '10px' }} onClick={descargarExcelTrabajadores}>
+      <button style={{ height: '40px', marginLeft: '10px' }} onClick={handleDescargarExcel}>
         ⬇️ Descargar Excel
       </button>
 

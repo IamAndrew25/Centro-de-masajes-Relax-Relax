@@ -49,7 +49,6 @@ export const saveWorkerAvailability = async (workerId, availability) => {
 //se envia al correo
 
 export const enviarExcelTrabajadores = async () => {
-  try {
     const correo = prompt("Ingresa el correo al que enviar el Excel de trabajadores:");
     if (!correo) return;
 
@@ -58,19 +57,11 @@ export const enviarExcelTrabajadores = async () => {
       headers: { Authorization: `Bearer ${getToken()}` }
     });
 
-    if (response.ok) {
-      alert("Reporte de trabajadores enviado correctamente");
-    } else {
-      alert("Error al enviar el reporte de trabajadores");
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Error al enviar el reporte de trabajadores");
-  }
+    if (!response.ok) throw new Error("Error al enviar el reporte");
+    return true;
 };
 //se descarga 
 export const descargarExcelTrabajadores = async () => {
-  try {
     const response = await fetch(`${API_URL}/reports/trabajadores/download`, {
       method: "GET",
       headers: { Authorization: `Bearer ${getToken()}` }
@@ -87,8 +78,6 @@ export const descargarExcelTrabajadores = async () => {
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error(error);
-    alert("Error al descargar el reporte de trabajadores");
-  }
+
+    return true;
 };
