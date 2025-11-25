@@ -11,9 +11,13 @@ import com.andreutp.centromasajes.dto.PaymentRequest;
 import com.andreutp.centromasajes.model.PaymentModel;
 import com.andreutp.centromasajes.model.UserModel;
 import com.andreutp.centromasajes.utils.EmailService;
+import com.andreutp.centromasajes.utils.PdfGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,6 +28,8 @@ public class PaymentService {
     @Autowired
     private final IAppointmentRepository appointmentRepository;
     private final EmailService emailService;
+    private static final Logger logger = LoggerFactory.getLogger(PdfGenerator.class);
+
 
     public PaymentService(IPaymentRepository paymentRepository, IUserRepository userRepository,
                           IInvoiceRepository invoiceRepository, IAppointmentRepository appointmentRepository
@@ -65,68 +71,84 @@ public class PaymentService {
     }
 
     public PaymentModel createPayment(PaymentRequest request) {
-        // 1 Buscar usuario y cita
+        // 1. buscar user y appointment
         UserModel user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         AppointmentModel appointment = appointmentRepository.findById(request.getAppointmentId())
                 .orElseThrow(() -> new RuntimeException("Cita no encontrada"));
 
-        // 2 Crear pago
+        // 2. preparar payment
+        LocalDateTime payDate = request.getPaymentDate() != null ? request.getPaymentDate() : LocalDateTime.now();
+
         PaymentModel payment = PaymentModel.builder()
                 .user(user)
                 .appointment(appointment)
                 .amount(request.getAmount())
-                .paymentDate(request.getPaymentDate())
+                .paymentDate(payDate)
                 .method(request.getMethod())
-                .status(PaymentModel.Status.PAID) // Marcamos como pagado directamente
-                .coveredBySubscription(request.isCoveredBySubscription())
+                .status(PaymentModel.Status.PAID)
+                .coveredBySubscription(Boolean.TRUE.equals(request.getCoveredBySubscription()))
                 .build();
 
         PaymentModel savedPayment = paymentRepository.save(payment);
 
-        // 3 Generar factura/boleta automáticamente
+        // 3. crear invoice relacionado
         InvoiceModel invoice = InvoiceModel.builder()
                 .payment(savedPayment)
-                .user(savedPayment.getUser())
-                .appointment(appointment) // <<---
-                .type(InvoiceModel.Type.BOLETA) // O FACTURA segn lógica
+                .user(user)
+                .appointment(appointment)
+                .type(InvoiceModel.Type.BOLETA)
                 .invoiceNumber(generateInvoiceNumber())
                 .customerName(user.getUsername())
-                .customerDoc(user.getDni()) // DNI del usuario
+                .customerDoc(user.getDni())
                 .total(savedPayment.getAmount())
                 .status(InvoiceModel.Status.PENDING)
                 .build();
 
         invoice = invoiceRepository.save(invoice);
 
-        // 4 Asociar factura al pago
+        // 4. asociar invoice al payment
         savedPayment.setInvoice(invoice);
         paymentRepository.save(savedPayment);
 
-        // 5 Enviar PDF por correo automáticamente
-        // Datos dinámicos para la FACTURA A4
-        String nombreCliente = user.getUsername();              // o getFirstName + getLastName si lo tienes
-        String descripcionServicio = appointment.getService().getName();
-        int cantidad = 1;                                       // por ahora siempre 1 sesión
-        double total = invoice.getTotal();
-        String metodoPago = "Visa";                            //  fijo
-        String numeroFactura = invoice.getInvoiceNumber();
-        String numeroPedido = "ORD-" + savedPayment.getId();   // opcional, tú defines el formato
+        // 5. enviar correo con PDF -- TRY/CATCH para evitar 500 si falla el mail
+        try {
+            byte[] pdfBytes = PdfGenerator.generateStyledInvoicePdf(
+                    user.getUsername(),
+                    invoice.getInvoiceNumber(),
+                    buildDescriptionFromAppointment(appointment), // helper abajo
+                    1,
+                    invoice.getTotal(),
+                    savedPayment.getMethod(),
+                    String.valueOf(invoice.getInvoiceNumber())
+            );
 
-        emailService.enviarFacturaA4ConPDF(
-                user.getEmail(),
-                nombreCliente,
-                descripcionServicio,
-                cantidad,
-                total,
-                metodoPago,
-                numeroFactura,
-                numeroPedido
-        );
+            String correoDestino = (request.getCorreo() != null && !request.getCorreo().isBlank()) ? request.getCorreo() : user.getEmail();
+
+            emailService.enviarCorreoConAdjunto(
+                    correoDestino,
+                    "Tu boleta - " + invoice.getInvoiceNumber(),
+                    "Adjuntamos su boleta electrónica. ¡Gracias por su preferencia!",
+                    pdfBytes,
+                    "Boleta_" + invoice.getInvoiceNumber() + ".pdf"
+            );
+        } catch (Exception e) {
+            // loguear pero no lanzar excepción
+            logger.error("Error enviando boleta por correo: {}", e.getMessage(), e);
+        }
 
         return savedPayment;
     }
+
+    // helper simple
+    private String buildDescriptionFromAppointment(AppointmentModel appointment) {
+        String serv = appointment.getService() != null ? appointment.getService().getName() : "Servicio";
+        String worker = appointment.getWorker() != null ? appointment.getWorker().getUsername() : "Trabajador";
+        String start = appointment.getAppointmentStart() != null ? appointment.getAppointmentStart().toString() : "";
+        return serv + " - " + worker + " - " + start;
+    }
+
 
 
 

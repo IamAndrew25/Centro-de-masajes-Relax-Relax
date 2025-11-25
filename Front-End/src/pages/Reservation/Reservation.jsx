@@ -197,59 +197,68 @@ const Reservation = () => {
   }, [formData.date, formData.workerId, serviceToBook]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newErrors = {};
-    if (!formData.workerId) newErrors.workerId = "Selecciona un especialista.";
-    if (!formData.date) newErrors.date = "Selecciona una fecha.";
-    if (!formData.time) newErrors.time = "Selecciona una hora.";
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length === 0) {
-      setIsLoading(true);
-      setSubmitMessage("");
-      const appointmentStart = `${formData.date}T${formData.time}:00`;
+  e.preventDefault();
 
-      const appointmentData = {
-        userId,
-        serviceId: serviceToBook.id,
-        workerId: parseInt(formData.workerId, 10),
-        appointmentStart,
-        amount: totalCartPrice,
-        status: "PENDING",
-      };
+  const newErrors = {};
+  if (!formData.workerId) newErrors.workerId = "Selecciona un especialista.";
+  if (!formData.date) newErrors.date = "Selecciona una fecha.";
+  if (!formData.time) newErrors.time = "Selecciona una hora.";
+  setErrors(newErrors);
 
-      try {
-        console.log("Enviando datos de cita:", appointmentData);
-        
-        // 1. CAPTURAMOS LA RESPUESTA DE LA API (que contiene el ID de la cita creada)
-        const newAppointment = await createAppointment(appointmentData);
-        
-        console.log("Cita creada:", newAppointment);
+  if (Object.keys(newErrors).length > 0) return;
 
-        // 2. GUARDAMOS EL ID EN EL CONTEXTO
-        // Nota: Verifica si tu backend devuelve el objeto con campo 'id' o 'appointmentId'. 
-        // Normalmente es 'id'.
-        if (newAppointment && newAppointment.id) {
-            setAppointmentId(newAppointment.id);
-        } else {
-            console.warn("La respuesta no tenía ID:", newAppointment);
-        }
+  setIsLoading(true);
+  setSubmitMessage("");
 
-        setSubmitMessage("¡Tu reserva ha sido registrada con éxito!");
-        toast.success("Reserva registrada. Redirigiendo al pago...");
-        
-        // 3. REDIRIGIMOS AUTOMÁTICAMENTE AL CHECKOUT
-        setTimeout(() => {
-            navigate('/checkout');
-        }, 1500);
+  // --- FIX HORA ---
+  let rawTime = formData.time;
 
-      } catch (apiError) {
-        console.error("Error al registrar la reserva:", apiError);
-        toast.error(apiError.message || "No se pudo registrar la reserva.");
-      } finally {
-        setIsLoading(false);
-      }
-    }
+  if (!rawTime || !rawTime.includes(":")) {
+    toast.error("Selecciona una hora válida.");
+    return;
+  }
+
+  let [hour, minute] = rawTime.split(":");
+  hour = hour.padStart(2, "0");
+  minute = minute.padStart(2, "0");
+
+  const appointmentStart = `${formData.date}T${hour}:${minute}:00`;
+
+  const appointmentData = {
+    userId,
+    serviceId: serviceToBook.id,
+    workerId: parseInt(formData.workerId, 10),
+    appointmentStart,
+    status: "PENDING",
   };
+
+  try {
+    console.log("Enviando datos:", appointmentData);
+    const resp = await createAppointment(appointmentData);
+    
+    console.log("RESPUESTA BACKEND:", resp);
+
+    const appointmentId = resp.id;
+
+    if (!appointmentId) {
+      toast.error("El backend no devolvió ID.");
+      return;
+    }
+
+    setAppointmentId(appointmentId);
+    localStorage.setItem("appointmentId", appointmentId);
+
+    toast.success("Reserva registrada.");
+    setFormData({ date: "", time: "", workerId: "" });
+    setAvailableHours([]);
+
+  } catch (error) {
+    toast.error(error.message || "No se pudo registrar la reserva.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   if (!userId || !serviceToBook) {
     return <MainLayout><div className="loading">Cargando...</div></MainLayout>;
@@ -278,9 +287,9 @@ const Reservation = () => {
             )}
 
             <form className="reservation-form" onSubmit={handleSubmit} noValidate>
-              <p className="service-summary">
+                <p className="service-summary">
                   Servicio: <strong>{serviceToBook.name}</strong> (S/ {totalCartPrice.toFixed(2)})
-              </p>
+                </p>
 
                 {/* Especialista */}
                 <div className="form-group">
@@ -294,7 +303,7 @@ const Reservation = () => {
                       ))}
                   </select>
                   {errors.workerId && <p className="error-text">{errors.workerId}</p>}
-              </div>
+                </div>
 
                 {/* Fecha */}
                 <div className="form-group">
@@ -327,8 +336,8 @@ const Reservation = () => {
                 </div>
 
                 <button type="submit" className="btn-reserve" disabled={isLoading}>
-                {isLoading ? "Registrando Reserva..." : "Confirmar Reserva"}
-              </button>
+                  {isLoading ? "Registrando Reserva..." : "Confirmar Reserva"}
+                </button>
             </form>
           </div>
         </section>

@@ -12,7 +12,6 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [appointmentId, setAppointmentId] = useState(null);
 
-
   // Función para añadir un item al carrito
   const addToCart = (item) => {
     const isItemInCart = cartItems.find(cartItem => cartItem.id === item.id);
@@ -36,7 +35,6 @@ export const CartProvider = ({ children }) => {
   // Función para limpiar el carrito
   const clearCart = () => {
     setCartItems([]);
-    setAppointmentId(null);
   };
 
   // Calculamos el total de items, el badge
@@ -44,20 +42,9 @@ export const CartProvider = ({ children }) => {
 
   // Calculamos el precio total
   const totalCartPrice = cartItems.reduce((total, item) => {
-    
-    const rawPrice = item.precio !== undefined ? item.precio : item.price;
-    
-    if (rawPrice === undefined || rawPrice === null) {
-      return total; // Si no hay precio, no sumar nada
-    }
-
-    const priceString = String(rawPrice).replace('S/ ', '');
+    // Aseguramos que el precio sea un numero y no una cadena
+    const priceString = String(item.price).replace('S/ ', '');
     const price = parseFloat(priceString);
-
-    if (isNaN(price)) {
-      return total;
-    }
-
     return total + (price * item.quantity);
   }, 0);
 
@@ -71,7 +58,7 @@ export const CartProvider = ({ children }) => {
     cartItemCount,
     totalCartPrice,
     appointmentId,
-    setAppointmentId
+    setAppointmentId,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
