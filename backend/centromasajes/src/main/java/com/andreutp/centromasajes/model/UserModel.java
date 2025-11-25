@@ -1,6 +1,8 @@
 package com.andreutp.centromasajes.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -56,6 +58,7 @@ public class UserModel {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "worker", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({"worker"})
     private List<WorkerAvailabilityModel> availability;
 
     private String especialidad;    // Masaje Relajante, Deportivo, etc.

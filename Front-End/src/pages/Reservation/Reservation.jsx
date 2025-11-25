@@ -90,7 +90,7 @@ const getDurationMinutes = (service) => {
 
 const Reservation = () => {
   const navigate = useNavigate();
-  const { cartItems, totalCartPrice } = useCart();
+  const { cartItems, totalCartPrice, setAppointmentId } = useCart();
 
   const [formData, setFormData] = useState({
     date: "",
@@ -197,41 +197,68 @@ const Reservation = () => {
   }, [formData.date, formData.workerId, serviceToBook]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newErrors = {};
-    if (!formData.workerId) newErrors.workerId = "Selecciona un especialista.";
-    if (!formData.date) newErrors.date = "Selecciona una fecha.";
-    if (!formData.time) newErrors.time = "Selecciona una hora.";
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length === 0) {
-      setIsLoading(true);
-      setSubmitMessage("");
-      const appointmentStart = `${formData.date}T${formData.time}:00`;
+  e.preventDefault();
 
-      const appointmentData = {
-        userId,
-        serviceId: serviceToBook.id,
-        workerId: parseInt(formData.workerId, 10),
-        appointmentStart,
-        amount: totalCartPrice,
-        status: "PENDING",
-      };
+  const newErrors = {};
+  if (!formData.workerId) newErrors.workerId = "Selecciona un especialista.";
+  if (!formData.date) newErrors.date = "Selecciona una fecha.";
+  if (!formData.time) newErrors.time = "Selecciona una hora.";
+  setErrors(newErrors);
 
-      try {
-        console.log("Enviando datos de cita:", appointmentData);
-        await createAppointment(appointmentData);
-        setSubmitMessage("¡Tu reserva ha sido registrada con éxito! Será revisada por un administrador.");
-        toast.success("Reserva registrada.");
-        setFormData({ date: "", time: "", workerId: "" });
-        setAvailableHours([]);
-      } catch (apiError) {
-        console.error("Error al registrar la reserva:", apiError);
-        toast.error(apiError.message || "No se pudo registrar la reserva.");
-      } finally {
-        setIsLoading(false);
-      }
-    }
+  if (Object.keys(newErrors).length > 0) return;
+
+  setIsLoading(true);
+  setSubmitMessage("");
+
+  // --- FIX HORA ---
+  let rawTime = formData.time;
+
+  if (!rawTime || !rawTime.includes(":")) {
+    toast.error("Selecciona una hora válida.");
+    return;
+  }
+
+  let [hour, minute] = rawTime.split(":");
+  hour = hour.padStart(2, "0");
+  minute = minute.padStart(2, "0");
+
+  const appointmentStart = `${formData.date}T${hour}:${minute}:00`;
+
+  const appointmentData = {
+    userId,
+    serviceId: serviceToBook.id,
+    workerId: parseInt(formData.workerId, 10),
+    appointmentStart,
+    status: "PENDING",
   };
+
+  try {
+    console.log("Enviando datos:", appointmentData);
+    const resp = await createAppointment(appointmentData);
+    
+    console.log("RESPUESTA BACKEND:", resp);
+
+    const appointmentId = resp.id;
+
+    if (!appointmentId) {
+      toast.error("El backend no devolvió ID.");
+      return;
+    }
+
+    setAppointmentId(appointmentId);
+    localStorage.setItem("appointmentId", appointmentId);
+
+    toast.success("Reserva registrada.");
+    setFormData({ date: "", time: "", workerId: "" });
+    setAvailableHours([]);
+
+  } catch (error) {
+    toast.error(error.message || "No se pudo registrar la reserva.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   if (!userId || !serviceToBook) {
     return <MainLayout><div className="loading">Cargando...</div></MainLayout>;

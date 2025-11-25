@@ -10,6 +10,7 @@ export const useCart = () => {
 // Proveedor del contexto
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const [appointmentId, setAppointmentId] = useState(null);
 
   // Función para añadir un item al carrito
   const addToCart = (item) => {
@@ -55,7 +56,9 @@ export const CartProvider = ({ children }) => {
     removeFromCart,
     clearCart,
     cartItemCount,
-    totalCartPrice
+    totalCartPrice,
+    appointmentId,
+    setAppointmentId,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

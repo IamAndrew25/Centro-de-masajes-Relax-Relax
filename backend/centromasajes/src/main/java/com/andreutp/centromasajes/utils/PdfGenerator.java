@@ -108,9 +108,6 @@ public class PdfGenerator {
                     .setTextAlignment(TextAlignment.CENTER)
                     .setFontSize(14)
                     .setFontColor(negro));
-            document.add(new Paragraph("RUC: 56879513478")
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setFontSize(10));
             document.add(new Paragraph("Av. El buen mar 125 - Azerbaiyán")
                     .setTextAlignment(TextAlignment.CENTER)
                     .setFontSize(10));
@@ -217,7 +214,6 @@ public class PdfGenerator {
                 .setBorder(Border.NO_BORDER);
     }
 
-    //FACTURAAA
 
 
 }
