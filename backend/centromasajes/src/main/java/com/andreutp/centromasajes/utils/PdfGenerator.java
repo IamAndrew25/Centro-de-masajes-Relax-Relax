@@ -251,7 +251,7 @@ public static byte[] generateInvoiceA4MultiItemsPdf(
 
         // ======= MARCA DE AGUA =======
         try {
-            String logoPath = "C:\\Users\\riosb\\Downloads\\Centro-de-masajes-Relax-Relax-branch-Jheremy\\Front-End\\src\\assets\\images\\logo.png";
+            String logoPath = "C:\\Users\\riosb\\Downloads\\Centro-de-masajes-Relax-Relax(CLON)\\Front-End\\src\\assets\\images\\logo.png";
             ImageData logoData = ImageDataFactory.create(logoPath);
             Image watermark = new Image(logoData);
             watermark.scaleToFit(300, 300);
@@ -306,9 +306,9 @@ public static byte[] generateInvoiceA4MultiItemsPdf(
                 .setBold().setFontSize(10).setFontColor(grisTexto);
         Paragraph empresaBody = new Paragraph(
                 "Centro de Masajes Relax Total\n" +
-                "Av. Principal 123, Ciudad\n" +
+                "Av. El buen masaje, Miraflores\n" +
                 "RUC: 56879513478\n" +
-                "PERÚKISTAN"
+                "Lima, Perú"
         ).setFontSize(9).setFontColor(grisTexto);
 
         Cell empresaCell = new Cell()
@@ -412,12 +412,46 @@ public static byte[] generateInvoiceA4MultiItemsPdf(
         document.add(new Paragraph("N° ORDEN: " + orderNumber)
                 .setFontSize(9).setTextAlignment(TextAlignment.CENTER));
 
+
+        // FOOTER: Condiciones de pago y contacto
+        Paragraph condicionesTitle = new Paragraph("Condiciones y forma de pago")
+                .setBold()
+                .setFontSize(9)
+                .setFontColor(new DeviceRgb(60, 60, 60));
+
+        Paragraph condicionesBody1 = new Paragraph("El pago se realizará al finalizar el servicio.")
+                .setFontSize(8)
+                .setFontColor(new DeviceRgb(60, 60, 60));
+
+        Paragraph condicionesBody2 = new Paragraph("Para cualquier consulta comuníquese con: contacto@relaxtotal.com")
+                .setFontSize(8)
+                .setFontColor(new DeviceRgb(60, 60, 60));
+
+        // Crear un Canvas para colocar en el pie de página
+        Canvas footerCanvas = new Canvas(pdf.getFirstPage(), pdf.getDefaultPageSize());
+
+        // Posición X del pie (alineado a la izquierda)
+        float footerX = document.getLeftMargin();
+        // Posición Y (a medida que vayas ajustando el Y, se mueve más abajo o más arriba)
+        float footerYTitle = 80f;   // Título
+        float footerYBody1 = 66f;   // Primera línea de condiciones
+        float footerYBody2 = 52f;   // Segunda línea de condiciones
+
+        // Mostrar el texto en el footer
+        footerCanvas.showTextAligned(condicionesTitle, footerX, footerYTitle, TextAlignment.LEFT);
+        footerCanvas.showTextAligned(condicionesBody1, footerX, footerYBody1, TextAlignment.LEFT);
+        footerCanvas.showTextAligned(condicionesBody2, footerX, footerYBody2, TextAlignment.LEFT);
+
+        // Cerrar el canvas para que se dibuje en el PDF
+        footerCanvas.close();
+
         document.close();
         return baos.toByteArray();
 
     } catch (Exception e) {
         throw new RuntimeException("Error generando factura MULTI-ITEMS: " + e.getMessage(), e);
     }
+
 }
 /**
  * FACTURA A4 ORIGINAL (1 ITEM)
