@@ -191,20 +191,31 @@ useEffect(() => {
           {cartItemCount === 0 ? (
             <p>Tu carrito está vacío</p>
           ) : (
-            cartItems.map(item => (
-              <div key={item.id} className="cart-item">
-                <div className="cart-item-details">
-                  <p>{item.name || item.title}</p>
-                  <span>S/ {String(item.price).replace('S/ ', '')}</span>
+            cartItems.map(item => {
+              const rawPrice = item.precio !== undefined ? item.precio : item.price;
+
+              return (
+                <div key={item.id} className="cart-item">
+                  <div className="cart-item-details">
+                    <p>{item.name || item.title}</p>
+                    
+                    <span>
+                      {typeof rawPrice === 'number'
+                        ? `S/ ${rawPrice.toFixed(2)}`
+                        : rawPrice // Mostrar '30% Descuento' o '2x1' tal cual
+                      }
+                    </span>
+
+                  </div>
+                  {/*Boton para eliminar */}
+                  <FaTimes 
+                    size={18} 
+                    className="cart-item-remove" 
+                    onClick={() => removeFromCart(item.id)}
+                  />
                 </div>
-                {/*Boton para elimianr */}
-                <FaTimes 
-                  size={18} 
-                  className="cart-item-remove" 
-                  onClick={() => removeFromCart(item.id)}
-                />
-              </div>
-            ))
+              );
+            })
           )}
         </div>
         {cartItemCount > 0 && (

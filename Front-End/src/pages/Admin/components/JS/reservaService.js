@@ -13,25 +13,9 @@ const axiosConfig = () => ({
 export const getAllAppointments = async () => {
   try {
     const response = await axios.get(`${API_URL}/appointments`, axiosConfig());
-    console.log("📡 Respuesta completa del backend:", response);
+    console.log("📡 Respuesta limpia del backend:", response);
 
-    let data = response.data;
-
-    if (typeof data === "string") {
-      try {
-        const firstBracket = data.indexOf("[");
-        const lastBracket = data.lastIndexOf("]");
-
-        const jsonPart = data.slice(firstBracket, lastBracket + 1);
-        data = JSON.parse(jsonPart);
-      } catch (parseError) {
-        console.error(" Error al intentar parsear los datos JSON:", parseError);
-        data = [];
-      }
-    }
-
-    console.log(" Datos procesados correctamente:", data);
-    return data;
+    return Array.isArray(response.data) ? response.data : [];
   } catch (error) {
     console.error(" Error al obtener las reservas:", error);
     throw error;

@@ -67,7 +67,7 @@
 
 - Backend: Java, Spring Boot
 
-- Frontend: HTML5, CSS3, javacript(React)
+- Frontend: HTML5, CSS3, javascript(React)
 
 - Base de Datos: MySQL
 

@@ -4,6 +4,7 @@ import { Modal } from './ui/Modal';
 import { FormInput, FormTextarea, FormRow } from './ui/Form';
 import { getAllServices, createService, updateService,
    deleteService,enviarExcelServicios,descargarExcelServicios } from './JS/serviceService';
+import { toast } from 'react-toastify';  
 
 const FIELD_MAX_LENGTHS = {
   name: 60,         // Nombre del servicio
@@ -33,6 +34,7 @@ const Servicios = () => {
       setServices(data);
     } catch (error) {
       console.error('Error cargando servicios:', error);
+      toast.error("Error al cargar la lista de servicios");
     }
   };
 
@@ -56,7 +58,7 @@ const Servicios = () => {
   const handleSaveService = async () => {
     try {
       if (!form.name || !form.durationMin || !form.baseprice || !form.description) {
-        alert('Nombre, duración, precio y descripción son obligatorios.');
+        toast.warn('Por favor, completa todos los campos obligatorios');
         return;
       }
 
@@ -68,7 +70,9 @@ const Servicios = () => {
 
       if (form.id) {
         await updateService(form.id, servicePayload);
+        toast.success('Servicio actualizado correctamente');
       } else {
+        toast.success('Servicio creado correctamente');
         await createService(servicePayload);
       }
 
@@ -80,7 +84,7 @@ const Servicios = () => {
       if (error.response && error.response.data) {
         console.log("Detalles del error del backend:", error.response.data);
       }
-      alert(errorMsg);
+      toast.error(errorMsg);
     }
   };
 
@@ -99,11 +103,36 @@ const Servicios = () => {
     if (!window.confirm('¿Seguro que quieres eliminar este servicio?')) return;
     try {
       await deleteService(id);
+      toast.success(' Servicio eliminado correctamente');
       fetchServices();
     } catch (error) {
       console.error('Error eliminando servicio:', error);
-      alert('No se pudo eliminar el servicio. Revisa la consola.');
+      toast.error('No se pudo eliminar el servicio');
     }
+  };
+
+  //Para los botones de excel dx
+  const handleDescargarExcel = async () => {
+      try {
+          await descargarExcelServicios();
+          toast.success(" Excel descargado correctamente");
+      } catch (error) {
+          console.error(error);
+          toast.error("Error al descargar el Excel");
+      }
+  };
+
+  const handleEnviarExcel = async () => {
+      try {
+        const opcion = await enviarExcelServicios();
+
+        if(opcion){
+          toast.success(" Reporte enviado por correo");
+        }
+      } catch (error) {
+          console.error(error);
+          toast.error("Error al enviar el reporte");
+      }
   };
 
   return (
@@ -114,18 +143,18 @@ const Servicios = () => {
           buttonText="➕ Nuevo Servicio"
           onButtonClick={handleNewService}
         />
-        <button
-          style={{ height: '40px', marginLeft: '10px' }}
-          onClick={descargarExcelServicios}
-        >
-          ⬇️ Descargar Excel
-        </button>
-        <button
-          style={{ height: '40px', marginLeft: '10px' }}
-          onClick={enviarExcelServicios}
-        >
-          📊 Reporte Excel
-        </button>
+          <button 
+            style={{ height: '40px', marginLeft: '10px' }} 
+            onClick={handleDescargarExcel} 
+            >
+            ⬇️ Descargar Excel
+          </button>
+          <button 
+            style={{ height: '40px', marginLeft: '10px' }} 
+            onClick={handleEnviarExcel} 
+            >
+            📊 Reporte Excel
+            </button> 
 
         <div className="services-grid">
           {services.length === 0 ? (
