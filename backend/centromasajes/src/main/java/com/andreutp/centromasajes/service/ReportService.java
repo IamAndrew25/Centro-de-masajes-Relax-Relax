@@ -1,10 +1,12 @@
 package com.andreutp.centromasajes.service;
 
 
+import com.andreutp.centromasajes.controller.ReportController;
 import com.andreutp.centromasajes.dao.IAppointmentRepository;
 import com.andreutp.centromasajes.dao.IPaymentRepository;
 import com.andreutp.centromasajes.dao.IServiceRepository;
 import com.andreutp.centromasajes.dao.IUserRepository;
+import com.andreutp.centromasajes.dto.InvoiceItem;
 import com.andreutp.centromasajes.model.AppointmentModel;
 import com.andreutp.centromasajes.model.PaymentModel;
 import com.andreutp.centromasajes.model.ServiceModel;
@@ -172,31 +174,101 @@ public class ReportService {
 
         logger.info("Boleta PDF enviada correctamente a {}", correo);
     }
-    // PDF CON DISEÑO AL CORREO FACTURA-------------------------------- JIJIJI GO LEFT?
-public void enviarFacturaPdf(String correo, String cliente, String descripcion,
-                             double total, String metodoPago) {
-    logger.info("Generando y enviando FACTURA PDF a {}", correo);
 
+
+    // PDF CON DISEÑO AL CORREO FACTURA - MODO SIMPLE (1 ITEM)
+public void enviarFacturaPdf(String correo,
+                             String cliente,
+                             String descripcion,
+                             double total,
+                             String metodoPago,
+                             Integer cantidad,
+                             String numeroPedido) {
+
+    logger.info("Generando y enviando FACTURA PDF (1 ítem) a {}", correo);
+
+    // Cantidad segura (mínimo 1)
+    int qty = (cantidad == null || cantidad <= 0) ? 1 : cantidad;
+
+    // Método de pago por defecto Visa si viene vacío
+    String metodoPagoSeguro = (metodoPago == null || metodoPago.isBlank())
+            ? "Visa"
+            : metodoPago;
+
+    // Número de factura generado internamente
+    String numeroFactura = "F" + System.currentTimeMillis();
+
+    // Pedido opcional
+    String pedido = (numeroPedido == null || numeroPedido.isBlank())
+            ? null
+            : numeroPedido;
+
+    // Usa el método A4 de un solo ítem (que ahora por dentro llama al multi-items)
     byte[] pdfBytes = PdfGenerator.generateInvoiceA4Pdf(
             cliente,
-            "F" + System.currentTimeMillis(), // número único
+            numeroFactura,
             descripcion,
-            1,                                // cantidad se puede parametrizar
+            qty,
             total,
-            metodoPago,
-            String.valueOf(System.currentTimeMillis())
+            metodoPagoSeguro,
+            pedido
     );
 
     emailService.enviarCorreoConAdjunto(
             correo,
-            "Factura electrónica - Relax Total",
-            "Adjuntamos su factura electrónica. ¡Gracias por su preferencia!",
+            "Factura electrónica - Relax Total " + numeroFactura,
+            "Adjuntamos su factura electrónica. ¡Gracias por su preferencia! 😊",
             pdfBytes,
-            "FacturaRelaxTotal.pdf"
+            "Factura-" + numeroFactura + ".pdf"
     );
 
-    logger.info("Factura PDF enviada correctamente a {}", correo);
+    logger.info("Factura PDF (1 ítem) enviada correctamente a {}", correo);
 }
+
+    // PDF CON DISEÑO AL CORREO FACTURA-------------------------------- JIJIJI GO LEFT?
+   public void enviarFacturaPdfMultiple(String correo,
+                                     String cliente,
+                                     String metodoPago,
+                                     String numeroPedido,
+                                     String numeroFactura,
+                                     List<ReportController.ItemFacturaDTO> itemsDto) {
+
+    logger.info("Generando FACTURA MULTI-ITEMS para {}", correo);
+
+    String metodoPagoSeguro = (metodoPago == null || metodoPago.isBlank()) ? "Visa" : metodoPago;
+    String nroFactura = (numeroFactura == null || numeroFactura.isBlank())
+            ? "F" + System.currentTimeMillis()
+            : numeroFactura;
+
+    String pedido = (numeroPedido == null || numeroPedido.isBlank()) ? null : numeroPedido;
+
+    // Convertir DTO → InvoiceItem
+    List<InvoiceItem> items = itemsDto.stream()
+            .map(i -> new InvoiceItem(
+                    i.getDescripcion(),
+                    i.getCantidad() == null ? 1 : i.getCantidad(),
+                    i.getPrecioUnitario() == null ? 0.0 : i.getPrecioUnitario()
+            )).toList();
+
+    byte[] pdfBytes = PdfGenerator.generateInvoiceA4MultiItemsPdf(
+            cliente,
+            nroFactura,
+            items,
+            metodoPagoSeguro,
+            pedido
+    );
+
+    emailService.enviarCorreoConAdjunto(
+            correo,
+            "Factura electrónica - Relax Total " + nroFactura,
+            "Adjuntamos su factura electrónica. ¡Gracias por su preferencia!",
+            pdfBytes,
+            "Factura-" + nroFactura + ".pdf"
+    );
+
+    logger.info("Factura MULTI-ITEM enviada correctamente.");
+}
+
 
 
 }

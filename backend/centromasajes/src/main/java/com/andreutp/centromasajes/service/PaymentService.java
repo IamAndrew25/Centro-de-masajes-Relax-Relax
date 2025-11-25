@@ -105,12 +105,24 @@ public class PaymentService {
         paymentRepository.save(savedPayment);
 
         // 5 Enviar PDF por correo automáticamente
-        emailService.enviarBoletaConPDF(
+        // Datos dinámicos para la FACTURA A4
+        String nombreCliente = user.getUsername();              // o getFirstName + getLastName si lo tienes
+        String descripcionServicio = appointment.getService().getName();
+        int cantidad = 1;                                       // por ahora siempre 1 sesión
+        double total = invoice.getTotal();
+        String metodoPago = "Visa";                            //  fijo
+        String numeroFactura = invoice.getInvoiceNumber();
+        String numeroPedido = "ORD-" + savedPayment.getId();   // opcional, tú defines el formato
+
+        emailService.enviarFacturaA4ConPDF(
                 user.getEmail(),
-                "Tu boleta de pago #" + invoice.getInvoiceNumber(),
-                user.getUsername(),
-                invoice.getInvoiceNumber(),
-                invoice.getTotal()
+                nombreCliente,
+                descripcionServicio,
+                cantidad,
+                total,
+                metodoPago,
+                numeroFactura,
+                numeroPedido
         );
 
         return savedPayment;
