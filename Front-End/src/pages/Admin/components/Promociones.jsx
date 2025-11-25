@@ -3,6 +3,14 @@ import { Card } from './ui/Card';
 import { getPromociones, createPromocion, updatePromocion, deletePromocion,uploadPromotionImage } from './JS/promocionesService';
 import './Promociones.css'; 
 
+// max campos 
+const FIELD_MAX_LENGTHS = {
+  nombre: 80,
+  descripcion: 255,
+  descuento: 4,      // ej: "99.9"
+  fecha_inicio: 10,  // YYYY-MM-DD
+  fecha_fin: 10      // YYYY-MM-DD
+};
 
 const Promociones = () => {
     const [promociones, setPromociones] = useState([]);
@@ -58,13 +66,28 @@ const Promociones = () => {
         }
     };
 
+// max lenght
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+    const { name, value } = e.target;
+
+    const max = FIELD_MAX_LENGTHS[name];
+    let finalValue = value;
+
+    // Para descuento permitimos solo números y punto
+    if (name === 'descuento') {
+      finalValue = value.replace(/[^0-9.]/g, '');
+    }
+
+    if (max && typeof finalValue === 'string') {
+      finalValue = finalValue.slice(0, max);
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: finalValue
+    }));
+  };
+
 
     const handleImageChange = (e) => {
     const file = e.target.files[0];

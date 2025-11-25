@@ -2,6 +2,18 @@ import React, { useState, useEffect } from 'react';
 import './PlanesMembresias.css';
 import { getPlanes, createPlan, updatePlan, deletePlan } from './JS/planesMembresiasService';
 
+// Límites de caracteres max
+const FIELD_MAX_LENGTHS = {
+  nombre: 60,
+  descripcion: 255,
+  precio: 5,               // ej: 999.9
+  icono: 10,                // emoji o texto corto
+  servicios_incluidos: 1000,
+  beneficios: 1000,
+  duracion: 3               // hasta 999
+};
+
+
 
 const PlanesMembresias = () => {
   const [planes, setPlanes] = useState([]);
@@ -126,18 +138,37 @@ const PlanesMembresias = () => {
     setEditingPlan(null);
   };
 
+  
+  // Input genérico con límite de caracteres y limpieza de números
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let newValue = type === 'checkbox' ? checked : value;
+
+    // Limpiar campos numéricos
+    if (name === 'precio') {
+      // solo números y punto
+      newValue = String(newValue).replace(/[^0-9.]/g, '');
+    }
+    if (name === 'duracion') {
+      // solo números enteros
+      newValue = String(newValue).replace(/[^0-9]/g, '');
+    }
+
+    const max = FIELD_MAX_LENGTHS[name];
+    if (max && typeof newValue === 'string') {
+      newValue = newValue.slice(0, max);
+    }
+
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: newValue
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    //  calidacion estricta para evitar error 400
+    // validación estricta para evitar error 400
     if (!formData.nombre || formData.nombre.trim().length === 0) {
       alert("El nombre del plan es obligatorio");
       return;
@@ -148,27 +179,25 @@ const PlanesMembresias = () => {
     }
 
     // Convertir servicios y beneficios de texto → array válido
-    // Soporte para CREAR (string) y EDITAR (array)
-const serviciosArray = Array.isArray(formData.servicios_incluidos)
-  ? formData.servicios_incluidos
-  : (formData.servicios_incluidos || "")
-      .split("\n")
-      .map(s => s.trim())
-      .filter(Boolean);
+    const serviciosArray = Array.isArray(formData.servicios_incluidos)
+      ? formData.servicios_incluidos
+      : (formData.servicios_incluidos || "")
+          .split("\n")
+          .map(s => s.trim())
+          .filter(Boolean);
 
-const beneficiosArray = Array.isArray(formData.beneficios)
-  ? formData.beneficios
-  : (formData.beneficios || "")
-      .split("\n")
-      .map(s => s.trim())
-      .filter(Boolean);
-
+    const beneficiosArray = Array.isArray(formData.beneficios)
+      ? formData.beneficios
+      : (formData.beneficios || "")
+          .split("\n")
+          .map(s => s.trim())
+          .filter(Boolean);
 
     setLoading(true);
     try {
       let icono = formData.icono || '💠';
 
-      // Iconos automáticos segun nombre
+      // Iconos automáticos según nombre
       const lower = formData.nombre.toLowerCase();
       if (lower.includes('3 meses')) icono = '📅';
       if (lower.includes('6 meses')) icono = '💎';
@@ -204,16 +233,15 @@ const beneficiosArray = Array.isArray(formData.beneficios)
       await loadPlanes();
 
     } catch (err) {
-  console.error('Error guardando plan:', err);
+      console.error('Error guardando plan:', err);
 
-  if (err.response) {
-    console.log("ERROR DEL BACKEND:", err.response.data);
-    alert("❌ Backend dice: " + JSON.stringify(err.response.data));
-  } else {
-    alert("❌ Error desconocido");
-  }
-}
-
+      if (err.response) {
+        console.log("ERROR DEL BACKEND:", err.response.data);
+        alert("❌ Backend dice: " + JSON.stringify(err.response.data));
+      } else {
+        alert("❌ Error desconocido");
+      }
+    }
   };
 
   return (
@@ -285,82 +313,82 @@ const beneficiosArray = Array.isArray(formData.beneficios)
       ) : (
         <div className="planes-grid-vertical">
           {planes.map((plan) => (
-          <div
-            key={plan.id}
-            className={`plan-card-vertical ${plan.destacado ? 'destacado' : ''} ${plan.tipo === 'vip' ? 'vip' : ''}`}
-          >
-            {plan.destacado && (
-              <span className="plan-badge-destacado">⭐ Destacado</span>
-            )}
-            
-            <div className="plan-icon-wrapper">
-              <span className="plan-icon">{plan.icono || '💠'}</span>
-              <h3 className="plan-title">{plan.nombre}</h3>
-            </div>
-            
-            <div className="plan-price">
-              <span className="price-amount">
-                S/ {plan.precio} 
-                {plan.duracion && plan.duracion_unidad ? (
-                  ` / ${plan.duracion} ${
-                    plan.duracion === 1 
-                      ? plan.duracion_unidad.replace("es","")   // mes / día
-                      : plan.duracion_unidad                    // meses / días
-                  }`
-                ) : ""}
-              </span>
-            </div>
-            <div className="plan-benefits">
-              <h4 className="benefits-title">Servicios Incluidos:</h4>
-              <ul className="benefits-list">
-                {(plan.servicios_incluidos || []).map((servicio, i) => (
-                  <li key={i}>
-                    <span className="checkmark">✓</span>
-                    {servicio}
-                  </li>
-                ))}
-              </ul>
-              
-              {plan.beneficios && plan.beneficios.length > 0 && (
-                <>
-                  <h4 className="benefits-title">Beneficios:</h4>
-                  <ul className="benefits-list">
-                    {plan.beneficios.map((beneficio, i) => (
-                      <li key={i}>
-                        <span className="checkmark">✓</span>
-                        {beneficio}
-                      </li>
-                    ))}
-                  </ul>
-                </>
+            <div
+              key={plan.id}
+              className={`plan-card-vertical ${plan.destacado ? 'destacado' : ''} ${plan.tipo === 'vip' ? 'vip' : ''}`}
+            >
+              {plan.destacado && (
+                <span className="plan-badge-destacado">⭐ Destacado</span>
               )}
-            </div>
+              
+              <div className="plan-icon-wrapper">
+                <span className="plan-icon">{plan.icono || '💠'}</span>
+                <h3 className="plan-title">{plan.nombre}</h3>
+              </div>
+              
+              <div className="plan-price">
+                <span className="price-amount">
+                  S/ {plan.precio} 
+                  {plan.duracion && plan.duracion_unidad ? (
+                    ` / ${plan.duracion} ${
+                      plan.duracion === 1 
+                        ? plan.duracion_unidad.replace("es","")   // mes / día
+                        : plan.duracion_unidad                    // meses / días
+                    }`
+                  ) : ""}
+                </span>
+              </div>
+              <div className="plan-benefits">
+                <h4 className="benefits-title">Servicios Incluidos:</h4>
+                <ul className="benefits-list">
+                  {(plan.servicios_incluidos || []).map((servicio, i) => (
+                    <li key={i}>
+                      <span className="checkmark">✓</span>
+                      {servicio}
+                    </li>
+                  ))}
+                </ul>
+                
+                {plan.beneficios && plan.beneficios.length > 0 && (
+                  <>
+                    <h4 className="benefits-title">Beneficios:</h4>
+                    <ul className="benefits-list">
+                      {plan.beneficios.map((beneficio, i) => (
+                        <li key={i}>
+                          <span className="checkmark">✓</span>
+                          {beneficio}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </div>
 
-            <div className="plan-actions">
-              <button 
-                className="btn-action btn-edit" 
-                title="Editar plan" 
-                onClick={() => handleEdit(plan)}
-              >
-                ✏️ Editar
-              </button>
-              <button 
-                className="btn-action btn-delete" 
-                title="Eliminar plan" 
-                onClick={() => handleDelete(plan.id)}
-              >
-                🗑️ Eliminar
-              </button>
-              <button 
-                className="btn-action btn-destacar" 
-                title={plan.destacado ? "Quitar destacado" : "Destacar plan"} 
-                onClick={() => toggleDestacado(plan)}
-              >
-                {plan.destacado ? '★ Destacado' : '☆ Destacar'}
-              </button>
+              <div className="plan-actions">
+                <button 
+                  className="btn-action btn-edit" 
+                  title="Editar plan" 
+                  onClick={() => handleEdit(plan)}
+                >
+                  ✏️ Editar
+                </button>
+                <button 
+                  className="btn-action btn-delete" 
+                  title="Eliminar plan" 
+                  onClick={() => handleDelete(plan.id)}
+                >
+                  🗑️ Eliminar
+                </button>
+                <button 
+                  className="btn-action btn-destacar" 
+                  title={plan.destacado ? "Quitar destacado" : "Destacar plan"} 
+                  onClick={() => toggleDestacado(plan)}
+                >
+                  {plan.destacado ? '★ Destacado' : '☆ Destacar'}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
         </div>
       )}
 
@@ -391,6 +419,7 @@ const beneficiosArray = Array.isArray(formData.beneficios)
                     onChange={handleInputChange}
                     placeholder="Ej: Plan Premium"
                     required
+                    maxLength={FIELD_MAX_LENGTHS.nombre}
                   />
                 </div>
 
@@ -406,6 +435,7 @@ const beneficiosArray = Array.isArray(formData.beneficios)
                     min="0"
                     step="0.01"
                     required
+                    maxLength={FIELD_MAX_LENGTHS.precio}
                   />
                 </div>
               </div>
@@ -419,6 +449,7 @@ const beneficiosArray = Array.isArray(formData.beneficios)
                   value={formData.descripcion}
                   onChange={handleInputChange}
                   placeholder="Breve descripción"
+                  maxLength={FIELD_MAX_LENGTHS.descripcion}
                 />
               </div>
 
@@ -446,6 +477,7 @@ const beneficiosArray = Array.isArray(formData.beneficios)
                     value={formData.icono}
                     onChange={handleInputChange}
                     placeholder="Ej: 💎"
+                    maxLength={FIELD_MAX_LENGTHS.icono}
                   />
                 </div>
 
@@ -467,6 +499,7 @@ const beneficiosArray = Array.isArray(formData.beneficios)
                   onChange={handleInputChange}
                   placeholder="Masaje relajante 60min&#10;Aromaterapia&#10;Música ambiente"
                   rows="4"
+                  maxLength={FIELD_MAX_LENGTHS.servicios_incluidos}
                 />
               </div>
 
@@ -479,6 +512,7 @@ const beneficiosArray = Array.isArray(formData.beneficios)
                   onChange={handleInputChange}
                   placeholder="5% descuento&#10;Toalla gratis&#10;Bebidas incluidas"
                   rows="4"
+                  maxLength={FIELD_MAX_LENGTHS.beneficios}
                 />
               </div>
 
@@ -492,6 +526,7 @@ const beneficiosArray = Array.isArray(formData.beneficios)
                     value={formData.duracion}
                     onChange={handleInputChange}
                     min="1"
+                    maxLength={FIELD_MAX_LENGTHS.duracion}
                   />
                 </div>
 

@@ -5,6 +5,13 @@ import { FormInput, FormTextarea, FormRow } from './ui/Form';
 import { getAllServices, createService, updateService,
    deleteService,enviarExcelServicios,descargarExcelServicios } from './JS/serviceService';
 
+const FIELD_MAX_LENGTHS = {
+  name: 60,         // Nombre del servicio
+  durationMin: 3,   // Máx 3 dígitos (hasta 999)
+  baseprice: 6,    // Ej: "999.99"
+  description: 255  // Texto descripción
+};
+
 const Servicios = () => {
   const [services, setServices] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -29,8 +36,16 @@ const Servicios = () => {
     }
   };
 
+  // Aplica límite de longitud maxlenght 
   const handleInputChange = (field, value) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    const max = FIELD_MAX_LENGTHS[field];
+    let finalValue = value;
+
+    if (max && typeof value === 'string') {
+      finalValue = value.slice(0, max);
+    }
+
+    setForm(prev => ({ ...prev, [field]: finalValue }));
   };
 
   const handleNewService = () => {
@@ -70,7 +85,13 @@ const Servicios = () => {
   };
 
   const handleEditService = (service) => {
-    setForm(service);
+    setForm({
+      id: service.id,
+      name: service.name || '',
+      durationMin: String(service.durationMin ?? ''),
+      baseprice: String(service.baseprice ?? ''),
+      description: service.description || ''
+    });
     setShowModal(true);
   };
 
@@ -93,47 +114,46 @@ const Servicios = () => {
           buttonText="➕ Nuevo Servicio"
           onButtonClick={handleNewService}
         />
-          <button 
-            style={{ height: '40px', marginLeft: '10px' }} 
-            onClick={descargarExcelServicios} 
-            >
-            ⬇️ Descargar Excel
-          </button>
-          <button 
-            style={{ height: '40px', marginLeft: '10px' }} 
-            onClick={enviarExcelServicios} 
-            >
-            📊 Reporte Excel
-            </button> 
+        <button
+          style={{ height: '40px', marginLeft: '10px' }}
+          onClick={descargarExcelServicios}
+        >
+          ⬇️ Descargar Excel
+        </button>
+        <button
+          style={{ height: '40px', marginLeft: '10px' }}
+          onClick={enviarExcelServicios}
+        >
+          📊 Reporte Excel
+        </button>
 
         <div className="services-grid">
           {services.length === 0 ? (
             <p>No hay servicios registrados.</p>
-            ) : (
+          ) : (
             services.map(servicio => (
-                <div key={servicio.id} className="service-card">
+              <div key={servicio.id} className="service-card">
                 <h3>{servicio.name}</h3>
                 <p className="duration">⏱️ {servicio.durationMin} min</p>
                 <p className="price">💰 S/ {servicio.baseprice}</p>
                 <p className="description">{servicio.description}</p>
                 <div className="service-actions">
-                    <button
+                  <button
                     className="btn-edit"
                     onClick={() => handleEditService(servicio)}
-                    >
+                  >
                     ✏️ Editar
-                    </button>
-                    <button
+                  </button>
+                  <button
                     className="btn-delete"
                     onClick={() => handleDeleteService(servicio.id)}
-                    >
+                  >
                     🗑️ Eliminar
-                    </button>
+                  </button>
                 </div>
-                </div>
+              </div>
             ))
-            )}
-
+          )}
         </div>
       </div>
 
@@ -148,6 +168,7 @@ const Servicios = () => {
           <FormInput
             label="💆‍♀️ Nombre del Servicio"
             value={form.name}
+            maxLength={FIELD_MAX_LENGTHS.name}
             onChange={(e) => {
               // Solo letras y espacios
               const soloLetras = e.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
@@ -161,9 +182,9 @@ const Servicios = () => {
               type="number"
               label="⏱️ Duración (minutos)"
               value={form.durationMin}
+              maxLength={FIELD_MAX_LENGTHS.durationMin} // aunque type=number, igual cortamos en handleInputChange
               onChange={(e) => {
-                //no jala no se porque xd
-                const soloNumeros = e.target.value.replace(/[^0-9.]/g, '');
+                const soloNumeros = e.target.value.replace(/[^0-9]/g, '');
                 handleInputChange('durationMin', soloNumeros);
               }}
               min="15"
@@ -174,8 +195,9 @@ const Servicios = () => {
               type="text"
               label="💰 Precio (Soles)"
               value={form.baseprice}
+              maxLength={FIELD_MAX_LENGTHS.baseprice}
               onChange={(e) => {
-                //numeros como 5.5 50
+                // números y punto decimal
                 const soloNumerosYPunto = e.target.value.replace(/[^0-9.]/g, '');
                 handleInputChange('baseprice', soloNumerosYPunto);
               }}
@@ -186,6 +208,7 @@ const Servicios = () => {
           <FormTextarea
             label="📝 Descripción"
             value={form.description}
+            maxLength={FIELD_MAX_LENGTHS.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
             rows={4}
             required
