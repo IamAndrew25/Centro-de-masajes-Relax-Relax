@@ -12,6 +12,7 @@ public class PaymentRequest {
     private LocalDateTime paymentDate;
     private String method; // Ejemplo: CREDIT_CARD, CASH, TRANSFER< YAPE Y MAS XD
     private Boolean coveredBySubscription;
+    private String correo;
 
 
     public Boolean isCoveredBySubscription() {

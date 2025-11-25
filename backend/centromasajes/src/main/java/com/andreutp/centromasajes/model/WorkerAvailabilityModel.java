@@ -1,5 +1,6 @@
 package com.andreutp.centromasajes.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,6 +24,7 @@ public class WorkerAvailabilityModel {
 
     @ManyToOne
     @JoinColumn(name = "worker_id")
+    @JsonIgnoreProperties({"availability"})
     private UserModel worker;
 
 }
