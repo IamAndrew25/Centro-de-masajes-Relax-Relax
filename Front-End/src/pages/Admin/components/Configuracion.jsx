@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getBusinessBasics, updateBusinessBasics } from "./JS/businessConfigService";
-// 👆 si este archivo NO está en src/pages/Admin/components, cambia la ruta
+import { toast } from "react-toastify";
 
 // Componentes internos para cada sección de configuración
 const InformacionNegocio = () => {
@@ -35,13 +35,19 @@ const InformacionNegocio = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+
+    if(!basics.nombreSpa || !basics.email){
+      toast.warn("El nombre y email son obligatorios");
+      return;
+    }
+
     try {
       setSaving(true);
       await updateBusinessBasics(basics);
-      alert("Datos básicos guardados correctamente ✅");
+      toast.success("Datos del negocio actualizados correctamente");
     } catch (err) {
       console.error("Error al guardar datos básicos:", err);
-      alert("Hubo un error al guardar los datos.");
+      toast.error("Hubo un error al guardar los cambios");
     } finally {
       setSaving(false);
     }

@@ -39,26 +39,20 @@ export const deleteService = async (id) => {
 
 // Enviar Excel por correo
 export const enviarExcelServicios = async () => {
-  try {
     const correo = prompt("Ingresa el correo al que enviar el Excel de servicios:");
-    if (!correo) return;
+    if (!correo) return null;
 
     const response = await fetch(`http://localhost:8080/reports/servicios?correo=${correo}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${getToken()}` }
     });
 
-    if (response.ok) alert("Reporte de servicios enviado correctamente");
-    else alert("Error al enviar el reporte de servicios");
-  } catch (error) {
-    console.error(error);
-    alert("Error al enviar el reporte de servicios");
-  }
+    if (!response.ok) throw new Error("Error al enviar el reporte");
+    return true;
 };
 
 // Descargar Excel
 export const descargarExcelServicios = async () => {
-  try {
     const response = await fetch(`http://localhost:8080/reports/servicios/download`, {
       method: "GET",
       headers: { Authorization: `Bearer ${getToken()}` }
@@ -74,8 +68,6 @@ export const descargarExcelServicios = async () => {
     a.click();
     a.remove();
     window.URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error(error);
-    alert("Error al descargar el reporte de servicios");
-  }
+
+    return true;
 };

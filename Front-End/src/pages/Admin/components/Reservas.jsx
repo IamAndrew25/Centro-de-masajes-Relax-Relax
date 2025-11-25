@@ -252,7 +252,8 @@ const Reservas = ({ onReservationCreated }) => {
             onChange={e => handleInputChange('estado', e.target.value)}
             options={[
               { value: 'PENDING', label: 'Pendiente' },
-              { value: 'CONFIRMED', label: 'Confirmada' }
+              { value: 'CONFIRMED', label: 'Confirmada' },
+              { value: 'CANCELLED', label: 'Cancelada / Reembolsada' }
             ]}
           />
         </div>

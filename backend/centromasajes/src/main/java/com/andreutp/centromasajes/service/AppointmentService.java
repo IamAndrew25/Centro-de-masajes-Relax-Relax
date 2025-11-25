@@ -2,13 +2,18 @@ package com.andreutp.centromasajes.service;
 
 
 import com.andreutp.centromasajes.dao.IAppointmentRepository;
+import com.andreutp.centromasajes.dao.IInvoiceRepository;
 import com.andreutp.centromasajes.dao.IPlanRepository;
 import com.andreutp.centromasajes.dao.IServiceRepository;
 import com.andreutp.centromasajes.dao.IUserRepository;
 import com.andreutp.centromasajes.dto.AppointmentRequest;
 import com.andreutp.centromasajes.model.AppointmentModel;
+import com.andreutp.centromasajes.dao.IPaymentRepository;
+import com.andreutp.centromasajes.model.PaymentModel;
 import com.andreutp.centromasajes.model.ServiceModel;
 import com.andreutp.centromasajes.model.UserModel;
+
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,16 +31,27 @@ public class AppointmentService {
     private final IServiceRepository serviceRepository;
 
     @Autowired
+    private final IPaymentRepository paymentRepository;
+
+    @Autowired
+    private final IInvoiceRepository invoiceRepository;
+
+
+    @Autowired
     private final IPlanRepository planRepository;
 
     public AppointmentService(IAppointmentRepository appointmentRepository,
                               IUserRepository userRepository,
                               IServiceRepository serviceRepository,
-                              IPlanRepository planRepository) {
+                              IPlanRepository planRepository,
+                              IPaymentRepository paymentRepository,
+                              IInvoiceRepository invoiceRepository) {
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
         this.serviceRepository = serviceRepository;
         this.planRepository = planRepository;
+        this.paymentRepository = paymentRepository;
+        this.invoiceRepository = invoiceRepository;
     }
 
     // Crear cita (validando que el worker no tenga otra a la misma hora)
@@ -116,6 +132,19 @@ public class AppointmentService {
         existing.setAppointmentEnd(request.getAppointmentStart().plusMinutes(service.getDurationMin()));
         existing.setStatus(AppointmentModel.Status.valueOf(request.getStatus()));
         existing.setNotes(request.getNotes());
+
+        //Estado de prueba
+        AppointmentModel.Status nuevoEstado = AppointmentModel.Status.valueOf(request.getStatus());
+        existing.setStatus(nuevoEstado);
+
+        // Si el admin marca la cita como CANCELLED, marcamos el pago como reembolsado
+        if (nuevoEstado == AppointmentModel.Status.CANCELLED) {
+            List<PaymentModel> payments = paymentRepository.findByAppointment(existing);
+            for (PaymentModel p : payments) {
+                p.setStatus(PaymentModel.Status.REFUNDED); // Asegúrate de tener este estado en tu Enum PaymentModel
+                paymentRepository.save(p);
+            }
+        }
 
         return appointmentRepository.save(existing);
     }

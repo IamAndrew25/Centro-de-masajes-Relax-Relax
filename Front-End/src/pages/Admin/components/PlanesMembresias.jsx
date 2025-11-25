@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './PlanesMembresias.css';
 import { getPlanes, createPlan, updatePlan, deletePlan } from './JS/planesMembresiasService';
+import { toast } from 'react-toastify';
 
 
 const PlanesMembresias = () => {
@@ -34,6 +35,7 @@ const PlanesMembresias = () => {
       setPlanes(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error cargando planes:', err);
+      toast.error('Error al cargar la lista de planes');
       setPlanes([]);
     } finally {
       setLoading(false);
@@ -46,10 +48,10 @@ const PlanesMembresias = () => {
     try {
       await deletePlan(id);
       await loadPlanes();
-      alert('Plan eliminado exitosamente');
+      toast.success('Plan eliminado exitosamente');
     } catch (err) {
       console.error('Error eliminando plan:', err);
-      alert('No se pudo eliminar el plan.');
+      toast.error('No se pudo eliminar el plan.');
     } finally {
       setLoading(false);
     }
@@ -91,7 +93,7 @@ const PlanesMembresias = () => {
       await loadPlanes();
     } catch (err) {
       console.error('Error actualizando destacado:', err);
-      alert('No se pudo actualizar.');
+      toast.error('No se pudo actualizar el estado');
     } finally {
       setLoading(false);
     }
@@ -139,11 +141,11 @@ const PlanesMembresias = () => {
 
     //  calidacion estricta para evitar error 400
     if (!formData.nombre || formData.nombre.trim().length === 0) {
-      alert("El nombre del plan es obligatorio");
+      toast.warn("El nombre del plan es obligatorio");
       return;
     }
     if (formData.precio === '' || isNaN(Number(formData.precio))) {
-      alert("El precio es obligatorio y debe ser numérico");
+      toast.warn("El precio es obligatorio y debe ser numérico");
       return;
     }
 
@@ -194,26 +196,27 @@ const beneficiosArray = Array.isArray(formData.beneficios)
 
       if (editingPlan) {
         await updatePlan(editingPlan.id, planData);
-        alert('✅ Plan actualizado exitosamente');
+        toast.success(' Plan actualizado exitosamente');
       } else {
         await createPlan(planData);
-        alert('✅ Plan creado exitosamente');
+        toast.success(' Plan creado exitosamente');
       }
 
       handleCloseModal();
       await loadPlanes();
 
     } catch (err) {
-  console.error('Error guardando plan:', err);
+      console.error('Error guardando plan:', err);
 
-  if (err.response) {
-    console.log("ERROR DEL BACKEND:", err.response.data);
-    alert("❌ Backend dice: " + JSON.stringify(err.response.data));
-  } else {
-    alert("❌ Error desconocido");
-  }
-}
-
+      let errorMsg = "Error desconocido";
+      if (err.response && err.response.data) {
+        console.log("ERROR DEL BACKEND:", err.response.data);
+        errorMsg = JSON.stringify(err.response.data);
+      }
+      toast.error(`❌ No se pudo guardar: ${errorMsg}`);
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
