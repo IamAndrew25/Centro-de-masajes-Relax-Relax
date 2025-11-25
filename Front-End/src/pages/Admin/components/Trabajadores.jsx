@@ -11,6 +11,8 @@ import {
   enviarExcelTrabajadores,
   descargarExcelTrabajadores
 } from './JS/workerService';
+import { toast } from 'react-toastify';
+
 
 const TRABAJADORES_ESTADOS = [
   { value: "ACTIVO", label: "Activo" },
@@ -53,6 +55,7 @@ const Trabajadores = () => {
       setWorkers(data);
     } catch (error) {
       console.error('Error cargando trabajadores:', error);
+      toast.error("Error al cargar la lista de trabajadores");
     }
   };
 
@@ -71,7 +74,7 @@ const Trabajadores = () => {
   const handleSave = async () => {
     try {
       if (!form.username || !form.email || !form.phone || !form.dni) {
-        alert("Nombre, Email, Teléfono y DNI son obligatorios.");
+        toast.warn("Nombre, Email, Teléfono y DNI son obligatorios.");
         return;
       }
 
@@ -97,7 +100,7 @@ const Trabajadores = () => {
         savedWorker = await updateWorker(form.id, payload);
       } else {
         if (!form.password) {
-          alert('La contraseña es obligatoria para un nuevo trabajador');
+          toast.warn('La contraseña es obligatoria para un nuevo trabajador');
           return;
         }
         savedWorker = await createWorker(payload);
@@ -113,7 +116,7 @@ const Trabajadores = () => {
 
       await saveWorkerAvailability(savedWorker.id || form.id, availabilityPayload);
 
-      alert("Trabajador y disponibilidad guardados correctamente");
+      toast.success("Trabajador y disponibilidad guardados correctamente");
       setShowModal(false);
       setForm({
         id: null,
@@ -136,7 +139,7 @@ const Trabajadores = () => {
       fetchWorkers();
     } catch (error) {
       console.error('Error guardando trabajador:', error.response?.data || error);
-      alert('Error guardando trabajador. Revisa la consola.');
+      toast.error('Error guardando trabajador. Revisa la consola.');
     }
   };
 
@@ -169,12 +172,35 @@ const Trabajadores = () => {
     if (!window.confirm("¿Seguro que quieres eliminar este trabajador?")) return;
     try {
       await deleteWorker(id);
+      toast.success(" Trabajador eliminado correctamente");
       fetchWorkers();
     } catch (error) {
       console.error('Error eliminando trabajador:', error);
-      alert('No se pudo eliminar. Revisa la consola.');
+      toast.error('No se pudo eliminar el trabajador');
     }
   };
+  // Para los botones de excel
+  const handleDescargarExcel = async () => {
+    try {
+        await descargarExcelTrabajadores();
+        toast.success(" Excel descargado correctamente");
+    } catch (error) {
+        console.error(error);
+        toast.error("Error al descargar el Excel");
+    }
+  };
+
+  const handleEnviarExcel = async () => {
+    try {
+        const resultado = await enviarExcelTrabajadores();
+        if (resultado) {
+            toast.success(" Reporte enviado por correo");
+        }
+    } catch (error) {
+        console.error(error);
+        toast.error("Error al enviar el reporte");
+    }
+  }
 
   const WorkerAvailability = ({ availability }) => {
     if (!Array.isArray(availability) || !availability.length) 
@@ -201,10 +227,10 @@ const Trabajadores = () => {
         buttonText="Nuevo Trabajador" 
         onButtonClick={() => setShowModal(true)} 
       />
-      <button style={{ height: '40px', marginLeft: '10px' }} onClick={enviarExcelTrabajadores}>
+      <button style={{ height: '40px', marginLeft: '10px' }} onClick={handleEnviarExcel}>
         📊 Reporte Excel
       </button>
-      <button style={{ height: '40px', marginLeft: '10px' }} onClick={descargarExcelTrabajadores}>
+      <button style={{ height: '40px', marginLeft: '10px' }} onClick={handleDescargarExcel}>
         ⬇️ Descargar Excel
       </button>
 
