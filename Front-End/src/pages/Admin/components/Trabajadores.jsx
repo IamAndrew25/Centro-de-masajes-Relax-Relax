@@ -21,7 +21,20 @@ const TRABAJADORES_ESTADOS = [
   { value: "INACTIVO", label: "Inactivo" }
 ];
 
+
 const DIAS_SEMANA = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO"];
+
+// limte de campo
+const FIELD_MAX_LENGTHS = {
+  username: 60,       // Nombre
+  phone: 9,          // Teléfono
+  dni: 8,             // DNI (Perú)
+  email: 100,         // Email
+  password: 30,       // Contraseña
+  especialidad: 60,   // Especialidad
+  experiencia: 2,     // Años (00-99)
+  notas: 255          // Notas
+};
 
 const Trabajadores = () => {
   const [workers, setWorkers] = useState([]);
@@ -60,7 +73,13 @@ const Trabajadores = () => {
   };
 
   const handleInputChange = (field, value) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    const max = FIELD_MAX_LENGTHS[field];
+    const finalValue = max ? value.slice(0, max) : value;
+
+    setForm(prev => ({
+      ...prev,
+      [field]: finalValue
+    }));
   };
 
   const handleAvailabilityChange = (index, field, value) => {
