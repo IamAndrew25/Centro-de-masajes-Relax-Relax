@@ -1,63 +1,115 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { getBusinessBasics, updateBusinessBasics } from "./JS/businessConfigService";
+import { toast } from "react-toastify";
 
 // Componentes internos para cada sección de configuración
-const InformacionNegocio = () => (
-    <div className="config-section">
-        <h3>🏢 Información del Negocio</h3>
-        <div className="config-grid">
-            <div className="config-card">
-                <h4>Datos Básicos</h4>
-                <div className="config-form">
-                    <div className="form-group">
-                        <label>Nombre del Spa:</label>
-                        <input type="text" defaultValue="Relax Total" />
-                    </div>
-                    <div className="form-group">
-                        <label>Dirección:</label>
-                        <input type="text" defaultValue="Av. Principal 123, Ciudad" />
-                    </div>
-                    <div className="form-group">
-                        <label>Teléfono:</label>
-                        <input type="tel" defaultValue="+1 (555) 123-4567" />
-                    </div>
-                    <div className="form-group">
-                        <label>Email:</label>
-                        <input type="email" defaultValue="info@relaxtotal.com" />
-                    </div>
-                </div>
-            </div>
-            
-            <div className="config-card">
-                <h4>Horarios de Atención</h4>
-                <div className="schedule-config">
-                    <div className="schedule-item">
-                        <span>Lunes - Viernes:</span>
-                        <div className="time-inputs">
-                            <input type="time" defaultValue="09:00" />
-                            <span>-</span>
-                            <input type="time" defaultValue="20:00" />
-                        </div>
-                    </div>
-                    <div className="schedule-item">
-                        <span>Sábados:</span>
-                        <div className="time-inputs">
-                            <input type="time" defaultValue="10:00" />
-                            <span>-</span>
-                            <input type="time" defaultValue="18:00" />
-                        </div>
-                    </div>
-                    <div className="schedule-item">
-                        <span>Domingos:</span>
-                        <select defaultValue="cerrado">
-                            <option value="cerrado">Cerrado</option>
-                            <option value="abierto">Abierto</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-);
+const InformacionNegocio = () => {
+  const [basics, setBasics] = useState({
+    nombreSpa: "Relax Total",
+    direccion: "Av. Principal 123, Ciudad",
+    telefono: "+1 (555) 123-4567",
+    email: "info@relaxtotal.com",
+  });
 
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const fetchBasics = async () => {
+      try {
+        const data = await getBusinessBasics();
+        setBasics(data);
+      } catch (err) {
+        console.error("Error al cargar datos básicos:", err);
+      }
+    };
+    fetchBasics();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setBasics((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+
+    if(!basics.nombreSpa || !basics.email){
+      toast.warn("El nombre y email son obligatorios");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      await updateBusinessBasics(basics);
+      toast.success("Datos del negocio actualizados correctamente");
+    } catch (err) {
+      console.error("Error al guardar datos básicos:", err);
+      toast.error("Hubo un error al guardar los cambios");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="config-section">
+      <h3>🏢 Información del Negocio</h3>
+
+      <form className="config-grid" onSubmit={handleSave}>
+        <div className="config-card">
+          <h4>Datos Básicos</h4>
+          <div className="config-form">
+            <div className="form-group">
+              <label>Nombre del Spa:</label>
+              <input
+                type="text"
+                name="nombreSpa"
+                value={basics.nombreSpa}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Dirección:</label>
+              <input
+                type="text"
+                name="direccion"
+                value={basics.direccion}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Teléfono:</label>
+              <input
+                type="tel"
+                name="telefono"
+                value={basics.telefono}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="form-group">
+              <label>Email:</label>
+              <input
+                type="email"
+                name="email"
+                value={basics.email}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="btn-save-config"
+            disabled={saving}
+          >
+            {saving ? "Guardando..." : "Guardar cambios"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
 
 export default InformacionNegocio;
