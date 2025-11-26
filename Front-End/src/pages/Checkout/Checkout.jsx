@@ -3,12 +3,12 @@ import MainLayout from '../../layouts/MainLayout';
 import { useCart } from '../../context/cartContext';
 import { useNavigate } from 'react-router-dom';
 import './Checkout.css';
-import { FaCreditCard, FaCalendarAlt, FaLock, FaCcVisa, FaCcMastercard} from 'react-icons/fa';
-import { createPayment } from '../../api/paymentApi';
+import { FaCreditCard, FaCalendarAlt, FaLock, FaCcVisa, FaCcMastercard } from 'react-icons/fa';
+import { createPaymentForAppointment } from '../../api/appointmentApi';// ahorase usa el método del appointmentApi para crear el pago con boleta o factura
 import { toast } from 'react-toastify';
 
 const Checkout = () => {
-  const { cartItems, totalCartPrice, clearCart, appointmentId} = useCart();
+  const { cartItems, totalCartPrice, clearCart, appointmentId } = useCart();
   const navigate = useNavigate();
 
   const [cardNumber, setCardNumber] = useState('');
@@ -20,76 +20,82 @@ const Checkout = () => {
   const [orderNumber, setOrderNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Efecto para generar datos de operación al cargar el componente
+  // NUEVO: Estado para seleccionar boleta o factura
+  const [paymentType, setPaymentType] = useState(''); // 'boleta' | 'factura'
+
   useEffect(() => {
     const now = new Date();
-    setOperationDate(now.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }));
-    setOperationTime(now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false }));
+    setOperationDate(now.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'}));
+    setOperationTime(now.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit', hour12: false}));
     setOrderNumber(Math.floor(100000 + Math.random() * 900000).toString());
   }, []);
-
-  // Manejador para enviar el formulario de pago
+  
   const handlePayment = async (e) => {
     e.preventDefault();
 
-    //Validacion de cita
     if (!appointmentId) {
-      toast.error('Error: No se ha encontrado una cita. Por favor, reserva una hora antes de pagar.');
-      navigate('/reserva');
-      return;
-    }
+      toast.error('Error: No se ha encontrado una cita. Por favor, reserva una hora antes de pagar.');
+      navigate('/reserva');
+      return;
+    }
 
-    //Validaciones del formulario
     if (!cardNumber || !cardExpiry || !cardCvv) {
       toast.warn('Por favor, completa todos los campos de la tarjeta.');
       return;
     }
+
+    // Validación numero de la tarjeta 
     const cleanedCardNumber = cardNumber.replace(/\s/g, '');
     if (cleanedCardNumber.length !== 16 || !/^\d+$/.test(cleanedCardNumber)) {
-        toast.warn('El número de tarjeta debe tener 16 dígitos numéricos.');
-        return;
+      toast.warn('El número de tarjeta debe tener 16 dígitos numéricos.');
+      return;
     }
+
     if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
-        toast.warn('La fecha de caducidad debe estar en formato MM/AA.');
-        return;
+      toast.warn('La fecha de caducidad debe estar en formato MM/AA.');
+      return;
     }
-    // Validar que la fecha no este pasada
+
     const [month, year] = cardExpiry.split('/');
     const expiryDate = new Date(`20${year}`, month - 1);
     const currentDate = new Date();
     currentDate.setDate(1);
     if (expiryDate < currentDate) {
-        toast.warn('La tarjeta ha caducado.');
-        return;
+      toast.warn('La tarjeta ha caducado.');
+      return;
     }
 
     const cleanedCvv = cardCvv.replace(/\D/g, '');
-    if (cleanedCvv.length < 3 ) {
-        toast.warn('El CVV debe tener 3 dígitos.');
-        return;
+    if (cleanedCvv.length < 3) {
+      toast.warn('El CVV debe tener 3 dígitos.');
+      return;
+    }
+
+    // NUEVO: validar que haya elegido boleta o factura
+    if (!paymentType) {
+      toast.warn('Por favor, selecciona si deseas boleta o factura.');
+      return;
     }
 
     setIsLoading(true);
 
     try {
-      const paymentDetails = {
-        amount: totalCartPrice,
-        method: "CREDIT_CARD",
-        appointmentId: appointmentId
-      };
-
-      // Llama a la función importada createPayment
-      const paymentResponse = await createPayment(paymentDetails);
+      // 'boleta' | 'factura' -> "BOLETA" | "FACTURA"
+      const invoiceType = paymentType === 'factura' ? 'FACTURA' : 'BOLETA';
+      // Llamamos al método que crea el pago, enviando el tipo de comprobante
+      const paymentResponse = await createPaymentForAppointment(
+        appointmentId,
+        totalCartPrice,
+        invoiceType
+      );
 
       console.log("Pago creado con éxito en backend:", paymentResponse);
 
-      // Si la llamada fue exitosa
       toast.success('¡Pago procesado con éxito! Gracias por tu compra.');
       clearCart();
       navigate('/home');
 
     } catch (apiError) {
-      // Si hubo un error en la llamada a la API
       console.error("Error en el pago:", apiError);
       toast.error(apiError.message || "Hubo un problema al procesar tu pago. Inténtalo de nuevo.");
     } finally {
@@ -120,13 +126,15 @@ const Checkout = () => {
         <div className="checkout-container empty">
           <div className="checkout-wrapper empty-cart-message">
             <h1>Tu carrito está vacío.</h1>
-            <p>Parece que no tienes productos en tu carrito. <a onClick={() => navigate('/')}>¡Explora nuestros servicios!</a></p>
+            <p>Parece que no tienes productos en tu carrito.{' '}
+              <a onClick={() => navigate('/')}>¡Explora nuestros servicios!</a>
+            </p>
           </div>
         </div>
       </MainLayout>
     );
   }
-  
+
   return (
     <MainLayout>
       <div className="checkout-container">
@@ -158,18 +166,16 @@ const Checkout = () => {
 
           <div className="payment-card">
             <div className="payment-header">
-                <h2>Pago por tarjeta</h2>
-                <div className="card-logos">
-                    <FaCcVisa size={30} color="#1A1F71"/>
-                    <FaCcMastercard size={30} color="#EB001B"/>
-                </div>
+              <h2>Pago por tarjeta</h2>
+              <div className="card-logos">
+                <FaCcVisa size={30} color="#1A1F71" />
+                <FaCcMastercard size={30} color="#EB001B" />
+              </div>
             </div>
 
-            {/* Formulario de pago */}
             <form onSubmit={handlePayment} className="payment-form">
-
               <div className="input-group">
-                <FaCreditCard className="input-icon"/>
+                <FaCreditCard className="input-icon" />
                 <input
                   type="text"
                   placeholder="Número de tarjeta"
@@ -186,13 +192,13 @@ const Checkout = () => {
 
               <div className="input-row">
                 <div className="input-group">
-                  <FaCalendarAlt className="input-icon"/>
+                  <FaCalendarAlt className="input-icon" />
                   <input
                     type="text"
                     placeholder="Caducidad (MM/AA)"
                     value={cardExpiry}
                     onChange={(e) => setCardExpiry(formatCardExpiry(e.target.value))}
-                    maxLength="5" // MM/AA
+                    maxLength="5"
                     inputMode="numeric"
                     pattern="\d{2}/\d{2}"
                     title="Ingrese la fecha en formato MM/AA"
@@ -200,14 +206,13 @@ const Checkout = () => {
                     required
                   />
                 </div>
-                {/* Input: CVV */}
+
                 <div className="input-group">
                   <FaLock className="input-icon"/>
                   <input
                     type="password"
                     placeholder="CVV"
                     value={cardCvv}
-                    // Solo permite dígitos y limita longitud en onChange
                     onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').substring(0, 4))}
                     maxLength="3"
                     inputMode="numeric"
@@ -219,13 +224,39 @@ const Checkout = () => {
                 </div>
               </div>
 
+              {/* bolitas check en una sola linea */}
+              <div className="invoice-type-row">
+                <label className="invoice-option">
+                  <input
+                    type="radio"
+                    id="boleta"
+                    checked={paymentType === 'boleta'}
+                    onChange={() => setPaymentType('boleta')}
+                    disabled={isLoading}
+                  />
+                  ¿Desea boleta?
+                </label>
+
+                <label className="invoice-option">
+                  <input
+                    type="radio"
+                    id="factura"
+                    checked={paymentType === 'factura'}
+                    onChange={() => setPaymentType('factura')}
+                    disabled={isLoading}
+                  />
+                  ¿Desea factura?
+                </label>
+              </div>
+
+
               <div className="button-row">
                 <button
                   type="button"
                   className="btn-cancel"
                   onClick={() => navigate(-1)}
                   disabled={isLoading}
-                 >
+                >
                   Cancelar
                 </button>
                 <button
@@ -237,11 +268,10 @@ const Checkout = () => {
                 </button>
               </div>
             </form>
+
           </div>
         </div>
-      </div> 
+      </div>
     </MainLayout>
   );
 };
-
-export default Checkout;

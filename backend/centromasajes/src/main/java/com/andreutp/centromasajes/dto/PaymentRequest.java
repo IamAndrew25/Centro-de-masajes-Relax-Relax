@@ -14,6 +14,8 @@ public class PaymentRequest {
     private Boolean coveredBySubscription;
     private String correo;
 
+    // NUEVO: tipo de comprobante (BOLETA o FACTURA)
+    private String invoiceType;
 
     public Boolean isCoveredBySubscription() {
         return coveredBySubscription;

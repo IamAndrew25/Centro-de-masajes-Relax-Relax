@@ -70,7 +70,7 @@ public class PaymentService {
         return paymentRepository.findAll();
     }
 
-    public PaymentModel createPayment(PaymentRequest request) {
+        public PaymentModel createPayment(PaymentRequest request) {
         // 1. buscar user y appointment
         UserModel user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -93,12 +93,25 @@ public class PaymentService {
 
         PaymentModel savedPayment = paymentRepository.save(payment);
 
-        // 3. crear invoice relacionado
+        // 3. determinar tipo de comprobante: BOLETA (default) o FACTURA
+        InvoiceModel.Type tipoComprobante = InvoiceModel.Type.BOLETA; // por defecto
+
+        if (request.getInvoiceType() != null) {
+            String tipo = request.getInvoiceType().trim().toUpperCase();
+            if ("FACTURA".equals(tipo)) {
+                tipoComprobante = InvoiceModel.Type.FACTURA;
+            } else if ("BOLETA".equals(tipo)) {
+                tipoComprobante = InvoiceModel.Type.BOLETA;
+            }
+            // si viene cualquier otra cosa, se queda en BOLETA
+        }
+
+        // 4. crear invoice relacionado
         InvoiceModel invoice = InvoiceModel.builder()
                 .payment(savedPayment)
                 .user(user)
                 .appointment(appointment)
-                .type(InvoiceModel.Type.BOLETA)
+                .type(tipoComprobante) 
                 .invoiceNumber(generateInvoiceNumber())
                 .customerName(user.getUsername())
                 .customerDoc(user.getDni())
@@ -108,40 +121,68 @@ public class PaymentService {
 
         invoice = invoiceRepository.save(invoice);
 
-        // 4. asociar invoice al payment
+        // 5. asociar invoice al payment
         savedPayment.setInvoice(invoice);
         paymentRepository.save(savedPayment);
 
-        // 5. enviar correo con PDF -- TRY/CATCH para evitar 500 si falla el mail
+        // 6. enviar correo con el PDF ya sea de la fac o coleta
         try {
-            byte[] pdfBytes = PdfGenerator.generateStyledInvoicePdf(
-                    user.getUsername(),
-                    invoice.getInvoiceNumber(),
-                    buildDescriptionFromAppointment(appointment), // helper abajo
-                    1,
-                    invoice.getTotal(),
-                    savedPayment.getMethod(),
-                    String.valueOf(invoice.getInvoiceNumber())
-            );
 
-            String correoDestino = (request.getCorreo() != null && !request.getCorreo().isBlank()) ? request.getCorreo() : user.getEmail();
+            byte[] pdfBytes;
+
+            // descripción común para ambos tipos
+            String descripcion = buildDescriptionFromAppointment(appointment);  
+
+            if (tipoComprobante == InvoiceModel.Type.FACTURA) {
+                //  FACTURA: usar diseño A4
+                pdfBytes = PdfGenerator.generateInvoiceA4Pdf(
+                        user.getUsername(),
+                        invoice.getInvoiceNumber(),
+                        descripcion,
+                        1,
+                        invoice.getTotal(),
+                        savedPayment.getMethod(),
+                        String.valueOf(invoice.getInvoiceNumber())
+                );
+            } else {
+                //  BOLETA: usar ticket estilizado
+                pdfBytes = PdfGenerator.generateStyledInvoicePdf(
+                        user.getUsername(),
+                        invoice.getInvoiceNumber(),
+                        descripcion,
+                        1,
+                        invoice.getTotal(),
+                        savedPayment.getMethod(),
+                        String.valueOf(invoice.getInvoiceNumber())
+                );
+            }
+
+            String correoDestino =
+                    (request.getCorreo() != null && !request.getCorreo().isBlank())
+                            ? request.getCorreo()
+                            : user.getEmail();
+
+            // texto dinámico según tipo
+            String tipoTexto = (tipoComprobante == InvoiceModel.Type.FACTURA) ? "factura" : "boleta";
+            String tipoTextoCap = (tipoComprobante == InvoiceModel.Type.FACTURA) ? "Factura" : "Boleta";
 
             emailService.enviarCorreoConAdjunto(
                     correoDestino,
-                    "Tu boleta - " + invoice.getInvoiceNumber(),
-                    "Adjuntamos su boleta electrónica. ¡Gracias por su preferencia!",
+                    "Tu " + tipoTextoCap + " - " + invoice.getInvoiceNumber(),
+                    "Adjuntamos su " + tipoTexto + " electrónica. ¡Gracias por su preferencia!",
                     pdfBytes,
-                    "Boleta_" + invoice.getInvoiceNumber() + ".pdf"
+                    tipoTextoCap + "_" + invoice.getInvoiceNumber() + ".pdf"
             );
         } catch (Exception e) {
-            // loguear pero no lanzar excepción
-            logger.error("Error enviando boleta por correo: {}", e.getMessage(), e);
+            logger.error("Error enviando " +
+                            (tipoComprobante == InvoiceModel.Type.FACTURA ? "factura" : "boleta") +
+                            " por correo: {}", e.getMessage(), e);
         }
 
         return savedPayment;
     }
 
-    // helper simple
+    // Metododin para generar la descripción de la cita
     private String buildDescriptionFromAppointment(AppointmentModel appointment) {
         String serv = appointment.getService() != null ? appointment.getService().getName() : "Servicio";
         String worker = appointment.getWorker() != null ? appointment.getWorker().getUsername() : "Trabajador";
