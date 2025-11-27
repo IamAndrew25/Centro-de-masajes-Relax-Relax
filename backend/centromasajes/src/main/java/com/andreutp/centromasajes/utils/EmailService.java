@@ -86,5 +86,43 @@ public class EmailService {
             throw new RuntimeException("Error enviando correo: " + e.getMessage(), e);
         }
     }
+//--------------Nuevo-----------------------
+    public void enviarFacturaA4ConPDF(String correo,
+                                  String nombreCliente,
+                                  String descripcionServicio,
+                                  int cantidad,
+                                  double total,
+                                  String metodoPago,
+                                  String numeroFactura,
+                                  String numeroPedido) {
+    try {
+        byte[] pdfBytes = PdfGenerator.generateInvoiceA4Pdf(
+                nombreCliente,
+                numeroFactura,
+                descripcionServicio,
+                cantidad,
+                total,
+                metodoPago,     // fijado a "Visa" desde el service
+                numeroPedido    // puede ser opcional
+        );
+
+        MimeMessage mensaje = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mensaje, true);
+
+        helper.setTo(correo);
+        helper.setSubject("Factura electrónica " + numeroFactura);
+        helper.setText("Hola " + nombreCliente + ",\nAdjuntamos tu factura electrónica. ¡Gracias por tu compra!");
+
+        helper.addAttachment("factura_" + numeroFactura + ".pdf",
+                new ByteArrayResource(pdfBytes));
+
+        mailSender.send(mensaje);
+        logger.info("Factura A4 enviada a {}", correo);
+
+    } catch (Exception e) {
+        logger.error("Error enviando factura A4", e);
+        throw new RuntimeException("Error enviando factura: " + e.getMessage(), e);
+    }
+}
 
 }

@@ -125,7 +125,7 @@ const Contact = () => {
               </ul>
 
               <div className="contact-map-placeholder">
-                <iframe src="https://maps.app.goo.gl/EuwE7dsjvvGgsL4F7" frameborder="0"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d675.6633095080708!2d-77.03602974731582!3d-12.120105988690884!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c90d67ad26b1%3A0x554d1dbb917b4471!2sQ%20Spa%20%26%20Wellness!5e1!3m2!1ses-419!2spe!4v1764053376226!5m2!1ses-419!2spe" width="100%" height="200" style={{ border:0 }} allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title='Mapa de Ubicacion'></iframe>
               </div>
             </div>
 

@@ -55,6 +55,7 @@ export const createPayment = async (paymentData) => {
     method: paymentData.method || "YAPE", // Un default más común
     paymentDate: new Date().toISOString(),
     coveredBySubscription: paymentData.coveredBySubscription || false,
+    invoiceType: paymentData.invoiceType || "BOLETA", // NUEVO: se usa para diferenciar el tipo de comprobante
   };
 
   console.log("Enviando payload de pago:", requestPayload);
