@@ -125,7 +125,7 @@ const Contact = () => {
               </ul>
 
               <div className="contact-map-placeholder">
-                <p>(Aquí va el mapa de Google Maps, si tuviéramos local)</p>
+                <iframe src="https://maps.app.goo.gl/EuwE7dsjvvGgsL4F7" frameborder="0"></iframe>
               </div>
             </div>
 
