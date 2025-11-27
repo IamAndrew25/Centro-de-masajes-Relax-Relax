@@ -275,3 +275,4 @@ const Checkout = () => {
     </MainLayout>
   );
 };
+export default Checkout;
