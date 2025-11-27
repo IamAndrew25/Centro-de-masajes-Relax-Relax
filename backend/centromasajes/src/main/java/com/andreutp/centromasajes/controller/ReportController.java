@@ -1,6 +1,6 @@
 package com.andreutp.centromasajes.controller;
 
-
+import java.util.List;
 import com.andreutp.centromasajes.service.ReportService;
 import com.andreutp.centromasajes.utils.PdfGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,5 +133,119 @@ public class ReportController {
 
     
     //metodo yherson
+
+    // FACTURA: DESCARGA (GET)
+@GetMapping("/factura/download")
+public ResponseEntity<byte[]> descargarFactura(
+        @RequestParam String cliente,
+        @RequestParam String descripcion,
+        @RequestParam double total,
+        @RequestParam String metodoPago,
+        @RequestParam(defaultValue = "F000-000001") String numero
+) {
+    byte[] pdfBytes = PdfGenerator.generateInvoiceA4Pdf(
+            cliente, numero, descripcion, 1, total, metodoPago, "ORD-" + System.currentTimeMillis()
+    );
+
+    return ResponseEntity.ok()
+            .header("Content-Disposition", "attachment; filename=Factura-" + numero + ".pdf")
+            .header("Content-Type", "application/pdf")
+            .body(pdfBytes);
+}
+
+//FACTURA: ENVÍO POR EMAIL (POST JSON) 
+@PostMapping("/factura/email")
+public ResponseEntity<String> enviarFacturaEmail(@RequestBody FacturaEmailRequest req) {
+
+    // Si hay ítems → MULTI-ITEM
+    if (req.getItems() != null && !req.getItems().isEmpty()) {
+        reportService.enviarFacturaPdfMultiple(
+                req.getCorreo(),
+                req.getCliente(),
+                req.getMetodoPago(),
+                req.getNumeroPedido(),
+                req.getNumeroFactura(),
+                req.getItems()
+        );
+    } else {
+        // Modo simple (1 item)
+        reportService.enviarFacturaPdf(
+                req.getCorreo(),
+                req.getCliente(),
+                req.getDescripcion(),
+                req.getTotal(),
+                req.getMetodoPago(),
+                req.getCantidad(),
+                req.getNumeroPedido()
+        );
+    }
+
+    return ResponseEntity.accepted().body("Factura enviada a: " + req.getCorreo());
+}
+
+    // DTO para el body del POST
+    public static class FacturaEmailRequest {
+        private String correo;
+        private String cliente;
+
+        // MODO SIMPLE (1 item)
+        private String descripcion;
+        private Double total;
+        private Integer cantidad;
+
+        private String metodoPago;
+        private String numeroPedido;
+        private String numeroFactura;
+
+        // MODO MULTI ITEMS
+        private List<ItemFacturaDTO> items;
+
+        public String getCorreo() { return correo; }
+        public void setCorreo(String correo) { this.correo = correo; }
+
+        public String getCliente() { return cliente; }
+        public void setCliente(String cliente) { this.cliente = cliente; }
+
+        public String getDescripcion() { return descripcion; }
+        public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+
+        public Double getTotal() { return total; }
+        public void setTotal(Double total) { this.total = total; }
+
+        public Integer getCantidad() { return cantidad; }
+        public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+
+        public String getMetodoPago() { return metodoPago; }
+        public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }
+
+        public String getNumeroPedido() { return numeroPedido; }
+        public void setNumeroPedido(String numeroPedido) { this.numeroPedido = numeroPedido; }
+
+        public String getNumeroFactura() { return numeroFactura; }
+        public void setNumeroFactura(String numeroFactura) { this.numeroFactura = numeroFactura; }
+
+        public List<ItemFacturaDTO> getItems() { return items; }
+        public void setItems(List<ItemFacturaDTO> items) { this.items = items; }
+    }
+
+        //----------------DTO para cada item de la factura----------------//
+        public static class ItemFacturaDTO {
+        private String descripcion;
+        private Integer cantidad;
+        private Double precioUnitario;
+
+        public String getDescripcion() { return descripcion; }
+        public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+
+        public Integer getCantidad() { return cantidad; }
+        public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+
+        public Double getPrecioUnitario() { return precioUnitario; }
+        public void setPrecioUnitario(Double precioUnitario) { this.precioUnitario = precioUnitario; }
+    }
+
+
+
+
 
 }

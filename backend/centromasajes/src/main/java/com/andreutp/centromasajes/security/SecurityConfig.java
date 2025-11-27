@@ -36,7 +36,12 @@ public class SecurityConfig {
                         .requestMatchers("/payments/**").permitAll()
                         .requestMatchers("/promotions/**").permitAll()
                         .requestMatchers("/plans/**").permitAll()
-                        .requestMatchers("/auth/register/**","/auth/login/**","/auth/forgot-password/**", "/auth/reset-password/**").permitAll()
+                        .requestMatchers(
+                                        "/auth/register/**",
+                                        "/auth/login/**",
+                                        "/auth/forgot-password/**",
+                                        "/auth/reset-password/**"
+                                ).permitAll()
                         .requestMatchers("/services/**").permitAll()
                         .requestMatchers("/upload/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
