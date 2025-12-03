@@ -36,13 +36,13 @@ public class PaymentModel {
     private Double amount;
 
     @Column(name = "payment_date", nullable = false)
-    private LocalDateTime paymentDate = LocalDateTime.now();;
+    private LocalDateTime paymentDate ;
 
     @Column(length = 50)
     private String method;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @Column(name = "covered_by_subscription", nullable = false)
     private Boolean coveredBySubscription = false;
@@ -57,4 +57,14 @@ public class PaymentModel {
 
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
+        if (this.paymentDate == null) {
+            this.paymentDate = LocalDateTime.now();
+        }
+    }
 }

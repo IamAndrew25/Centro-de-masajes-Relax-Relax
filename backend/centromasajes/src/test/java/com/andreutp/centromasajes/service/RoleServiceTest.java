@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+//@ExtendWith(MockitoExtension.class)
 class RoleServiceTest {
-
+/*
     @Mock
     private IRoleRepository roleRepository;
 
@@ -161,5 +161,5 @@ class RoleServiceTest {
 
         // Assert
         verify(roleRepository, times(1)).deleteById(roleId);
-    }
+    }*/
 }

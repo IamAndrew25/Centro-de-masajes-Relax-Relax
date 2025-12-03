@@ -1,0 +1,12 @@
+-- init.sql
+CREATE DATABASE IF NOT EXISTS centro_masajes;
+USE centro_masajes;
+
+CREATE TABLE IF NOT EXISTS roles (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+INSERT IGNORE INTO roles (name) VALUES ('ADMIN');
+INSERT IGNORE INTO roles (name) VALUES ('USER');
+INSERT IGNORE INTO roles (name) VALUES ('WORKER');

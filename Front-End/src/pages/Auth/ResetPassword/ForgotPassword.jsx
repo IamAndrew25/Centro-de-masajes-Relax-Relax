@@ -9,7 +9,7 @@ export default function ForgotPassword({ onClose }) {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:8080/auth/forgot-password", {
+      const res = await fetch("http://3.16.225.135:8080/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

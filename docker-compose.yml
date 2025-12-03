@@ -1,0 +1,87 @@
+version: '3.9'
+
+services:
+
+  db:
+    image: mysql:8.0.33
+    container_name: centromasajes-db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: centro_masajes
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+    networks:
+      - app-networks
+  backend:
+    build: ./backend/centromasajes
+    mem_limit: 521m
+    container_name: centromasajes-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/centro_masajes?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-networks
+  frontend:
+    build: ./Front-End
+    container_name: centromasajes-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - app-networks
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+    - "9090:9090"
+    depends_on:
+      - backend
+    networks:
+      - app-networks
+    
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+    - "3001:3000" # 3000 lo usa tu frontend
+    environment:
+    - GF_SECURITY_ADMIN_USER=admin
+    - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+    - prometheus
+    networks:
+      - app-networks
+  
+  backup:
+    build: ./backup
+    container_name: centromasajes-backup
+    volumes:
+      - ./backups:/backups
+    depends_on:
+      - db
+    networks:
+      - app-networks
+
+networks:
+  app-networks:
+    driver: bridge

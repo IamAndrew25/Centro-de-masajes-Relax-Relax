@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/promotions';
+const API_URL = 'http://3.16.225.135:8080/promotions';
 
 const toDate = (value) => {
     if (!value) return null;
@@ -56,7 +56,7 @@ export const uploadPromotionImage = async (file) => {
     const formData = new FormData();
     formData.append("image", file);
 
-    const res = await axios.post("http://localhost:8080/upload/promotion-image", formData, {
+    const res = await axios.post("http://3.16.225.135:8080/upload/promotion-image", formData, {
         headers: { "Content-Type": "multipart/form-data" }
     });
 

@@ -1,8 +1,7 @@
-// src/services/businessConfigService.js
-// src/services/businessConfigService.js
+
 import axios from "axios";
 
-const API_URL = "http://localhost:8080"; // ⬅️ BACKEND, no 3000
+const API_URL = "http://3.16.225.135:8080"; // 
 
 // Recuperar el JWT del localStorage (ajusta la clave si usas otra)
 const getToken = () => localStorage.getItem("token");

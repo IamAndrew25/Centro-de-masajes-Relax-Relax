@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/services';
+const API_URL = 'http://3.16.225.135:8080/services';
 
 // Función para obtener el token del localStorage
 const getToken = () => localStorage.getItem('token');
@@ -42,7 +42,7 @@ export const enviarExcelServicios = async () => {
     const correo = prompt("Ingresa el correo al que enviar el Excel de servicios:");
     if (!correo) return null;
 
-    const response = await fetch(`http://localhost:8080/reports/servicios?correo=${correo}`, {
+    const response = await fetch(`http://3.16.225.135:8080/reports/servicios?correo=${correo}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${getToken()}` }
     });
@@ -53,7 +53,7 @@ export const enviarExcelServicios = async () => {
 
 // Descargar Excel
 export const descargarExcelServicios = async () => {
-    const response = await fetch(`http://localhost:8080/reports/servicios/download`, {
+    const response = await fetch(`http://3.16.225.135:8080/reports/servicios/download`, {
       method: "GET",
       headers: { Authorization: `Bearer ${getToken()}` }
     });

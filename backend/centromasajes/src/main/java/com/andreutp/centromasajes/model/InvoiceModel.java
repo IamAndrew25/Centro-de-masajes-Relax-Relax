@@ -49,7 +49,7 @@ public class InvoiceModel {
     private String notes;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -64,5 +64,11 @@ public class InvoiceModel {
     public enum Type {
         BOLETA,
         FACTURA
+    }
+    @PrePersist
+    protected void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
     }
 }
