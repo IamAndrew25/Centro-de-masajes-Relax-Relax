@@ -63,7 +63,7 @@ const mapFromBackendPromotions = (p) => {
 
   let imageUrl = p.imageUrl;
     if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('/assets')) {
-      imageUrl = `http://18.222.159.158:8080${imageUrl}`;
+      imageUrl = `http://localhost:8080${imageUrl}`;
     }
 
   return {
@@ -96,7 +96,7 @@ const Plans = () => {
     const loadPlans = async () => {
       setLoadingMemberships(true);
       try {
-        const res = await axios.get('http://3.16.225.135:8080/plans');
+        const res = await axios.get('http://localhost:8080/plans');
         const data = Array.isArray(res.data) ? res.data.map(mapFromBackend) : [];
         const activeMemberships = data.filter(p => 
           (p.tipo === 'membresia' || p.tipo === 'vip' || p.tipo === 'plan') && p.estado === 'activo'
@@ -118,7 +118,7 @@ const Plans = () => {
     const loadPromotions = async () => {
       setLoadingPackages(true);
       try {
-        const res = await axios.get('http://3.16.225.135:8080/promotions');
+        const res = await axios.get('http://localhost:8080/promotions');
         const data = Array.isArray(res.data) ? res.data.map(mapFromBackendPromotions) : [];
         const activePromotions = data.filter(p => p.active);
         setCustomPackages(activePromotions);

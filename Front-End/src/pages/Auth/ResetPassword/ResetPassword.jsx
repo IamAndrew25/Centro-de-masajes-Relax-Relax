@@ -26,7 +26,7 @@ export default function ResetPassword() {
     }
 
     try {
-      const res = await fetch("http://3.16.225.135:8080/auth/reset-password", {
+      const res = await fetch("http://localhost:8080/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, newPassword }),
